@@ -1,0 +1,64 @@
+{
+  "name": "recorder",
+  "version": "1.0.0",
+  "license": "MIT",
+  "description": "Recorder is an audio recorder used in the installation Rumor, created by playField.",
+  "author": "playField.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/playfield-art/rumor"
+  },
+  "scripts": {
+    "build": "yarn run build:main && npm run build:preload && npm run build:renderer",
+    "build:main": "cd ./src/main && vite build",
+    "build:renderer": "cd ./src/renderer && vite build",
+    "build:preload": "cd ./src/preload && vite build",
+    "compile": "cross-env MODE=production npm run build && electron-builder build --config .electron-builder.config.js",
+    "prepare-publish": "node scripts/prepare_publish.js",
+    "publish": "yarn run prepare-publish && yarn run compile && yarn scripts/publish.js",
+    "publish-test": "node scripts/publish.js",
+    "typecheck": "yarn run typecheck:main && yarn run typecheck:preload && yarn run typecheck:renderer",
+    "typecheck:main": "tsc --noEmit -p src/main/tsconfig.json",
+    "typecheck:preload": "tsc --noEmit -p src/preload/tsconfig.json",
+    "typecheck:renderer": "tsc --noEmit -p src/renderer/tsconfig.json",
+    "watch": "NODE_ENV=development node scripts/watch.js"
+  },
+  "private": true,
+  "main": "src/main/dist/main.cjs",
+  "build": {
+    "extraFiles": [
+      {
+        "from": "resources",
+        "to": "Resources/bin",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ]
+  },
+  "dependencies": {
+    "@electron/notarize": "^1.2.3",
+    "@octokit/rest": "^19.0.5",
+    "@types/howler": "^2.2.7",
+    "howler": "^2.2.3",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-toastify": "^9.1.1",
+    "sequelize": "^6.25.6",
+    "serialport": "^10.5.0",
+    "sqlite3": "^5.1.2",
+    "styled-components": "^5.3.6"
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.22",
+    "@types/react-dom": "^18.0.7",
+    "@types/styled-components": "^5.1.26",
+    "@vitejs/plugin-react": "^2.2.0",
+    "cross-env": "^7.0.3",
+    "electron": "21.2.3",
+    "electron-builder": "^23.6.0",
+    "typescript": "^4.6.4",
+    "vite": "^3.2.0",
+    "winston": "^3.8.2"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "paths": {
+      "@components": ["./src/components"],
+      "@components/*": ["./src/components/*"],
+      "@hooks": ["./src/hooks"],
+      "@hooks/*": ["./src/hooks/*"],
+      "@shared/*": ["./../shared/*"],
+    },
+  },
+  "include": [
+    "../renderer/**/*",
+    "../preload/exposedMainWorld.d.ts"
+  ],
+}

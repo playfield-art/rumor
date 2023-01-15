@@ -1,0 +1,24 @@
+{
+  "name": "rumor",
+  "version": "1.0.0",
+  "private": "true",
+  "workspaces": [
+    "recorder",
+    "cms"
+  ],
+  "scripts": {
+    "start:api": "yarn workspace api start:dev",
+    "start:dashboard": "yarn workspace dashboard dev",
+    "start:dev": "npm -s run tools && concurrently -n \"API,DASHBOARD\" -c \"red.bold,green.bold\"  \"yarn run start:api\" \"yarn run start:dashboard\"",
+    "start:dev:api": "yarn run start:api",
+    "start:dev:dashboard": "$(npm bin)/wait-on http-get://localhost:3000 && yarn run start:dashboard",
+    "start:recorder": "yarn workspace recorder run watch",
+    "compile:recorder": "yarn workspace recorder run compile"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^7.4.0",
+    "wait-on": "^6.0.1"
+  },
+  "dependencies": {}
+}

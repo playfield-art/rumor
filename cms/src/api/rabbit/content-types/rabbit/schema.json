@@ -1,0 +1,19 @@
+{
+  "kind": "collectionType",
+  "collectionName": "rabbits",
+  "info": {
+    "singularName": "rabbit",
+    "pluralName": "rabbits",
+    "displayName": "Rabbit",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string"
+    }
+  }
+}
