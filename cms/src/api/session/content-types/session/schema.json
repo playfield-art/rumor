@@ -1,0 +1,47 @@
+{
+  "kind": "collectionType",
+  "collectionName": "sessions",
+  "info": {
+    "singularName": "session",
+    "pluralName": "sessions",
+    "displayName": "Session",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "language": {
+      "type": "enumeration",
+      "enum": [
+        "en",
+        "nl"
+      ],
+      "default": "nl",
+      "required": true
+    },
+    "booth": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::booth.booth"
+    },
+    "moderated": {
+      "type": "boolean",
+      "required": true,
+      "default": false
+    },
+    "narrative": {
+      "type": "json"
+    },
+    "answers": {
+      "type": "component",
+      "repeatable": true,
+      "component": "answers.anwser"
+    },
+    "session_id": {
+      "type": "string",
+      "required": true
+    }
+  }
+}

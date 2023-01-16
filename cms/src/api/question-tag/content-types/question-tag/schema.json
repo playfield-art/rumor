@@ -1,14 +1,14 @@
 {
   "kind": "collectionType",
-  "collectionName": "rabbits",
+  "collectionName": "question_tags",
   "info": {
-    "singularName": "rabbit",
-    "pluralName": "rabbits",
-    "displayName": "Rabbit",
+    "singularName": "question-tag",
+    "pluralName": "question-tags",
+    "displayName": "QuestionTag",
     "description": ""
   },
   "options": {
-    "draftAndPublish": true
+    "draftAndPublish": false
   },
   "pluginOptions": {},
   "attributes": {

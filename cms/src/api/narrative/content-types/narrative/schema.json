@@ -1,0 +1,41 @@
+{
+  "kind": "singleType",
+  "collectionName": "narratives",
+  "info": {
+    "singularName": "narrative",
+    "pluralName": "narratives",
+    "displayName": "Narrative",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "first_chapters": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::chapter.chapter"
+    },
+    "second_chapters": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::chapter.chapter"
+    },
+    "third_chapters": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::chapter.chapter"
+    },
+    "intro": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::chapter.chapter"
+    },
+    "outro": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::chapter.chapter"
+    }
+  }
+}

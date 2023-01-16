@@ -1,0 +1,15 @@
+{
+  "collectionName": "components_blocks_vo_blocks",
+  "info": {
+    "displayName": "VoiceOverBlock",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "voice_over": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::voice-over.voice-over"
+    }
+  }
+}

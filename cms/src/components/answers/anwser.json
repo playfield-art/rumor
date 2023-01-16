@@ -1,0 +1,32 @@
+{
+  "collectionName": "components_answers_anwsers",
+  "info": {
+    "displayName": "Anwser",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "original_transcript": {
+      "type": "text"
+    },
+    "moderated_transcript": {
+      "type": "text"
+    },
+    "question": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::question.question"
+    },
+    "transcribed": {
+      "type": "boolean",
+      "default": false
+    },
+    "audio": {
+      "allowedTypes": [
+        "audios"
+      ],
+      "type": "media",
+      "multiple": false
+    }
+  }
+}

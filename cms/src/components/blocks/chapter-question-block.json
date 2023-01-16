@@ -1,0 +1,15 @@
+{
+  "collectionName": "components_blocks_question_blocks",
+  "info": {
+    "displayName": "QuestionBlock",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "question": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::question.question"
+    }
+  }
+}

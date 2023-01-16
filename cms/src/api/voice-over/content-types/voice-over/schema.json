@@ -1,0 +1,30 @@
+{
+  "kind": "collectionType",
+  "collectionName": "voice_overs",
+  "info": {
+    "singularName": "voice-over",
+    "pluralName": "voice-overs",
+    "displayName": "VoiceOver",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "audio_nl": {
+      "type": "media",
+      "multiple": false,
+      "required": true,
+      "allowedTypes": [
+        "audios"
+      ]
+    },
+    "description": {
+      "type": "text"
+    }
+  }
+}

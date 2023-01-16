@@ -4,11 +4,14 @@ export default {
       endpoint: '/graphql',
       shadowCRUD: true,
       playgroundAlways: true,
-      depthLimit: 7,
+      depthLimit: 20,
       amountLimit: 100,
       apolloServer: {
         tracing: false,
       },
     },
   },
+  'drag-drop-content-types': {
+    enabled: true
+  }
 };
