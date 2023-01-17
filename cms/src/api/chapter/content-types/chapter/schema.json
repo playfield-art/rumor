@@ -24,11 +24,22 @@
       "required": false
     },
     "soundscape": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
       "allowedTypes": [
         "audios"
-      ],
-      "type": "media",
-      "multiple": false
+      ]
+    },
+    "narrative_part": {
+      "type": "enumeration",
+      "enum": [
+        "intro",
+        "first",
+        "second",
+        "third",
+        "outro"
+      ]
     }
   }
 }

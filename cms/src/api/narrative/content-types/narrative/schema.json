@@ -27,14 +27,14 @@
       "relation": "oneToMany",
       "target": "api::chapter.chapter"
     },
-    "intro": {
+    "intros": {
       "type": "relation",
-      "relation": "oneToOne",
+      "relation": "oneToMany",
       "target": "api::chapter.chapter"
     },
-    "outro": {
+    "outros": {
       "type": "relation",
-      "relation": "oneToOne",
+      "relation": "oneToMany",
       "target": "api::chapter.chapter"
     }
   }
