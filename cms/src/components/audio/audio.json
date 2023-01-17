@@ -1,0 +1,26 @@
+{
+  "collectionName": "components_audio_audio",
+  "info": {
+    "displayName": "Audio",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "audio": {
+      "type": "media",
+      "multiple": false,
+      "required": true,
+      "allowedTypes": [
+        "audios"
+      ]
+    },
+    "language": {
+      "type": "enumeration",
+      "enum": [
+        "nl"
+      ],
+      "default": "nl",
+      "required": true
+    }
+  }
+}

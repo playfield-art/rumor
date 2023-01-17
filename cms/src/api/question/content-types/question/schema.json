@@ -13,23 +13,23 @@
   "pluginOptions": {},
   "attributes": {
     "title": {
-      "type": "string"
+      "type": "string",
+      "pluginOptions": {}
     },
     "description": {
-      "type": "text"
-    },
-    "audio_nl": {
-      "type": "media",
-      "multiple": false,
-      "required": true,
-      "allowedTypes": [
-        "audios"
-      ]
+      "type": "text",
+      "pluginOptions": {}
     },
     "question_tags": {
       "type": "relation",
       "relation": "oneToMany",
       "target": "api::question-tag.question-tag"
+    },
+    "audio": {
+      "type": "component",
+      "repeatable": true,
+      "component": "audio.audio",
+      "required": false
     }
   }
 }

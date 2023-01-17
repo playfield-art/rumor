@@ -15,16 +15,13 @@
     "title": {
       "type": "string"
     },
-    "audio_nl": {
-      "type": "media",
-      "multiple": false,
-      "required": true,
-      "allowedTypes": [
-        "audios"
-      ]
-    },
     "description": {
       "type": "text"
+    },
+    "audio": {
+      "type": "component",
+      "repeatable": true,
+      "component": "audio.audio"
     }
   }
 }
