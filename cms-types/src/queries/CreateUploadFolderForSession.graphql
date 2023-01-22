@@ -1,0 +1,21 @@
+mutation createUploadFolderForSession(
+  $name: String
+  $path: String
+  $pathId: Int
+  $parent: ID
+  $files: [ID]
+) {
+  createUploadFolder(
+    data: {
+      name: $name
+      path: $path
+      pathId: $pathId
+      parent: $parent
+      files: $files
+    }
+  ) {
+    data {
+      id
+    }
+  }
+}

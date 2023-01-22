@@ -1,0 +1,9 @@
+query getLastPathId {
+  uploadFolders(sort: "pathId:desc", pagination: { limit: 1 }) {
+    data {
+      attributes {
+        pathId
+      }
+    }
+  }
+}

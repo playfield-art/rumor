@@ -8,9 +8,10 @@ type SelectFolderProps = {
 }
 
 const SelectFolderContainer = styled.div`
-  display: grid;
-  grid-gap: 1rem;
-  grid-template-columns: 4fr 1fr;
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  width: 100%;
 `
 
 const SelectFolder = ({ path, onClick, label = '...' }: SelectFolderProps) => {

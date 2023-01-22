@@ -1,0 +1,65 @@
+query getChapters($narrative_part: String) {
+  chapters(filters: { narrative_part: { eq: $narrative_part } }) {
+    data {
+      attributes {
+        title
+        soundscape {
+          data {
+            attributes {
+              ext
+              url
+            }
+          }
+        }
+        narrative_part
+        blocks {
+          __typename
+          ... on ComponentBlocksChapterQuestionBlock {
+            question {
+              data {
+                id
+                attributes {
+                  title
+                  description
+                  audio {
+                    language
+                    audio {
+                      data {
+                        attributes {
+                          ext
+                          url
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+          ... on ComponentBlocksChapterVoiceOverBlock {
+            voice_over {
+              data {
+                id
+                attributes {
+                  title
+                  description
+                  audio {
+                    language
+                    audio {
+                      data {
+                        attributes {
+                          ext
+                          url
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

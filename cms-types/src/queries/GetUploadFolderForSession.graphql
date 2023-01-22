@@ -1,0 +1,16 @@
+query getUploadFolderForSession($parent: ID, $sessionId: String) {
+  uploadFolder(id: $parent) {
+    data {
+      attributes {
+        name
+        children(filters: { name: { eq: $sessionId } }) {
+          data {
+            attributes {
+              name
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -21,17 +21,19 @@ import { ISetting } from "@shared/interfaces";
  * Exposing the KweenB API in the main world
  */
 contextBridge.exposeInMainWorld("rumor", {
+  actions: {
+    saveSetting: (setting: ISetting) => ipcRenderer.send("saveSetting", setting),
+    startRecording: (language: string, id: number) => ipcRenderer.send("startRecording", language, id),
+    stopRecording: () => ipcRenderer.send("stopRecording")
+  },
   methods: {
     createNewRecordingFolder: () => ipcRenderer.invoke("createNewRecordingFolder"),
-    getAudioList: () => ipcRenderer.invoke("getAudioList"),
+    getAudioList: (language: string) => ipcRenderer.invoke("getAudioList", language),
     getSetting: (key: string) => ipcRenderer.invoke("getSetting", key),
     setNarrativesFolder: () => ipcRenderer.invoke("setNarrativesFolder"),
     setRecordingsFolder: () => ipcRenderer.invoke("setRecordingsFolder"),
-  },
-  actions: {
-    saveSetting: (setting: ISetting) => ipcRenderer.send("saveSetting", setting),
-    startRecording: (fileName: string) => ipcRenderer.send("startRecording", fileName),
-    stopRecording: () => ipcRenderer.send("stopRecording")
+    syncNarrative: () => ipcRenderer.invoke('syncNarrative'),
+    uploadToCms: () => ipcRenderer.invoke('uploadToCms')
   },
   events: {
     onNextVO: (callback: any) => {

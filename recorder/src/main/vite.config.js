@@ -27,6 +27,8 @@ export default defineConfig({
         'electron',
         'sequelize',
         'serialport',
+        'graphql',
+        'graphql-request',
         ...builtinModules
       ],
       output: {

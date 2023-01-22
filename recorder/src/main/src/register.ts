@@ -1,5 +1,6 @@
 import { ipcMain } from "electron";
 import { createNewRecordingFolder, getAudioList, startRecording, stopRecording } from "./controllers/audio";
+import { syncNarrative, uploadToCms } from "./controllers/sync";
 import { getSetting, saveSetting, setNarrativesFolder, setRecordingsFolder } from "./controllers/setting";
 
 export const registerActions = () => {
@@ -14,4 +15,6 @@ export const registerMethods = () => {
   ipcMain.handle("getSetting", getSetting);
   ipcMain.handle("setNarrativesFolder", setNarrativesFolder);
   ipcMain.handle("setRecordingsFolder", setRecordingsFolder);
+  ipcMain.handle("syncNarrative", syncNarrative);
+  ipcMain.handle("uploadToCms", uploadToCms);
 }

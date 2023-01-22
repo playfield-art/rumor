@@ -1,0 +1,15 @@
+mutation createUploadFolderInRoot($name: String, $path: String, $pathId: Int) {
+  createUploadFolder(
+    data: {
+      name: $name
+      path: $path
+      pathId: $pathId
+    }
+  ) {
+    data {
+      attributes {
+        name
+      }
+    }
+  }
+}

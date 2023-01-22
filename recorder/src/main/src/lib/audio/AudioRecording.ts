@@ -2,6 +2,7 @@ import AudioRecorder from './AudioRecorder';
 import * as fs from 'fs';
 import * as path from 'path';
 import { resourcesPath } from '@shared/resources';
+import { UNWANTED_FILES } from '../../consts';
 
 const AudioRecordingOptions = {
   program: `${resourcesPath}/sox`, // Which program to use, either `arecord`, `rec`, or `sox`.
@@ -53,20 +54,25 @@ export class AudioRecording {
     }
   }
 
-  startRecording(fileName?: string) {
-    // Create the file path
-    let filePath = path.join(
-      this._outDir,
-      fileName ? fileName : Math.random()
-        .toString(36)
-        .replace(/[^0-9a-zA-Z]+/g, '')
-        .concat('.wav')
-    );
+  startRecording(language: string = 'nl', id: number) {
+    // get the current order number (new recordings wil get a new number)
+    const recordedFiles = fs.readdirSync(this._outDir)
+                 .filter(f => !UNWANTED_FILES.includes(f))
+                 .filter(f => f.startsWith(language));
 
-    // Create write stream.
+    // validate and get the max order
+    let maxOrder = 0;
+    if(recordedFiles.length > 0) {
+      maxOrder = Math.max(...recordedFiles.map(f => parseInt(f.split('-')[1])));
+    }
+
+    // create the file path
+    let filePath = path.join(this._outDir, `${language}-${maxOrder++}-${id}.wav`);
+
+    // create write stream.
     const fileStream = fs.createWriteStream(filePath, { encoding: 'binary' });
 
-    // Start and write to the file.
+    // start and write to the file.
     this._audioRecorder?.start()?.stream()?.pipe(fileStream);
   }
 

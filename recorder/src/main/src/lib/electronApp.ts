@@ -77,6 +77,7 @@ export default class ElectronApp {
         webviewTag: false,
         preload: path.join(__dirname, "../../preload/dist/index.cjs"),
       },
+      // resizable: false
     });
 
     // make the main window global

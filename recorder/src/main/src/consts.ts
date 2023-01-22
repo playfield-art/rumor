@@ -12,3 +12,6 @@ export const UNWANTED_FILES = ['.DS_Store']
 
 // The public URL for our audiofiles
 export const SEQUELIZE_LOGGING = false;
+
+// The type of narrative parts/chapters
+export const narrativeChapters = [ "intro", "first", "second", "third", "outro" ];

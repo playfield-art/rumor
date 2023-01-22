@@ -1,4 +1,5 @@
 import { AppContainer, ButtonContainer } from '@components';
+import { AppVerticalContainer } from '@components/layout/AppContainer';
 import SelectFolder from '@components/SelectFolder';
 import { StatusContainer } from '@components/StatusContainer';
 import useSettings from '@hooks/useSettings';
@@ -14,41 +15,53 @@ function App() {
     currentRecordingsFolder,
     setCurrentRecordingsFolder
   } = useSettings();
-  const { playNextVO, stop, refetch, currentSC, currentVO } = useSoundBoard(notifyError);
+  const { playNextVO, stop, start, started, currentSC, currentVO } = useSoundBoard(notifyError);
 
   return (
     <AppContainer>
-      <ButtonContainer>
-        <button onClick={() => playNextVO()}>Next Voice Over</button>
-      </ButtonContainer>
-      <ButtonContainer>
-        <button onClick={() => stop()}>Stop Soundboard</button>
-      </ButtonContainer>
-      <ButtonContainer>
-        <button onClick={() => refetch()}>Refetch Audio Data</button>
-      </ButtonContainer>
-      <ButtonContainer>
-        <SelectFolder
-          path={currentNarrativesFolder || ''}
-          label='NAR'
-          onClick={async () => {
-            setCurrentNarrativesFolder(await window.rumor.methods.setNarrativesFolder())
-            refetch();
-          }} />
-      </ButtonContainer>
-      <ButtonContainer>
-        <SelectFolder
-          path={currentRecordingsFolder || ''}
-          label='REC'
-          onClick={async () => {
-            setCurrentRecordingsFolder(await window.rumor.methods.setRecordingsFolder())
-          }} />
-      </ButtonContainer>
-      <StatusContainer>
-        {!currentVO && !currentSC && "No current status."}
-        {currentVO && <div>{currentVO ? `Current Voice Over: ${currentVO}` : ""}</div>}
-        {currentSC && <div>{currentSC ? `Current Soundscape: ${currentSC}` : ""}</div>}
-      </StatusContainer>
+      <AppVerticalContainer>
+        {!started &&
+          <ButtonContainer>
+            <button onClick={() => start()}>Start Soundboard</button>
+          </ButtonContainer>
+        }
+        {started &&
+          <ButtonContainer>
+            <button onClick={() => stop()}>Stop Soundboard</button>
+          </ButtonContainer>
+        }
+        <ButtonContainer>
+          <button onClick={() => playNextVO()}>Next Voice Over</button>
+        </ButtonContainer>
+        <ButtonContainer>
+          <button onClick={async () => await window.rumor.methods.syncNarrative()}>Sync Narrative</button>
+          <button onClick={async () => await window.rumor.methods.uploadToCms()}>Upload To CMS</button>
+        </ButtonContainer>
+        <ButtonContainer>
+          <SelectFolder
+            path={currentNarrativesFolder || ''}
+            label='NAR'
+            onClick={async () => {
+              setCurrentNarrativesFolder(await window.rumor.methods.setNarrativesFolder())
+            }} />
+        </ButtonContainer>
+        <ButtonContainer>
+          <SelectFolder
+            path={currentRecordingsFolder || ''}
+            label='REC'
+            onClick={async () => {
+              setCurrentRecordingsFolder(await window.rumor.methods.setRecordingsFolder())
+            }} />
+        </ButtonContainer>
+      </AppVerticalContainer>
+      <AppVerticalContainer>
+        <StatusContainer>
+          {!currentVO && !currentSC && "No current status."}
+          {currentVO && <div>{currentVO ? `Current Chapter: ${currentVO.chapter}` : ""}</div>}
+          {currentVO && <div>{currentVO ? `Current Voice Over: ${currentVO.fileName}` : ""}</div>}
+          {currentSC && <div>{currentSC ? `Current Soundscape: ${currentSC.startsAt.chapter}` : ""}</div>}
+        </StatusContainer>
+      </AppVerticalContainer>
       <ToastContainer />
     </AppContainer>
   )

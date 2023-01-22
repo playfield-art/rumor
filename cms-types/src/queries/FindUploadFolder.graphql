@@ -1,0 +1,10 @@
+query findUploadFolder($folderName: String) {
+  uploadFolders(filters: { name: { eq: $folderName } }) {
+    data {
+      id
+      attributes {
+        name
+      }
+    }
+  }
+}

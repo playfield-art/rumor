@@ -2,10 +2,10 @@
   "name": "rumor",
   "version": "1.0.0",
   "private": "true",
-  "workspaces": [
-    "recorder",
-    "cms"
-  ],
+  "workspaces": {
+    "packages": ["recorder", "cms", "cms-types"],
+    "nohoist": ["@graphql-codegen/**"]
+  },
   "scripts": {
     "start:api": "yarn workspace api start:dev",
     "start:dashboard": "yarn workspace dashboard dev",
