@@ -8,6 +8,8 @@ mutation createSession(
   $moderated: Boolean = false
   $answers: [ComponentAnswersAnwserInput!]
   $narrative: JSON
+  $date: Date
+  $time: Time
 ) {
   createSession(
     data: {
@@ -17,6 +19,8 @@ mutation createSession(
       moderated: $moderated
       narrative: $narrative
       answers: $answers
+      date: $date
+      time: $time
     }
   ) {
     data {

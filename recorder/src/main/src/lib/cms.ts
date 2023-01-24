@@ -27,6 +27,7 @@ import {
   getRecordingsFolder,
   moveFolder,
 } from "./filesystem";
+import { convertSessionIdToDateAndTime } from "./sessions/SessionUtils";
 
 let graphQLClient: GraphQLClient | null = null;
 
@@ -359,6 +360,11 @@ export const uploadSessions = async (sessions: Session[]) => {
       )
     );
 
+    // convert session id to date and time
+    const recordingDateAndTime = convertSessionIdToDateAndTime(
+      session.meta.sessionId
+    );
+
     // create a new session
     await getGraphQLClient().request(CreateSessionDocument, {
       boothId: "1",
@@ -366,6 +372,8 @@ export const uploadSessions = async (sessions: Session[]) => {
       language: session.meta.language as Enum_Session_Language,
       moderated: false,
       narrative: session.audioList,
+      date: recordingDateAndTime.date,
+      time: recordingDateAndTime.time,
       answers: uploadedRecordings.map((uploadedRecording) => ({
         question: uploadedRecording.questionId,
         transcribed: false,
