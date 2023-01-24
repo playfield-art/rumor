@@ -4,8 +4,8 @@
 
 import { join } from "path";
 import { Sequelize } from "sequelize";
-import { SEQUELIZE_LOGGING } from "./consts";
 import { app } from "electron";
+import { SEQUELIZE_LOGGING } from "./consts";
 
 class Database {
   private sequelize: Sequelize;

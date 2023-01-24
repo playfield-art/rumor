@@ -1,3 +1,7 @@
+#
+# This will update a filename
+#
+
 mutation updateFileName($id: ID!, $fileName: String!) {
   updateFileInfo(id: $id, info: { name: $fileName }) {
     data {

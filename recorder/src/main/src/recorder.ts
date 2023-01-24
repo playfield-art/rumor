@@ -33,23 +33,31 @@ export class Recorder {
      * Audio Recording
      */
 
-    const recordingsFolderSetting = await SettingHelper.getSetting('recordingsFolder');
-    if(recordingsFolderSetting?.value) AudioRecordingSingleton.setInstance(
-      new AudioRecording({
-        outDir: recordingsFolderSetting.value
-    }));
+    const recordingsFolderSetting = await SettingHelper.getSetting(
+      "recordingsFolder"
+    );
+    if (recordingsFolderSetting?.value)
+      AudioRecordingSingleton.setInstance(
+        new AudioRecording({
+          outDir: recordingsFolderSetting.value,
+        })
+      );
 
     /**
      * Serial Button
      */
 
     const serialPorts = await getSerialPorts();
-    const usbSerialPort = serialPorts.find((port) => port.includes('usbserial'));
-    if(usbSerialPort) {
-      SerialButtonSingleton.setInstance(new SerialButton({
-        path: usbSerialPort,
-        onButtonUp: () => Recorder._mainWindow.webContents.send('next-vo')
-      }));
+    const usbSerialPort = serialPorts.find((port) =>
+      port.includes("usbserial")
+    );
+    if (usbSerialPort) {
+      SerialButtonSingleton.setInstance(
+        new SerialButton({
+          path: usbSerialPort,
+          onButtonUp: () => Recorder._mainWindow.webContents.send("next-vo"),
+        })
+      );
     }
   }
 }

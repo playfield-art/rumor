@@ -22,23 +22,27 @@ import { ISetting } from "@shared/interfaces";
  */
 contextBridge.exposeInMainWorld("rumor", {
   actions: {
-    saveSetting: (setting: ISetting) => ipcRenderer.send("saveSetting", setting),
-    startRecording: (language: string, id: number) => ipcRenderer.send("startRecording", language, id),
-    stopRecording: () => ipcRenderer.send("stopRecording")
+    saveSetting: (setting: ISetting) =>
+      ipcRenderer.send("saveSetting", setting),
+    startRecording: (language: string, id: number) =>
+      ipcRenderer.send("startRecording", language, id),
+    stopRecording: () => ipcRenderer.send("stopRecording"),
   },
   methods: {
-    createNewRecordingFolder: () => ipcRenderer.invoke("createNewRecordingFolder"),
-    getAudioList: (language: string) => ipcRenderer.invoke("getAudioList", language),
+    createNewSession: (language: string) =>
+      ipcRenderer.invoke("createNewSession", language),
+    getAudioList: (language: string) =>
+      ipcRenderer.invoke("getAudioList", language),
     getSetting: (key: string) => ipcRenderer.invoke("getSetting", key),
     setNarrativesFolder: () => ipcRenderer.invoke("setNarrativesFolder"),
     setRecordingsFolder: () => ipcRenderer.invoke("setRecordingsFolder"),
-    syncNarrative: () => ipcRenderer.invoke('syncNarrative'),
-    uploadToCms: () => ipcRenderer.invoke('uploadToCms')
+    syncNarrative: () => ipcRenderer.invoke("syncNarrative"),
+    uploadToCms: () => ipcRenderer.invoke("uploadToCms"),
   },
   events: {
     onNextVO: (callback: any) => {
       ipcRenderer.on("next-vo", callback);
       return () => ipcRenderer.removeAllListeners("next-vo");
-    }
+    },
   },
 });

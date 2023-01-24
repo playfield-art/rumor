@@ -1,4 +1,9 @@
-mutation createUploadFolderForSession(
+#
+# This mutation will create an upload folder for and adds some files into the folder
+# Needs to specify the parent of the folder
+#
+
+mutation createUploadFolderInParent(
   $name: String
   $path: String
   $pathId: Int

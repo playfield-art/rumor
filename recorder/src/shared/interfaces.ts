@@ -2,30 +2,33 @@
  * Shared interfaces
  */
 
+import { GetChaptersQuery } from "cms-types/gql/graphql";
+
 export interface VoiceOver {
-  id: number
-  order: number
-  language: string
-  url: string
-  type: VoiceOverType,
-  fileName: string
-  chapter: string
+  id: number;
+  order: number;
+  language: string;
+  url: string;
+  type: VoiceOverType;
+  fileName: string;
+  chapter: string;
 }
 
 export enum VoiceOverType {
   Question = "QU",
-  VoiceOver = "VO"
+  VoiceOver = "VO",
 }
 
 export interface SoundScape {
-  startsAt: VoiceOver
-  url: string
-  fileName: string
+  startsAt: VoiceOver;
+  url: string;
+  fileName: string;
 }
 
 export interface AudioList {
-  VO: VoiceOver[]
-  SC: SoundScape[]
+  chapters: ChapterMeta[];
+  VO: VoiceOver[];
+  SC: SoundScape[];
 }
 
 /**
@@ -33,18 +36,23 @@ export interface AudioList {
  */
 
 export interface Recording {
-  language: string
-  order: number
-  questionId: string
-  fileName: string
-  fullPath: string
+  language: string;
+  order: number;
+  questionId: string;
+  fileName: string;
+  fullPath: string;
+}
+
+export interface UploadedRecording extends Recording {
+  uploadedFileId: string;
 }
 
 export interface RecordingMeta {
-  boothId: string
-  sessionId: string
-  recordingDate: string
-  recordingTime: string
+  language: string;
+  boothSlug: string;
+  sessionId: string;
+  recordingDate: string;
+  recordingTime: string;
 }
 
 /**
@@ -52,8 +60,9 @@ export interface RecordingMeta {
  */
 
 export interface Session {
-  meta: RecordingMeta
-  recordings: Recording[]
+  meta: RecordingMeta;
+  audioList: AudioList;
+  recordings: Recording[];
 }
 
 /**
@@ -61,11 +70,19 @@ export interface Session {
  */
 
 export interface Narrative {
-  introChapters: Chapter[]
-  outroChapters: Chapter[]
-  firstChapters: Chapter[]
-  secondChapters: Chapter[]
-  thirdChapters: Chapter[]
+  introChapters: Chapter[];
+  outroChapters: Chapter[];
+  firstChapters: Chapter[];
+  secondChapters: Chapter[];
+  thirdChapters: Chapter[];
+}
+
+export interface NarrativeChapterData {
+  introChapters: GetChaptersQuery;
+  outroChapters: GetChaptersQuery;
+  firstChapters: GetChaptersQuery;
+  secondChapters: GetChaptersQuery;
+  thirdChapters: GetChaptersQuery;
 }
 
 /**
@@ -73,32 +90,35 @@ export interface Narrative {
  */
 
 export interface Chapter {
-  title: string
-  soundScape: AudioCms | null
-  narrativePart: string
-  blocks?: ChapterBlock[]
+  id: string;
+  title: string;
+  soundScape: AudioCms | null;
+  narrativePart: string;
+  blocks?: ChapterBlock[];
 }
 
+export type ChapterMeta = Pick<Chapter, "id" | "title" | "narrativePart">;
+
 export enum ChapterBlockType {
-  Question = 'QU',
-  VoiceOver = 'VO'
+  Question = "QU",
+  VoiceOver = "VO",
 }
 
 export interface ChapterBlock {
-  type: ChapterBlockType,
-  title: string,
-  description: string,
-  cms_id: string,
-  audio: AudioCmsBlock[]
+  type: ChapterBlockType;
+  title: string;
+  description: string;
+  cms_id: string;
+  audio: AudioCmsBlock[];
 }
 
 export interface AudioCms {
-  audioUrl: string
-  ext: string
+  audioUrl: string;
+  ext: string;
 }
 
 export interface AudioCmsBlock extends AudioCms {
-  language: string
+  language: string;
 }
 
 /**

@@ -10,7 +10,7 @@ declare global {
         stopRecording(): void;
       };
       readonly methods: {
-        createNewRecordingFolder(): Promise<void>;
+        createNewSession(language: string): Promise<AudioList>;
         getAudioList(language: string): Promise<AudioList>;
         getSetting(key: string): string | null;
         setNarrativesFolder(): string;

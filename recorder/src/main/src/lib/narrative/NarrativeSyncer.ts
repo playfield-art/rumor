@@ -2,14 +2,20 @@
  * A Library to sync the narrative in the recorder
  */
 
-import { Narrative } from "@shared/interfaces";
-import fsExtra from 'fs-extra';
+import { Chapter, ChapterMeta, Narrative } from "@shared/interfaces";
+import fsExtra from "fs-extra";
 import Downloader from "nodejs-file-downloader";
-import { join } from 'path';
+import { join } from "path";
+
+interface NarrativeChapter {
+  chapters: Chapter[] | null;
+  name: string;
+}
 
 export class NarrativeSyncer {
   private folderPath: string = "";
-  private narrative: Narrative | null = null;
+
+  private narrative: Narrative;
 
   constructor(folderPath: string, narrative: Narrative) {
     this.folderPath = folderPath;
@@ -22,20 +28,22 @@ export class NarrativeSyncer {
 
   async createEmptyFolders() {
     // validate
-    if(!this.narrative || this.folderPath === "") return;
+    if (!this.narrative || this.folderPath === "") return;
 
     // get an array of the narrativekeys, so we can loop easier
     const narrativeKeys = Object.keys(this.narrative);
 
-    // loop over every key
-    for(const narrativeKey of narrativeKeys) {
-      await fsExtra.mkdir(join(this.folderPath, narrativeKey));
-    }
+    // remove all folders
+    await Promise.all(
+      narrativeKeys.map(async (narrativeKey) =>
+        fsExtra.mkdir(join(this.folderPath, narrativeKey))
+      )
+    );
   }
 
   async start() {
     // validate
-    if(!this.narrative || this.folderPath === "") return;
+    if (!this.narrative || this.folderPath === "") return;
 
     // clean the narratives folder
     await this.cleanNarrativesFolder();
@@ -46,50 +54,112 @@ export class NarrativeSyncer {
     // get an array of the narrativekeys, so we can loop easier
     const narrativeKeys = Object.keys(this.narrative);
 
-    // loop over the chapters and download the files
-    for(const narrativeKey of narrativeKeys) {
-      // remember the chapter
-      let chapterNumber = 1;
+    // get the narrative chapters
+    const narrativeChapters: NarrativeChapter[] = narrativeKeys.map(
+      (narrativeKey) => ({
+        chapters: this.narrative[narrativeKey as keyof Narrative],
+        name: narrativeKey,
+      })
+    );
 
-      // get the possible chapters
-      const currentChapterOptions = this.narrative[narrativeKey as keyof Narrative];
+    // create the work arrays
+    let createOptionFoldersPromises: Promise<void>[] = [];
+    let downloadOptionsPromises: Promise<void>[] = [];
 
-      // if we have possible chapters, create the folders and download the files
-      if(currentChapterOptions.length > 0) {
-        // for every chapter option
-        for(const chapterOption of currentChapterOptions) {
-          // create the folder path of each option
-          const chapterOptionFolder = join(this.folderPath, narrativeKey, (chapterNumber++).toString());
+    // loop over every narrative chapter
+    narrativeChapters.forEach((narrativeChapter) => {
+      // validate
+      if (!narrativeChapter || !narrativeChapter.chapters) return;
+
+      // ----
+      // Create Promises for creating an option folder for every chapter type
+      // ----
+
+      createOptionFoldersPromises = [
+        ...createOptionFoldersPromises,
+        ...narrativeChapter.chapters.map(async (chapter) => {
+          // define the option folder
+          const chapterOptionFolder = join(
+            this.folderPath,
+            narrativeChapter.name,
+            chapter.id
+          );
 
           // create the folder in the file system
           await fsExtra.mkdir(chapterOptionFolder);
 
-          //if we have a soundscape, create the promise for this scape
-          if(chapterOption.soundScape) {
-            console.log('downloading', chapterOption.soundScape.audioUrl);
-            await new Downloader({
-              url: `${chapterOption.soundScape.audioUrl}`,
-              directory: `${chapterOptionFolder}`,
-              fileName: `soundscape${chapterOption.soundScape.ext}`
-            }).download()
-          }
+          // create a meta file for this chapter
+          const chapterMeta: ChapterMeta = {
+            id: chapter.id,
+            title: chapter.title,
+            narrativePart: chapter.narrativePart,
+          };
+          await fsExtra.writeFile(
+            join(chapterOptionFolder, "meta.json"),
+            JSON.stringify(chapterMeta)
+          );
 
-          // if we have blocks, create the promises for the audio
-          if(chapterOption.blocks && chapterOption.blocks.length > 0) {
-            let blockOrder = 1;
-            for(const block of chapterOption.blocks) {
-              for(const audio of block.audio) {
-                console.log('downloading', audio.audioUrl);
-                await new Downloader({
-                  url: `${audio.audioUrl}`,
-                  directory: `${chapterOptionFolder}`,
-                  fileName: `${audio.language}-${blockOrder++}-${block.type}-${block.cms_id}${audio.ext}`
-                }).download()
-              }
-            }
+          // if we have a soundscape, create the promise for this scape
+          if (chapter.soundScape) {
+            // console.log("downloading", chapter.soundScape.audioUrl);
+            await new Downloader({
+              url: `${chapter.soundScape.audioUrl}`,
+              directory: `${chapterOptionFolder}`,
+              fileName: `soundscape${chapter.soundScape.ext}`,
+            }).download();
           }
-        };
-      }
-    }
+        }),
+      ];
+    });
+
+    console.log("Creating option folders, adding soundscape...");
+    await Promise.all(createOptionFoldersPromises);
+
+    // loop over every narrative chapter
+    narrativeChapters.forEach((narrativeChapter) => {
+      // ----
+      // Create Promises for downloading the sound files
+      // ----
+      let blockOrder = 1;
+
+      narrativeChapter.chapters?.forEach((chapter) => {
+        // validate
+        if (!chapter || !chapter.blocks) return;
+
+        // if we have blocks, create the promises for the audio
+        blockOrder = 0;
+
+        // map every block, because we got work to do
+        chapter.blocks.forEach(async (block) => {
+          // define the option folder
+          const chapterOptionFolder = join(
+            this.folderPath,
+            narrativeChapter.name,
+            chapter.id
+          );
+
+          // create download promises
+          downloadOptionsPromises = [
+            ...downloadOptionsPromises,
+            ...block.audio.map(async (audio) => {
+              await new Downloader({
+                url: `${audio.audioUrl}`,
+                directory: `${chapterOptionFolder}`,
+                fileName: `${audio.language}-${(blockOrder += 1)}-${
+                  block.type
+                }-${block.cms_id}${audio.ext}`,
+              }).download();
+            }),
+          ];
+        });
+      });
+    });
+
+    // start executing the logic
+    console.log("Downloading all the narrative audio...");
+    await Promise.all(downloadOptionsPromises);
+
+    // we are done with the work..
+    console.log("Narratives synced succesfully!");
   }
 }

@@ -43,7 +43,7 @@ const initApp = async () => {
     // await installExtension(REACT_DEVELOPER_TOOLS);
 
     // ask for microphone access
-    systemPreferences.askForMediaAccess('microphone');
+    systemPreferences.askForMediaAccess("microphone");
 
     // create a new electron app
     const electronApp = new ElectronApp({

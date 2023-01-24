@@ -1,8 +1,27 @@
-import { CreateUploadFolderForSessionDocument, CreateUploadFolderInRootDocument, FindUploadFolderDocument, GetChaptersDocument, GetLastPathIdDocument, GetUploadFolderForSessionDocument, UpdateFileNameDocument, UploadFilesDocument } from 'cms-types/gql/graphql'
-import { GraphQLClient } from 'graphql-request';
-import { Narrative, Chapter, ChapterBlock, ChapterBlockType, Session } from '@shared/interfaces';
-import { narrativeChapters } from '../consts';
-import fsExtra from 'fs-extra';
+import {
+  CreateUploadFolderInParentDocument,
+  CreateUploadFolderInRootDocument,
+  FindUploadFolderDocument,
+  GetChaptersDocument,
+  GetLastPathIdDocument,
+  FindUploadFolderInParentDocument,
+  UpdateFileNameDocument,
+  UploadFilesDocument,
+  CreateSessionDocument,
+  Enum_Session_Language,
+} from "cms-types/gql/graphql";
+import { GraphQLClient } from "graphql-request";
+import {
+  Narrative,
+  Chapter,
+  ChapterBlock,
+  ChapterBlockType,
+  Session,
+  NarrativeChapterData,
+  UploadedRecording,
+} from "@shared/interfaces";
+import fsExtra from "fs-extra";
+import { narrativeChapters } from "../consts";
 
 let graphQLClient: GraphQLClient | null = null;
 
@@ -10,32 +29,28 @@ let graphQLClient: GraphQLClient | null = null;
  * Get the API endpoint
  * @returns
  */
-const getApiEndpoint = (): string => {
-  return process.env.CMS_API_URL || ""
-}
+const getApiEndpoint = (): string => process.env.CMS_API_URL || "";
 
 /**
  * Get the API token
  * @returns
  */
-const getApiToken = (): string => {
-  return process.env.CMS_API_TOKEN || ""
-}
+const getApiToken = (): string => process.env.CMS_API_TOKEN || "";
 
 /**
  * Returns a GraphQL client to work with
  * @returns
  */
 const getGraphQLClient = (): GraphQLClient => {
-  if(!graphQLClient) {
+  if (!graphQLClient) {
     graphQLClient = new GraphQLClient(getApiEndpoint(), {
       headers: {
         authorization: `Bearer ${getApiToken()}`,
       },
-    })
+    });
   }
   return graphQLClient;
-}
+};
 
 /**
  * Gets the narrative from the CMS
@@ -48,184 +63,317 @@ export const getNarrative = async () => {
     firstChapters: [],
     secondChapters: [],
     thirdChapters: [],
-    outroChapters: []
-  }
+    outroChapters: [],
+  };
 
-  // loop over each narrative part and get the chapter
-  for(const narrativePart of narrativeChapters) {
-    // get the data
-    const data = await getGraphQLClient().request(GetChaptersDocument, { narrative_part: narrativePart });
+  /**
+   * ----
+   * Get all the data from the rumor-cms
+   * ----
+   */
 
-    // only if there are chapters available
-    if(data.chapters?.data.length && data.chapters?.data.length > 0) {
-      output[`${narrativePart}Chapters` as keyof Narrative] = data.chapters.data.map(({ attributes }) => {
-        // transform all the blocks in this chapter
-        const chapterBlocks: ChapterBlock[] | undefined = attributes?.blocks?.map(b => {
+  console.log("Fetching the narrative data from CMS...");
 
-          // define the chapter block output
-          const chapterBlock: ChapterBlock = {
-            type: b?.__typename === 'ComponentBlocksChapterQuestionBlock' ? ChapterBlockType.Question : ChapterBlockType.VoiceOver,
-            title: "",
-            cms_id: "",
-            description: "",
-            audio: []
-          }
+  const narrativeChapterData: NarrativeChapterData = {
+    introChapters: {},
+    firstChapters: {},
+    secondChapters: {},
+    thirdChapters: {},
+    outroChapters: {},
+  };
 
-          // chapterblocks behave different based on type
-          if(b?.__typename === "ComponentBlocksChapterQuestionBlock") {
-            chapterBlock.title = b.question?.data?.attributes?.title || "";
-            chapterBlock.description = b.question?.data?.attributes?.description || "";
-            chapterBlock.cms_id = b.question?.data?.id || "9999";
-            chapterBlock.audio = b.question?.data?.attributes?.audio?.map(a => ({
-              audioUrl: a?.audio.data?.attributes?.url || "",
-              language: a?.language || "unknown",
-              ext: a?.audio.data?.attributes?.ext || ""
-            })) || []
-          } else if(b?.__typename === "ComponentBlocksChapterVoiceOverBlock") {
-            chapterBlock.title = b.voice_over?.data?.attributes?.title || "";
-            chapterBlock.description = b.voice_over?.data?.attributes?.description || "";
-            chapterBlock.cms_id = b.voice_over?.data?.id || "9999";
-            chapterBlock.audio = b.voice_over?.data?.attributes?.audio?.map(a => ({
-              audioUrl: a?.audio.data?.attributes?.url || "",
-              language: a?.language || "unknown",
-              ext: a?.audio.data?.attributes?.ext || ""
-            })) || []
-          }
-
-          // returns the chapter block
-          return chapterBlock;
-        })
-
-        return {
-          title: attributes?.title,
-          soundScape: attributes?.soundscape?.data ? {
-            audioUrl: attributes?.soundscape?.data?.attributes?.url,
-            ext: attributes?.soundscape?.data?.attributes?.ext,
-          } : null,
-          narrativePart: attributes?.narrative_part,
-          blocks: chapterBlocks
-        } as Chapter
+  const narrativeChapterDataPromises = narrativeChapters.map(
+    async (narrativePart) => {
+      narrativeChapterData[
+        `${narrativePart}Chapters` as keyof NarrativeChapterData
+      ] = await getGraphQLClient().request(GetChaptersDocument, {
+        narrative_part: narrativePart,
       });
     }
-  }
+  );
+
+  await Promise.all(narrativeChapterDataPromises);
+
+  /**
+   * ----
+   * Transform the data coming from CMS
+   * ----
+   */
+
+  // loop over each narrative part and get the chapter
+  Object.keys(narrativeChapterData).forEach((narrativeChapterDataKey) => {
+    // get the narrative chapter data
+    const narrativeChapterDataItem =
+      narrativeChapterData[
+        narrativeChapterDataKey as keyof NarrativeChapterData
+      ];
+
+    // only if there are chapters available
+    if (
+      narrativeChapterDataItem.chapters?.data.length &&
+      narrativeChapterDataItem.chapters?.data.length > 0
+    ) {
+      output[narrativeChapterDataKey as keyof Narrative] =
+        narrativeChapterDataItem.chapters.data.map(({ id, attributes }) => {
+          // transform all the blocks in this chapter
+          const chapterBlocks: ChapterBlock[] | undefined =
+            attributes?.blocks?.map((b) => {
+              // define the chapter block output
+              const chapterBlock: ChapterBlock = {
+                type:
+                  b?.__typename === "ComponentBlocksChapterQuestionBlock"
+                    ? ChapterBlockType.Question
+                    : ChapterBlockType.VoiceOver,
+                title: "",
+                cms_id: "",
+                description: "",
+                audio: [],
+              };
+
+              // chapterblocks behave different based on type
+              if (b?.__typename === "ComponentBlocksChapterQuestionBlock") {
+                chapterBlock.title = b.question?.data?.attributes?.title || "";
+                chapterBlock.description =
+                  b.question?.data?.attributes?.description || "";
+                chapterBlock.cms_id = b.question?.data?.id || "9999";
+                chapterBlock.audio =
+                  b.question?.data?.attributes?.audio?.map((a) => ({
+                    audioUrl: a?.audio.data?.attributes?.url || "",
+                    language: a?.language || "unknown",
+                    ext: a?.audio.data?.attributes?.ext || "",
+                  })) || [];
+              } else if (
+                b?.__typename === "ComponentBlocksChapterVoiceOverBlock"
+              ) {
+                chapterBlock.title =
+                  b.voice_over?.data?.attributes?.title || "";
+                chapterBlock.description =
+                  b.voice_over?.data?.attributes?.description || "";
+                chapterBlock.cms_id = b.voice_over?.data?.id || "9999";
+                chapterBlock.audio =
+                  b.voice_over?.data?.attributes?.audio?.map((a) => ({
+                    audioUrl: a?.audio.data?.attributes?.url || "",
+                    language: a?.language || "unknown",
+                    ext: a?.audio.data?.attributes?.ext || "",
+                  })) || [];
+              }
+
+              // returns the chapter block
+              return chapterBlock;
+            });
+
+          return {
+            id,
+            title: attributes?.title,
+            soundScape: attributes?.soundscape?.data
+              ? {
+                  audioUrl: attributes?.soundscape?.data?.attributes?.url,
+                  ext: attributes?.soundscape?.data?.attributes?.ext,
+                }
+              : null,
+            narrativePart: attributes?.narrative_part,
+            blocks: chapterBlocks,
+          } as Chapter;
+        });
+    }
+  });
 
   // return the narrative
   return output;
-}
-
+};
 
 /**
  * Get the last path id of an uploadfolder
  * @returns
  */
 export const getLastPathId = async () => {
-  const { uploadFolders } = await getGraphQLClient().request(GetLastPathIdDocument);
+  const { uploadFolders } = await getGraphQLClient().request(
+    GetLastPathIdDocument
+  );
   let lastPathId = 0;
-  if(uploadFolders?.data && uploadFolders.data.length > 0) {
-    lastPathId = (uploadFolders.data.pop()?.attributes?.pathId) || 0;
+  if (uploadFolders?.data && uploadFolders.data.length > 0) {
+    lastPathId = uploadFolders.data.pop()?.attributes?.pathId || 0;
   }
   return lastPathId;
-}
+};
 
 /**
  * Get the upload folder id for a booth
  */
-export const getUploadFolderIdForBooth = async (boothId: string): Promise<string> => {
-  const { uploadFolders } = await getGraphQLClient().request(FindUploadFolderDocument, { folderName: boothId });
-  if(uploadFolders?.data && uploadFolders.data.length > 0) {
-    return uploadFolders.data[0].id || "";
-  } else {
-    let lastPathId = await getLastPathId();
-    await getGraphQLClient().request(
-      CreateUploadFolderInRootDocument,
-      {
-        name: boothId,
-        path: `/${boothId}`,
-        pathId: ++lastPathId
-      }
-    );
-    return await getUploadFolderIdForBooth(boothId);
+export const getUploadFolderIdForBooth = async (
+  boothSlug: string
+): Promise<string> => {
+  // find the upload folder in the root of our media library
+  const { uploadFolders } = await getGraphQLClient().request(
+    FindUploadFolderDocument,
+    { folderName: boothSlug }
+  );
+
+  // if we found data, return that folder
+  if (uploadFolders?.data && uploadFolders.data.length > 0) {
+    return uploadFolders.data[0].id || "";
   }
-}
+
+  // we didn't find data, so let's create the folder
+  const lastPathId = await getLastPathId();
+  const newPathId = lastPathId + 1;
+  await getGraphQLClient().request(CreateUploadFolderInRootDocument, {
+    name: boothSlug,
+    path: `/${boothSlug}`,
+    pathId: newPathId,
+  });
+
+  // recursivly, let's try to find the folder again
+  return getUploadFolderIdForBooth(boothSlug);
+};
 
 /**
  * Check if a session id for a booth exists
- * @param boothId The booth id
+ * @param boothSlug The booth slug
  * @param sessionId The session id
  * @returns
  */
-const uploadFolderForSessionExists = async (boothId: string, sessionId: string) => {
-  const uploadFolderIdForBooth = await getUploadFolderIdForBooth(boothId);
-  const uploadFolderForSession = await getGraphQLClient().request(GetUploadFolderForSessionDocument, {
-    parent: uploadFolderIdForBooth,
-    sessionId: sessionId}
+export const uploadFolderForSessionExists = async (
+  boothSlug: string,
+  sessionId: string
+) => {
+  // get the upload folder for a booth
+  const uploadFolderIdForBooth = await getUploadFolderIdForBooth(boothSlug);
+
+  // find the upload folder for this session in the booth folder
+  const uploadFolderForSession = await getGraphQLClient().request(
+    FindUploadFolderInParentDocument,
+    {
+      parent: uploadFolderIdForBooth,
+      sessionId: sessionId,
+    }
   );
-  return (uploadFolderForSession.uploadFolder?.data?.attributes?.children?.data || []).length > 0;
-}
+
+  // didn't find it? Or did we?
+  return (
+    (
+      uploadFolderForSession.uploadFolder?.data?.attributes?.children?.data ||
+      []
+    ).length > 0
+  );
+};
 
 /**
  * Create an upload folder for a session
  */
-export const createUploadFolderForSession = async (boothId: string, sessionId: string, files: string[]) => {
-
-
+export const createUploadFolderForSession = async (
+  boothSlug: string,
+  sessionId: string,
+  files: string[]
+) => {
   // get the folder id for a booth
-  const uploadFolderIdForBooth = await getUploadFolderIdForBooth(boothId);
+  const uploadFolderIdForBooth = await getUploadFolderIdForBooth(boothSlug);
 
-  // get the last id path
-  let lastPathId = await getLastPathId();
+  // get the last id path and create a new path id
+  const lastPathId = await getLastPathId();
+  const newPathId = lastPathId + 1;
 
   // create a new upload folder in a session
-  return await getGraphQLClient().request(CreateUploadFolderForSessionDocument, {
-    pathId: ++lastPathId,
-    path: `${sessionId}`,
-    name:sessionId,
+  return getGraphQLClient().request(CreateUploadFolderInParentDocument, {
+    pathId: newPathId,
+    path: `/${sessionId}`,
+    name: sessionId,
     files,
-    parent: uploadFolderIdForBooth
+    parent: uploadFolderIdForBooth,
   });
-}
+};
 
 /**
  * Upload Sessions
  * @param sessions
  */
-export const uploadSessions = async(sessions: Session[]) => {
-  // loop over the different sessions
-  for(const session of sessions) {
+export const uploadSessions = async (sessions: Session[]) => {
+  // loop over the different sessions and create worker promises
+  const uploadPromises = sessions.map(async (session) => {
     // let them now
-    console.log(`Uploading session ${session.meta.sessionId}...`);
+    console.log(`Uploading session ${session.meta.sessionId} started...`);
+
+    // check if the upload folder for the session exists
+    const doesFolderForSessionExist = await uploadFolderForSessionExists(
+      session.meta.boothSlug,
+      session.meta.sessionId
+    );
 
     // validate
-    if(await uploadFolderForSessionExists(session.meta.boothId, session.meta.sessionId)) {
-      console.log(`Upload folder for session ${session.meta.sessionId} in booth ${session.meta.boothId} already exists`);
-      continue;
+    if (doesFolderForSessionExist) {
+      console.log(
+        `Upload folder for session ${session.meta.sessionId} in booth ${session.meta.boothSlug} already exists`
+      );
+      return;
     }
 
-    // get the files
+    // get the readstreams for every file we need to upload
     const files = {
-      files: session.recordings.map(r => fsExtra.createReadStream(r.fullPath))
-    }
+      files: session.recordings.map((r) =>
+        fsExtra.createReadStream(r.fullPath)
+      ),
+    };
 
-    // change filenames
-    const fileIds = [];
-    const { multipleUpload } = await getGraphQLClient().request(UploadFilesDocument, files);
-    for(const upload of multipleUpload) {
-      if(upload?.data && upload?.data.id && upload.data.attributes) {
-        // add to file ids
-        fileIds.push(upload.data.id);
-console.log(upload.data.attributes.name);
-        // update file name with the correct name
-        await getGraphQLClient().request(UpdateFileNameDocument, {
-          id: upload?.data.id,
-          fileName: `${session.meta.boothId}-${session.meta.sessionId}-${upload.data.attributes.name}` }
-        );
-      }
-    }
+    // upload the files
+    const { multipleUpload } = await getGraphQLClient().request(
+      UploadFilesDocument,
+      files
+    );
+
+    // change the filenames, then we can filter better in our CMS
+    await Promise.all(
+      multipleUpload.map(async (upload) => {
+        if (upload?.data && upload?.data.id && upload.data.attributes) {
+          // update file name with the correct name
+          await getGraphQLClient().request(UpdateFileNameDocument, {
+            id: upload?.data.id,
+            fileName: `${session.meta.boothSlug}-${session.meta.sessionId}-${upload.data.attributes.name}`,
+          });
+          console.log(`Uploaded ${upload.data.attributes.name}.`);
+        }
+      })
+    );
+
+    // get the file ids form the data
+    const uploadedRecordings: UploadedRecording[] = session.recordings.map(
+      (recording) => ({
+        ...recording,
+        uploadedFileId:
+          multipleUpload.find(
+            (upload) => upload?.data?.attributes?.name === recording.fileName
+          )?.data?.id || "",
+      })
+    );
 
     // add the new added files to a session folder
-    await createUploadFolderForSession(session.meta.boothId, session.meta.sessionId, fileIds);
-  }
+    await createUploadFolderForSession(
+      session.meta.boothSlug,
+      session.meta.sessionId,
+      uploadedRecordings.map(
+        (uploadedRecording) => uploadedRecording.uploadedFileId
+      )
+    );
+
+    // create a new session
+    await getGraphQLClient().request(CreateSessionDocument, {
+      boothId: "1",
+      sessionId: session.meta.sessionId,
+      language: session.meta.language as Enum_Session_Language,
+      moderated: false,
+      narrative: session.audioList,
+      answers: uploadedRecordings.map((uploadedRecording) => ({
+        question: uploadedRecording.questionId,
+        transcribed: false,
+        original_transcript: "",
+        moderated_transcript: "",
+        audio: uploadedRecording.uploadedFileId,
+      })),
+    });
+  });
+
+  // Upload everyting
+  await Promise.all(uploadPromises);
 
   // let them now
-  console.log('All sessions were uploaded.');
-}
+  console.log("All sessions were uploaded.");
+};

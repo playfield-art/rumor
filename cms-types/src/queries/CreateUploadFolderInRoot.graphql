@@ -1,3 +1,7 @@
+#
+# Creates a folder in the root of the media library
+#
+
 mutation createUploadFolderInRoot($name: String, $path: String, $pathId: Int) {
   createUploadFolder(
     data: {

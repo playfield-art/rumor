@@ -6,6 +6,7 @@ import Database from "../database";
  */
 class Setting extends Model {
   declare key: string;
+
   declare value: string;
 }
 

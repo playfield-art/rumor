@@ -1,3 +1,7 @@
+#
+# This query will get the last path id (as found in the upload_folders table)
+#
+
 query getLastPathId {
   uploadFolders(sort: "pathId:desc", pagination: { limit: 1 }) {
     data {

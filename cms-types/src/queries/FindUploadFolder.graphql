@@ -1,3 +1,7 @@
+#
+# This will find an upload folder in the root
+#
+
 query findUploadFolder($folderName: String) {
   uploadFolders(filters: { name: { eq: $folderName } }) {
     data {

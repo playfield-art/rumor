@@ -1,3 +1,7 @@
+#
+# This mutation will upload all the files
+#
+
 mutation uploadFiles($files: [Upload]!) {
   multipleUpload(files: $files) {
     data {

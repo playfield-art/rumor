@@ -1,6 +1,11 @@
 import { VoiceOver, VoiceOverType, SoundScape } from "@shared/interfaces";
-import { useState, useEffect, useCallback, useMemo } from "react";
-import { CAN_CONTINUE_WHILE_PLAYING, CAN_RECORD, FADING_TIME } from "../consts";
+import { useState, useCallback, useMemo } from "react";
+import {
+  CAN_CONTINUE_WHILE_PLAYING,
+  CAN_RECORD,
+  FADING_TIME,
+  NARRATIVE_LANGUAGE,
+} from "../consts";
 import { OnPlayChange, OnVOEnd, SoundBoard } from "../lib/SoundBoard";
 
 const useSoundBoard = (onError?: (e: Error) => void) => {
@@ -15,7 +20,7 @@ const useSoundBoard = (onError?: (e: Error) => void) => {
   const onPlayChange = useCallback((e: OnPlayChange) => {
     setCurrentVO(e.VO);
     setCurrentSC(e.SC);
-    if(CAN_RECORD) window.rumor.actions.stopRecording();
+    if (CAN_RECORD) window.rumor.actions.stopRecording();
   }, []);
 
   /**
@@ -23,10 +28,11 @@ const useSoundBoard = (onError?: (e: Error) => void) => {
    */
 
   const onVOEnd = useCallback((e: OnVOEnd) => {
-    if(CAN_RECORD && !e.isLast && e.VO?.type === VoiceOverType.Question) {
+    if (CAN_RECORD && !e.isLast && e.VO?.type === VoiceOverType.Question) {
       window.rumor.actions.startRecording(e.VO.language, e.VO.id);
     }
-    if(e.VO?.type === VoiceOverType.VoiceOver) soundBoard.playNextVO();
+    // eslint-disable-next-line @typescript-eslint/no-use-before-define
+    if (e.VO?.type === VoiceOverType.VoiceOver) soundBoard.playNextVO();
   }, []);
 
   /**
@@ -34,35 +40,18 @@ const useSoundBoard = (onError?: (e: Error) => void) => {
    */
 
   const soundBoard = useMemo(
-    () => new SoundBoard({
-      onPlayChange,
-      onVOEnd,
-      onStop: () => {
-        setStarted(false);
-      },
-      onStart: async () => {
-        try {
-          await window.rumor.methods.createNewRecordingFolder()
-          setStarted(true);
-        } catch(e: any) {
-          if(onError) onError(e);
-        }
-      },
-      fadingTime: FADING_TIME,
-      canContinueWhilePlaying: CAN_CONTINUE_WHILE_PLAYING
-    }
-  ), []);
-
-  /**
-   * Whenever the component got hooked
-   */
-  useEffect(() => {
-    const removeAllListeners = window.rumor.events.onNextVO(async () => {
-      if(!started) { await soundBoard.init(); }
-      soundBoard.playNextVO()
-    });
-    return () => removeAllListeners();
-  }, []);
+    () =>
+      new SoundBoard({
+        onPlayChange,
+        onVOEnd,
+        onStop: () => {
+          setStarted(false);
+        },
+        fadingTime: FADING_TIME,
+        canContinueWhilePlaying: CAN_CONTINUE_WHILE_PLAYING,
+      }),
+    []
+  );
 
   /**
    * Plays next VO
@@ -74,10 +63,25 @@ const useSoundBoard = (onError?: (e: Error) => void) => {
    * Start the soundboard
    */
 
-  const start = useCallback(async() => {
-    if(!started) {
-      await soundBoard.init();
-      soundBoard.playNextVO()
+  const start = useCallback(async () => {
+    if (!started) {
+      try {
+        // create a new session
+        const audioList = await window.rumor.methods.createNewSession(
+          NARRATIVE_LANGUAGE
+        );
+
+        // init the soundboard (load up the audio)
+        await soundBoard.init(audioList);
+
+        // set the internal "started" state
+        setStarted(true);
+
+        // play the first audio file
+        soundBoard.playNextVO();
+      } catch (e: any) {
+        if (onError) onError(e);
+      }
     }
   }, [started]);
 
@@ -86,7 +90,7 @@ const useSoundBoard = (onError?: (e: Error) => void) => {
    */
 
   const stop = useCallback(() => {
-    if(started) {
+    if (started) {
       soundBoard.stop();
       soundBoard.reset();
     }
@@ -98,7 +102,7 @@ const useSoundBoard = (onError?: (e: Error) => void) => {
     stop,
     started,
     currentVO,
-    currentSC
+    currentSC,
   };
 };
 

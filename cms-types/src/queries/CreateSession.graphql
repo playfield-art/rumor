@@ -1,0 +1,27 @@
+#
+# Creates a new session in the rumor CMS
+#
+mutation createSession(
+  $boothId: ID!
+  $sessionId: String!
+  $language: ENUM_SESSION_LANGUAGE!
+  $moderated: Boolean = false
+  $answers: [ComponentAnswersAnwserInput!]
+  $narrative: JSON
+) {
+  createSession(
+    data: {
+      booth: $boothId
+      session_id: $sessionId
+      language: $language
+      moderated: $moderated
+      narrative: $narrative
+      answers: $answers
+    }
+  ) {
+    data {
+      id
+    }
+  }
+}
+

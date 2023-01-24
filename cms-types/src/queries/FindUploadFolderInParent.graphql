@@ -1,4 +1,8 @@
-query getUploadFolderForSession($parent: ID, $sessionId: String) {
+#
+# This query will find an upload folder in a given parent folder
+#
+
+query findUploadFolderInParent($parent: ID, $sessionId: String) {
   uploadFolder(id: $parent) {
     data {
       attributes {

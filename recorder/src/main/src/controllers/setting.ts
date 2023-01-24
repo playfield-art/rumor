@@ -37,7 +37,7 @@ export const getSetting = async (
 ): Promise<string | null> => {
   try {
     const setting = await SettingHelper.getSetting(key);
-    return setting ? setting.value : '';
+    return setting ? setting.value : "";
   } catch (e: any) {
     throw new Exception({ where: "getSetting", message: e.message });
   }
@@ -47,52 +47,54 @@ export const getSetting = async (
  * Save the narratives folder
  */
 export const setNarrativesFolder = async () => {
-  var { canceled, filePaths } = await dialog.showOpenDialog(
+  const { canceled, filePaths } = await dialog.showOpenDialog(
     Recorder.mainWindow,
-    { properties: ['openDirectory'] }
+    { properties: ["openDirectory"] }
   );
 
   // if folder was selected
-  if(!canceled && filePaths.length > 0) {
+  if (!canceled && filePaths.length > 0) {
     await SettingHelper.saveSetting({
-      key: 'narrativesFolder',
-      value: filePaths[0]
+      key: "narrativesFolder",
+      value: filePaths[0],
     });
     return filePaths[0];
   }
 
   // if canceled, check DB if not return empty
-  const setting = await SettingHelper.getSetting('narrativesFolder');
-  return setting ? setting.value : '';
-}
+  const setting = await SettingHelper.getSetting("narrativesFolder");
+  return setting ? setting.value : "";
+};
 
 /**
  * Save the recordings folder
  */
 export const setRecordingsFolder = async () => {
-  var { canceled, filePaths } = await dialog.showOpenDialog(
+  const { canceled, filePaths } = await dialog.showOpenDialog(
     Recorder.mainWindow,
-    { properties: ['openDirectory'] }
+    { properties: ["openDirectory"] }
   );
 
   // if folder was selected
-  if(!canceled && filePaths.length > 0) {
+  if (!canceled && filePaths.length > 0) {
     // save the setting in local database
     await SettingHelper.saveSetting({
-      key: 'recordingsFolder',
-      value: filePaths[0]
+      key: "recordingsFolder",
+      value: filePaths[0],
     });
 
     // set the audio recording singleton
-    AudioRecordingSingleton.setInstance(new AudioRecording({
-      outDir: filePaths[0]
-    }));
+    AudioRecordingSingleton.setInstance(
+      new AudioRecording({
+        outDir: filePaths[0],
+      })
+    );
 
     // return the recording file path
     return filePaths[0];
   }
 
   // if canceled, check DB if not return empty
-  const setting = await SettingHelper.getSetting('recordingsFolder');
-  return setting ? setting.value : ''
-}
+  const setting = await SettingHelper.getSetting("recordingsFolder");
+  return setting ? setting.value : "";
+};

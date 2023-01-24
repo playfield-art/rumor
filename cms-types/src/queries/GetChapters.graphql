@@ -1,6 +1,11 @@
+#
+# This query will get the chapters from the narrative
+#
+
 query getChapters($narrative_part: String) {
   chapters(filters: { narrative_part: { eq: $narrative_part } }) {
     data {
+      id
       attributes {
         title
         soundscape {
