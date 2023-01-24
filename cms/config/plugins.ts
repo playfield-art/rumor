@@ -11,8 +11,5 @@ export default {
         introspection: true,
       },
     },
-  },
-  'drag-drop-content-types': {
-    enabled: true
   }
 };

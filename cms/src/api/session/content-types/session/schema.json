@@ -42,6 +42,12 @@
     "session_id": {
       "type": "string",
       "required": true
+    },
+    "date": {
+      "type": "date"
+    },
+    "time": {
+      "type": "time"
     }
   }
 }

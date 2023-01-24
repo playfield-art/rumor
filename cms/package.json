@@ -10,7 +10,6 @@
     "strapi": "strapi"
   },
   "dependencies": {
-    "@retikolo/drag-drop-content-types": "^1.2.1",
     "@strapi-community/strapi-provider-upload-google-cloud-storage": "^4.5.6",
     "@strapi/plugin-graphql": "^4.5.6",
     "@strapi/plugin-i18n": "4.5.6",
