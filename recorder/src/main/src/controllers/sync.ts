@@ -6,9 +6,9 @@ import { Narrative } from "@shared/interfaces";
 import { existsSync } from "fs";
 import { getNarrative, uploadSessions } from "../lib/cms";
 import { Exception } from "../lib/exceptions/Exception";
+import { getNarrativesFolder, getRecordingsFolder } from "../lib/filesystem";
 import { NarrativeSyncer } from "../lib/narrative/NarrativeSyncer";
 import { SessionFactory } from "../lib/sessions/SessionFactory";
-import SettingHelper from "../lib/settings/SettingHelper";
 
 /**
  * Syncs the narrative that we got from the cloud
@@ -16,8 +16,7 @@ import SettingHelper from "../lib/settings/SettingHelper";
 export const syncNarrative = async (): Promise<void> => {
   try {
     const narrative: Narrative = await getNarrative();
-    const narrativesFolder =
-      (await SettingHelper.getSetting("narrativesFolder"))?.value || "";
+    const narrativesFolder = await getNarrativesFolder();
     if (narrative && existsSync(narrativesFolder)) {
       await new NarrativeSyncer(narrativesFolder, narrative).start();
     }
@@ -31,8 +30,7 @@ export const syncNarrative = async (): Promise<void> => {
  */
 export const uploadToCms = async (): Promise<void> => {
   try {
-    const sessionFolder =
-      (await SettingHelper.getSetting("recordingsFolder"))?.value || "";
+    const sessionFolder = await getRecordingsFolder();
     if (sessionFolder && existsSync(sessionFolder)) {
       const sessions = await new SessionFactory(sessionFolder).getSessions();
       if (sessions && sessions.length > 0) await uploadSessions(sessions);

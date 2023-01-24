@@ -34,7 +34,8 @@ contextBridge.exposeInMainWorld("rumor", {
     getAudioList: (language: string) =>
       ipcRenderer.invoke("getAudioList", language),
     getSetting: (key: string) => ipcRenderer.invoke("getSetting", key),
-    setNarrativesFolder: () => ipcRenderer.invoke("setNarrativesFolder"),
+    setFolderSetting: (key: string) =>
+      ipcRenderer.invoke("setFolderSetting", key),
     setRecordingsFolder: () => ipcRenderer.invoke("setRecordingsFolder"),
     syncNarrative: () => ipcRenderer.invoke("syncNarrative"),
     uploadToCms: () => ipcRenderer.invoke("uploadToCms"),

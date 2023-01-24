@@ -48,7 +48,7 @@ const initApp = async () => {
     // create a new electron app
     const electronApp = new ElectronApp({
       browserWidth: 900, // sets the browser width
-      browserHeight: 365, // sets the browser height
+      browserHeight: 425, // sets the browser height
       iconPath: path.join(resourcePath, "icon.icns"), // sets the app icon
       installExtensions: false, // shall we install react dev tools?
     });

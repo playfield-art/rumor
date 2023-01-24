@@ -9,7 +9,7 @@ import { syncNarrative, uploadToCms } from "./controllers/sync";
 import {
   getSetting,
   saveSetting,
-  setNarrativesFolder,
+  setFolderSetting,
   setRecordingsFolder,
 } from "./controllers/setting";
 
@@ -23,7 +23,7 @@ export const registerMethods = () => {
   ipcMain.handle("createNewSession", createNewSession);
   ipcMain.handle("getAudioList", getAudioList);
   ipcMain.handle("getSetting", getSetting);
-  ipcMain.handle("setNarrativesFolder", setNarrativesFolder);
+  ipcMain.handle("setFolderSetting", setFolderSetting);
   ipcMain.handle("setRecordingsFolder", setRecordingsFolder);
   ipcMain.handle("syncNarrative", syncNarrative);
   ipcMain.handle("uploadToCms", uploadToCms);

@@ -2,11 +2,10 @@ import fs from "fs";
 import path from "path";
 import { Utils } from "@shared/utils";
 import { AudioList, RecordingMeta } from "../../../shared/interfaces";
-
-import SettingHelper from "../lib/settings/SettingHelper";
 import { AudioRecordingSingleton } from "../lib/audio/AudioRecordingSingleton";
 import { Exception } from "../lib/exceptions/Exception";
 import { getAudioList as getAudioListHelper } from "../lib/audio/AudioList";
+import { getRecordingsFolder } from "../lib/filesystem";
 
 /**
  * Get the audiolist
@@ -29,12 +28,10 @@ export const createNewSession = async (
   const audioList = await getAudioListHelper(language);
 
   // get the recording folder from settings
-  const recordingsFolderSetting = await SettingHelper.getSetting(
-    "recordingsFolder"
-  );
+  const recordingsFolder = await getRecordingsFolder();
 
   // if no recording folder, throw an exception
-  if (!recordingsFolderSetting) {
+  if (!recordingsFolder) {
     throw new Exception({
       message: "There was no recordings folder provided.",
       where: "createNewSession",
@@ -51,10 +48,7 @@ export const createNewSession = async (
   };
 
   // create a new folder
-  const folder = path.join(
-    recordingsFolderSetting.value,
-    recordingMeta.sessionId
-  );
+  const folder = path.join(recordingsFolder, recordingMeta.sessionId);
   if (!fs.existsSync(folder)) {
     fs.mkdirSync(folder);
     AudioRecordingSingleton.getInstance().outDir = folder;

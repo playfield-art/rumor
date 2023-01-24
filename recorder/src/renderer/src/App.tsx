@@ -15,6 +15,8 @@ function App() {
     setCurrentNarrativesFolder,
     currentRecordingsFolder,
     setCurrentRecordingsFolder,
+    currentArchiveFolder,
+    setCurrentArchiveFolder,
   } = useSettings();
   const { playNextVO, stop, start, started, currentSC, currentVO } =
     useSoundBoard(notifyError);
@@ -61,7 +63,7 @@ function App() {
             label="NAR"
             onClick={async () => {
               setCurrentNarrativesFolder(
-                await window.rumor.methods.setNarrativesFolder()
+                await window.rumor.methods.setFolderSetting("narrativesFolder")
               );
             }}
           />
@@ -73,6 +75,17 @@ function App() {
             onClick={async () => {
               setCurrentRecordingsFolder(
                 await window.rumor.methods.setRecordingsFolder()
+              );
+            }}
+          />
+        </ButtonContainer>
+        <ButtonContainer>
+          <SelectFolder
+            path={currentArchiveFolder || ""}
+            label="ARH"
+            onClick={async () => {
+              setCurrentArchiveFolder(
+                await window.rumor.methods.setFolderSetting("archiveFolder")
               );
             }}
           />

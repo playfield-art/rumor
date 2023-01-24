@@ -7,6 +7,9 @@ const useSettings = () => {
   const [currentRecordingsFolder, setCurrentRecordingsFolder] = useState<
     string | null
   >("");
+  const [currentArchiveFolder, setCurrentArchiveFolder] = useState<
+    string | null
+  >("");
 
   useEffect(() => {
     const getSettings = async () => {
@@ -15,6 +18,9 @@ const useSettings = () => {
       );
       setCurrentRecordingsFolder(
         await window.rumor.methods.getSetting("recordingsFolder")
+      );
+      setCurrentArchiveFolder(
+        await window.rumor.methods.getSetting("archiveFolder")
       );
     };
     getSettings();
@@ -25,6 +31,8 @@ const useSettings = () => {
     setCurrentNarrativesFolder,
     currentRecordingsFolder,
     setCurrentRecordingsFolder,
+    currentArchiveFolder,
+    setCurrentArchiveFolder,
   };
 };
 

@@ -6,6 +6,7 @@ import { Chapter, ChapterMeta, Narrative } from "@shared/interfaces";
 import fsExtra from "fs-extra";
 import Downloader from "nodejs-file-downloader";
 import { join } from "path";
+import { createEmptyFolders } from "../filesystem";
 
 interface NarrativeChapter {
   chapters: Chapter[] | null;
@@ -26,19 +27,15 @@ export class NarrativeSyncer {
     await fsExtra.emptyDir(this.folderPath);
   }
 
-  async createEmptyFolders() {
+  async createEmptyFoldersForNarrative() {
     // validate
     if (!this.narrative || this.folderPath === "") return;
 
     // get an array of the narrativekeys, so we can loop easier
     const narrativeKeys = Object.keys(this.narrative);
 
-    // remove all folders
-    await Promise.all(
-      narrativeKeys.map(async (narrativeKey) =>
-        fsExtra.mkdir(join(this.folderPath, narrativeKey))
-      )
-    );
+    // create folders
+    await createEmptyFolders(this.folderPath, narrativeKeys);
   }
 
   async start() {
@@ -49,7 +46,7 @@ export class NarrativeSyncer {
     await this.cleanNarrativesFolder();
 
     // create the empty narrative folder
-    await this.createEmptyFolders();
+    await this.createEmptyFoldersForNarrative();
 
     // get an array of the narrativekeys, so we can loop easier
     const narrativeKeys = Object.keys(this.narrative);

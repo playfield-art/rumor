@@ -44,9 +44,15 @@ export const getSetting = async (
 };
 
 /**
- * Save the narratives folder
+ * Set a folder setting
+ * @param event
+ * @param key
+ * @returns
  */
-export const setNarrativesFolder = async () => {
+export const setFolderSetting = async (
+  event: Electron.IpcMainInvokeEvent,
+  key: string
+) => {
   const { canceled, filePaths } = await dialog.showOpenDialog(
     Recorder.mainWindow,
     { properties: ["openDirectory"] }
@@ -55,14 +61,14 @@ export const setNarrativesFolder = async () => {
   // if folder was selected
   if (!canceled && filePaths.length > 0) {
     await SettingHelper.saveSetting({
-      key: "narrativesFolder",
+      key,
       value: filePaths[0],
     });
     return filePaths[0];
   }
 
   // if canceled, check DB if not return empty
-  const setting = await SettingHelper.getSetting("narrativesFolder");
+  const setting = await SettingHelper.getSetting(key);
   return setting ? setting.value : "";
 };
 

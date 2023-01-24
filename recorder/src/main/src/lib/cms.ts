@@ -22,6 +22,11 @@ import {
 } from "@shared/interfaces";
 import fsExtra from "fs-extra";
 import { narrativeChapters } from "../consts";
+import {
+  getArchiveFolder,
+  getRecordingsFolder,
+  moveFolder,
+} from "./filesystem";
 
 let graphQLClient: GraphQLClient | null = null;
 
@@ -369,6 +374,12 @@ export const uploadSessions = async (sessions: Session[]) => {
         audio: uploadedRecording.uploadedFileId,
       })),
     });
+
+    // move folder to the archive directory
+    await moveFolder(
+      `${await getRecordingsFolder()}/${session.meta.sessionId}`,
+      `${await getArchiveFolder()}/${session.meta.sessionId}`
+    );
   });
 
   // Upload everyting

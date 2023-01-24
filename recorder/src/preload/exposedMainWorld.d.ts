@@ -13,7 +13,7 @@ declare global {
         createNewSession(language: string): Promise<AudioList>;
         getAudioList(language: string): Promise<AudioList>;
         getSetting(key: string): string | null;
-        setNarrativesFolder(): string;
+        setFolderSetting(key: string): Promise<string>;
         setRecordingsFolder(): string;
         syncNarrative(): Promise<void>;
         uploadToCms(): Promise<void>;
