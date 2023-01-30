@@ -39,11 +39,13 @@ export default {
    * @param ctx
    */
   notify: async (ctx) => {
-    const { body } = ctx.request;
+    const { url } = ctx.request;
     try {
-      console.log(body);
-      console.log(ctx);
-      ctx.send({ body });
+      const fullUrl = new URL(`https://example.com${url}`);
+      const id = fullUrl.searchParams.get('id');
+      const text = await getService('speechmatics').getTextFromJob(id);
+      console.log(text);
+      ctx.send({ text });
     } catch (err) {
       ctx.throw(500, err)
     }

@@ -20,8 +20,7 @@ const getSpeechmaticsConfig = (language: string, url: string, notifyCallbackUrl:
       ...config,
       "notification_config": [
         {
-          "url": notifyCallbackUrl,
-          "contents": ["transcript.txt", "jobinfo"]
+          "url": notifyCallbackUrl
         }
       ]
     }
@@ -30,7 +29,44 @@ const getSpeechmaticsConfig = (language: string, url: string, notifyCallbackUrl:
   return config;
 };
 
+const getSpeechmaticsUrl = () => {
+  return 'https://asr.api.speechmatics.com/v2/jobs/';
+}
+
 export default ({ strapi }: { strapi: Strapi }) => ({
+  /**
+   * Gets the text, coming from a Speechmatics job
+   * @param jobId
+   */
+  getTextFromJob: async (jobId: string) => {
+     // start jobs at speechmatics
+    let config = await getCoreStore().get({ key: 'settings' });
+
+    // validate
+    if(!config || !config.speechmaticsApiToken) return;
+
+    // get the token
+    const token = config.speechmaticsApiToken;
+
+    // create form data
+    const formData = new FormData();
+
+    // do the post
+    const { data } = await axios.post(
+      `${getSpeechmaticsUrl()}/${jobId}/transcript?format=txt`,
+      formData.getBuffer(),
+      {
+        headers: {
+          ...formData.getHeaders(),
+          'Authorization': `Bearer ${token}`
+        }
+      }
+    );
+
+    // return the text
+    return data;
+  },
+
   /**
    * Transcibes a session (starts job at speechmatics)
    * @param sessionId The ID of the session
@@ -66,7 +102,7 @@ export default ({ strapi }: { strapi: Strapi }) => ({
     const notifyCallbackUrl = config?.notifyCallbackUrl || "";
 
     // get the speechmatics URL
-    const speechmaticsUrl = "https://asr.api.speechmatics.com/v2/jobs/";
+    const speechmaticsUrl = getSpeechmaticsUrl();
 
     // answers to transcribe
     const answersToTranscribePromises = answersToTranscribe.map(async(answer) => {
