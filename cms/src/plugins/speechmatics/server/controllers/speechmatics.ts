@@ -39,9 +39,12 @@ export default {
    * @param ctx
    */
   notify: async (ctx) => {
+    const { id } = ctx.params;
     const { body } = ctx.request;
+    const { data } = ctx;
     try {
-      console.log(ctx);
+      console.log(id);
+      console.log(data);
       ctx.send({ body });
     } catch (err) {
       ctx.throw(500, err)
