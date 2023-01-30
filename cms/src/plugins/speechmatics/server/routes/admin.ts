@@ -16,7 +16,21 @@ const routes: StrapiRoute[] = [
     config: {
       policies: [],
     },
-  }
+  },
+  {
+    method: "POST",
+    path: "/transcribeSession",
+    handler: "speechmatics.transcribeSession",
+    config: {
+      policies: [],
+      description: "Transcribe a session",
+      tag: {
+        plugin: "speechmatics",
+        name: "Speechmatics",
+        actionType: "update",
+      },
+    },
+  },
 ];
 
 export default routes;

@@ -17,7 +17,8 @@ import { settingsApi } from '../../api/settings';
 
 const defaultSettings = {
   speechmaticsApiToken: "",
-  translatorApiToken: ""
+  translatorApiToken: "",
+  notifyCallbackUrl: ""
 }
 
 const Settings = () => {
@@ -111,6 +112,24 @@ const Settings = () => {
                           setSettings({
                             ...settings,
                             translatorApiToken: e.target.value,
+                          })
+                        }}
+                      />
+                    </Stack>
+                  </Field>
+                </GridItem>
+                <GridItem col={12} s={12}>
+                  <Field name="notifyCallbackUrl">
+                    <Stack>
+                      <FieldLabel>Notify Callback Url</FieldLabel>
+                      <FieldInput
+                        type="text"
+                        placeholder=""
+                        value={settings?.notifyCallbackUrl}
+                        onChange={(e) => {
+                          setSettings({
+                            ...settings,
+                            notifyCallbackUrl: e.target.value,
                           })
                         }}
                       />

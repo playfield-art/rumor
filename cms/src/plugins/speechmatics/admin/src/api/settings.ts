@@ -24,7 +24,7 @@ export const settingsApi = {
   */
   setSettings: async (data) => {
     try {
-      return await axiosInstance.post('/speechmatics/settings', data);
+      return await axiosInstance.post(getApiURL('settings'), data);
     } catch (err) {
       console.log(err.message);
     }

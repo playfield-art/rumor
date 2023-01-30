@@ -3,16 +3,32 @@ import FormData from 'form-data';
 import axios from "axios";
 import { getCoreStore } from '../utils';
 
-const getSpeechmaticsConfig = (language: string, url: string) => ({
-  "type": "transcription",
-  "transcription_config": {
-    "operating_point":"enhanced",
-    "language": language
-  },
-  "fetch_data": {
-    "url": url
+const getSpeechmaticsConfig = (language: string, url: string, notifyCallbackUrl: string = "") => {
+  const config = {
+    "type": "transcription",
+    "transcription_config": {
+      "operating_point":"enhanced",
+      "language": language
+    },
+    "fetch_data": {
+      "url": url
+    }
   }
-});
+
+  if(notifyCallbackUrl) {
+    return {
+      ...config,
+      "notification_config": [
+        {
+          "url": notifyCallbackUrl,
+          "contents": ["transcript.txt", "jobinfo"]
+        }
+      ]
+    }
+  }
+
+  return config;
+};
 
 export default ({ strapi }: { strapi: Strapi }) => ({
   /**
@@ -46,13 +62,25 @@ export default ({ strapi }: { strapi: Strapi }) => ({
     // get the token
     const token = config.speechmaticsApiToken;
 
+    // get the notification url
+    const notifyCallbackUrl = config?.notifyCallbackUrl || "";
+
     // get the speechmatics URL
     const speechmaticsUrl = "https://asr.api.speechmatics.com/v2/jobs/";
 
     // answers to transcribe
     const answersToTranscribePromises = answersToTranscribe.map(async(answer) => {
+      const speechmaticsConfig = getSpeechmaticsConfig(
+        session.language,
+        answer.audio.url,
+        notifyCallbackUrl
+      )
+
       const formData = new FormData();
-      formData.append('config', JSON.stringify(getSpeechmaticsConfig(session.language, answer.audio.url)));
+      formData.append(
+        'config',
+        JSON.stringify(speechmaticsConfig)
+      );
 
       // do the post
       const { data } = await axios.post(

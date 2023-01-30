@@ -5,9 +5,10 @@ import { getCoreStore } from '../utils';
 /**
  * The default config
  */
-const defaultConfig = {
+const defaultConfig: Settings = {
   speechmaticsApiToken: "",
-  translatorApiToken: ""
+  translatorApiToken: "",
+  notifyCallbackUrl: ""
 }
 
 /**

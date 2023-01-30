@@ -17,20 +17,6 @@ const routes: StrapiRoute[] = [
   },
   {
     method: "POST",
-    path: "/transcribeSession",
-    handler: "speechmatics.transcribeSession",
-    config: {
-      policies: [],
-      description: "Transcribe a session",
-      tag: {
-        plugin: "speechmatics",
-        name: "Speechmatics",
-        actionType: "update",
-      },
-    },
-  },
-   {
-    method: "POST",
     path: "/notify",
     handler: "speechmatics.notify",
     config: {

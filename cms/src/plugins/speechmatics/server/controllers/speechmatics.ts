@@ -41,7 +41,7 @@ export default {
   notify: async (ctx) => {
     const { body } = ctx.request;
     try {
-      console.log(body);
+      console.log(ctx.request);
       ctx.send({ body });
     } catch (err) {
       ctx.throw(500, err)
