@@ -1,10 +1,10 @@
 {
   "name": "speechmatics",
   "version": "0.0.0",
-  "description": "This is the description of the plugin.",
+  "description": "Plugin to interact with the Speechmatics API.",
   "strapi": {
-    "name": "speechmatics",
-    "description": "Description of speechmatics plugin",
+    "name": "Speechmatics",
+    "description": "Plugin to interact with the Speechmatics API",
     "kind": "plugin"
   },
   "dependencies": {

@@ -4,7 +4,7 @@ services:
     rootDir: cms
     env: node
     plan: starter
-    buildCommand: yarn install && yarn build
+    buildCommand: yarn install && yarn install-plugins && yarn build
     startCommand: yarn start
     healthCheckPath: /_health
     region: frankfurt
