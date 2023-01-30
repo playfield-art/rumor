@@ -8,6 +8,7 @@ import {
   UpdateFileNameDocument,
   UploadFilesDocument,
   CreateSessionDocument,
+  GetBoothIdDocument,
   Enum_Session_Language,
 } from "cms-types/gql/graphql";
 import { GraphQLClient } from "graphql-request";
@@ -28,6 +29,7 @@ import {
   moveFolder,
 } from "./filesystem";
 import { convertSessionIdToDateAndTime } from "./sessions/SessionUtils";
+import { Exception } from "./exceptions/Exception";
 
 let graphQLClient: GraphQLClient | null = null;
 
@@ -56,6 +58,28 @@ const getGraphQLClient = (): GraphQLClient => {
     });
   }
   return graphQLClient;
+};
+
+/**
+ * Gets the booth id, coming from the booth slug
+ * @param boothSlug
+ */
+export const getBoothId = async (boothSlug: string): Promise<string> => {
+  // do the request
+  const { booths } = await getGraphQLClient().request(GetBoothIdDocument, {
+    slug: boothSlug,
+  });
+
+  // validate and return the id
+  if (booths?.data && booths.data.length === 1) {
+    return booths.data[0].id || "";
+  }
+
+  // if we made it here, the booth id does not exist
+  throw new Exception({
+    message: `The booth with slug ${boothSlug} does not exists.`,
+    where: "getBoothId",
+  });
 };
 
 /**
@@ -367,7 +391,7 @@ export const uploadSessions = async (sessions: Session[]) => {
 
     // create a new session
     await getGraphQLClient().request(CreateSessionDocument, {
-      boothId: "1",
+      boothId: await getBoothId(session.meta.boothSlug),
       sessionId: session.meta.sessionId,
       language: session.meta.language as Enum_Session_Language,
       moderated: false,

@@ -1,0 +1,10 @@
+#
+# Gets the booth id
+#
+query getBoothId($slug: String) {
+  booths(filters: { slug: { eq: $slug } }) {
+    data {
+      id
+    }
+  }
+}

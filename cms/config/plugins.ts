@@ -11,5 +11,9 @@ export default {
         introspection: true,
       },
     },
+  },
+  'speechmatics': {
+    enabled: true,
+    resolve: './src/plugins/speechmatics'
   }
 };

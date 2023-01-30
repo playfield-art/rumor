@@ -28,6 +28,9 @@
       "allowedTypes": [
         "audios"
       ]
+    },
+    "speechmatics_job_id": {
+      "type": "string"
     }
   }
 }
