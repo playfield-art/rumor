@@ -6,7 +6,9 @@
   "scripts": {
     "develop": "strapi develop",
     "start": "strapi start",
-    "build": "strapi build",
+    "build": "yarn build-plugins && strapi build",
+    "install-plugins": "yarn --cwd src/plugins/speechmatics",
+    "build-plugins": "yarn --cwd src/plugins/speechmatics build",
     "strapi": "strapi"
   },
   "dependencies": {

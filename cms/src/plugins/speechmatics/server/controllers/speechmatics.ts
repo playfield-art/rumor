@@ -42,6 +42,7 @@ export default {
     const { body } = ctx.request;
     try {
       console.log(body);
+      ctx.send({ body });
     } catch (err) {
       ctx.throw(500, err)
     }
