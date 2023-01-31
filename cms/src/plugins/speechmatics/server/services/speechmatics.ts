@@ -35,6 +35,18 @@ const getSpeechmaticsUrl = () => {
 
 export default ({ strapi }: { strapi: Strapi }) => ({
   /**
+   * Adds the text from a job to an answer
+   * @param jobId
+   */
+  addTextToAnswerViaJobId: async(text: string, jobId: string) => {
+    const data = await strapi.db.connection.raw(`
+      UPDATE public.components_answers_anwsers
+      SET original_transcript='${text}', moderated_transcript='${text}', speechmatics_job_id = '', transcribed = true
+      WHERE speechmatics_job_id = '${jobId}'
+    `);
+  },
+
+  /**
    * Gets the text, coming from a Speechmatics job
    * @param jobId
    */

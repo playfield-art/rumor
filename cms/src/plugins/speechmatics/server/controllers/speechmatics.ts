@@ -44,8 +44,8 @@ export default {
       const fullUrl = new URL(`https://example.com${url}`);
       const id = fullUrl.searchParams.get('id');
       const text = await getService('speechmatics').getTextFromJob(id);
-      console.log(text);
-      ctx.send({ text });
+      await getService('speechmatics').addTextToAnswerViaJobId(text, id);
+      ctx.send({ jobId: id, text });
     } catch (err) {
       ctx.throw(500, err)
     }
