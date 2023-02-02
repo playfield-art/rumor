@@ -22,9 +22,10 @@ export const settingsApi = {
   * @param data
   * @returns
   */
-  setSettings: async (data) => {
+  setSettings: async (settings) => {
     try {
-      return await axiosInstance.post(getApiURL('settings'), data);
+      const { data } = await axiosInstance.post(getApiURL('settings'), settings);
+      return data;
     } catch (err) {
       console.log(err.message);
     }

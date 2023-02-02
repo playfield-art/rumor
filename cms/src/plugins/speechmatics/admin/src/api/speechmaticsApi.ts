@@ -14,5 +14,16 @@ export const speechmaticsApi = {
     } catch (err) {
       console.log(err.message);
     }
+  },
+
+  /**
+   * Translate moderated texts in a session
+   */
+  translateSession: async (sessionId: number) => {
+    try {
+      await axiosInstance.post(getApiURL('translateSession'), { sessionId });
+    } catch (err) {
+      console.log(err.message);
+    }
   }
 }

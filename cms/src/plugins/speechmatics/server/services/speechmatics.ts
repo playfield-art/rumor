@@ -2,6 +2,8 @@ import { Strapi } from '@strapi/strapi';
 import FormData from 'form-data';
 import axios from "axios";
 import { getCoreStore } from '../utils';
+import { Settings } from '../../types';
+const { Translate } = require('@google-cloud/translate').v2;
 
 const getSpeechmaticsConfig = (language: string, url: string, notifyCallbackUrl: string = "") => {
   const config = {
@@ -35,11 +37,11 @@ const getSpeechmaticsUrl = () => {
 
 export default ({ strapi }: { strapi: Strapi }) => ({
   /**
-   * Adds the text from a job to an answer
+   * Adds the text from a job to an answer in the database
    * @param jobId
    */
   addTextToAnswerViaJobId: async(text: string, jobId: string) => {
-    const data = await strapi.db.connection.raw(`
+    await strapi.db.connection.raw(`
       UPDATE public.components_answers_anwsers
       SET original_transcript='${text}', moderated_transcript='${text}', speechmatics_job_id = '', transcribed = true
       WHERE speechmatics_job_id = '${jobId}'
@@ -101,7 +103,7 @@ export default ({ strapi }: { strapi: Strapi }) => ({
     // validate
     if(answersToTranscribe.length <= 0) return;
 
-    // start jobs at speechmatics
+    // get the plugin settings
     let config = await getCoreStore().get({ key: 'settings' });
 
     // validate
@@ -159,5 +161,56 @@ export default ({ strapi }: { strapi: Strapi }) => ({
 
     // return the updated session
     return updatedSession;
+  },
+
+  /**
+   * Translates the moderated texts in of a session
+   * @param sessionId The ID of the session to translate
+   */
+  translateSession: async(sessionId: number) => {
+    // get the session
+    const session = await strapi.entityService.findOne('api::session.session', sessionId, {
+      populate: ["answers"]
+    });
+
+    // validate
+    if(!session || !session.answers || session.answers.length <= 0) return;
+
+     // get the answers to translate
+    const answersToTranslate = session.answers.filter((answer) => {
+      return (answer.moderated_transcript && answer.moderated_transcript !== "")
+    });
+
+    // validate
+    if(answersToTranslate.length <= 0) return;
+
+    // start translating the moderated answers
+    let config = await getCoreStore().get({ key: 'settings' });
+
+    // validate
+    if(!config || !config.googleTranslateApiToken || !config.googleCloudProjectId) return;
+
+    // instantiates a client
+    const translate = new Translate({
+      key: config.googleTranslateApiToken,
+      projectId: config.googleCloudProjectId
+    });
+
+    // answers to transcribe
+    const answersToTranslatePromises = answersToTranslate.map(async(answer) => {
+      const [translation] = await translate.translate(answer.moderated_transcript, config.targetLanguage || "en");
+      answer.common_language = translation;
+    });
+
+    // translate the moderated text of answers
+    await Promise.all(answersToTranslatePromises);
+
+    // update the session with translations
+    await strapi.entityService.update('api::session.session', sessionId, {
+      populate: ["answers"],
+      data: {
+        ...session
+      },
+    });
   }
 });

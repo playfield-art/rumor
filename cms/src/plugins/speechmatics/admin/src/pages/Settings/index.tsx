@@ -9,6 +9,7 @@ import {
   GridItem,
   HeaderLayout,
   ContentLayout,
+  Typography,
   Field, FieldLabel, FieldHint, FieldError, FieldInput, FieldAction
 } from '@strapi/design-system';
 import { Check } from '@strapi/icons';
@@ -17,7 +18,9 @@ import { settingsApi } from '../../api/settings';
 
 const defaultSettings = {
   speechmaticsApiToken: "",
-  translatorApiToken: "",
+  googleTranslateApiToken: "",
+  targetLanguage: "",
+  googleCloudProjectId: "",
   notifyCallbackUrl: ""
 }
 
@@ -71,74 +74,140 @@ const Settings = () => {
         <LoadingIndicatorPage />
       ) : (
         <ContentLayout>
-          <Box
-            background="neutral0"
-            hasRadius
-            shadow="filterShadow"
-            paddingTop={6}
-            paddingBottom={6}
-            paddingLeft={7}
-            paddingRight={7}
-          >
-            <Stack>
-              <Grid gap={6}>
-                <GridItem col={12} s={12}>
-                  <Field name="speechmaticsApiToken">
-                    <Stack>
-                      <FieldLabel>Speechmatics API Token</FieldLabel>
-                      <FieldInput
-                        type="text"
-                        placeholder=""
-                        value={settings?.speechmaticsApiToken}
-                        onChange={(e) => {
-                          setSettings({
-                            ...settings,
-                            speechmaticsApiToken: e.target.value,
-                          })
-                        }}
-                      />
-                    </Stack>
-                  </Field>
-                </GridItem>
-                <GridItem col={12} s={12}>
-                  <Field name="translatorApiToken">
-                    <Stack>
-                      <FieldLabel>Translator API Token</FieldLabel>
-                      <FieldInput
-                        type="text"
-                        placeholder=""
-                        value={settings?.translatorApiToken}
-                        onChange={(e) => {
-                          setSettings({
-                            ...settings,
-                            translatorApiToken: e.target.value,
-                          })
-                        }}
-                      />
-                    </Stack>
-                  </Field>
-                </GridItem>
-                <GridItem col={12} s={12}>
-                  <Field name="notifyCallbackUrl">
-                    <Stack>
-                      <FieldLabel>Notify Callback Url</FieldLabel>
-                      <FieldInput
-                        type="text"
-                        placeholder=""
-                        value={settings?.notifyCallbackUrl}
-                        onChange={(e) => {
-                          setSettings({
-                            ...settings,
-                            notifyCallbackUrl: e.target.value,
-                          })
-                        }}
-                      />
-                    </Stack>
-                  </Field>
-                </GridItem>
-              </Grid>
-            </Stack>
-          </Box>
+          <Stack spacing={7}>
+            <Box
+              background="neutral0"
+              hasRadius
+              shadow="filterShadow"
+              paddingTop={6}
+              paddingBottom={6}
+              paddingLeft={7}
+              paddingRight={7}
+            >
+              <Stack spacing={4}>
+                <Stack spacing={1}>
+                  <Typography variant="delta" as="h2">
+                    Speechmatics Configuration
+                  </Typography>
+                </Stack>
+                <Stack>
+                  <Grid gap={6}>
+                    <GridItem col={12} s={12}>
+                      <Field name="speechmaticsApiToken">
+                        <Stack>
+                          <FieldLabel>Speechmatics API Token</FieldLabel>
+                          <FieldInput
+                            type="text"
+                            placeholder=""
+                            value={settings?.speechmaticsApiToken}
+                            onChange={(e) => {
+                              setSettings({
+                                ...settings,
+                                speechmaticsApiToken: e.target.value,
+                              })
+                            }}
+                          />
+                        </Stack>
+                      </Field>
+                    </GridItem>
+                    <GridItem col={12} s={12}>
+                      <Field name="notifyCallbackUrl">
+                        <Stack>
+                          <FieldLabel>Notify Callback Url</FieldLabel>
+                          <FieldInput
+                            type="text"
+                            placeholder=""
+                            value={settings?.notifyCallbackUrl}
+                            onChange={(e) => {
+                              setSettings({
+                                ...settings,
+                                notifyCallbackUrl: e.target.value,
+                              })
+                            }}
+                          />
+                        </Stack>
+                      </Field>
+                    </GridItem>
+                  </Grid>
+                </Stack>
+              </Stack>
+            </Box>
+            <Box
+              background="neutral0"
+              hasRadius
+              shadow="filterShadow"
+              paddingTop={6}
+              paddingBottom={6}
+              paddingLeft={7}
+              paddingRight={7}
+            >
+              <Stack spacing={4}>
+                <Stack spacing={1}>
+                  <Typography variant="delta" as="h2">
+                    Google Translate Configuration
+                  </Typography>
+                </Stack>
+                <Stack>
+                  <Grid gap={6}>
+                    <GridItem col={12} s={12}>
+                      <Field name="googleTranslateApiToken">
+                        <Stack>
+                          <FieldLabel>Google Translate API Token</FieldLabel>
+                          <FieldInput
+                            type="text"
+                            placeholder=""
+                            value={settings?.googleTranslateApiToken}
+                            onChange={(e) => {
+                              setSettings({
+                                ...settings,
+                                googleTranslateApiToken: e.target.value,
+                              })
+                            }}
+                          />
+                        </Stack>
+                      </Field>
+                    </GridItem>
+                    <GridItem col={12} s={12}>
+                      <Field name="googleCloudProjectId">
+                        <Stack>
+                          <FieldLabel>Google Cloud Project Id</FieldLabel>
+                          <FieldInput
+                            type="text"
+                            placeholder=""
+                            value={settings?.googleCloudProjectId}
+                            onChange={(e) => {
+                              setSettings({
+                                ...settings,
+                                googleCloudProjectId: e.target.value,
+                              })
+                            }}
+                          />
+                        </Stack>
+                      </Field>
+                    </GridItem>
+                    <GridItem col={12} s={12}>
+                      <Field name="targetLanguage">
+                        <Stack>
+                          <FieldLabel>Target Language</FieldLabel>
+                          <FieldInput
+                            type="text"
+                            placeholder=""
+                            value={settings?.targetLanguage}
+                            onChange={(e) => {
+                              setSettings({
+                                ...settings,
+                                targetLanguage: e.target.value,
+                              })
+                            }}
+                          />
+                        </Stack>
+                      </Field>
+                    </GridItem>
+                  </Grid>
+                </Stack>
+              </Stack>
+            </Box>
+          </Stack>
         </ContentLayout>
       )}
     </>

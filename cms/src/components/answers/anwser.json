@@ -31,6 +31,9 @@
     },
     "speechmatics_job_id": {
       "type": "string"
+    },
+    "common_language": {
+      "type": "text"
     }
   }
 }

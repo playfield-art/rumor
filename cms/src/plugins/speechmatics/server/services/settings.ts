@@ -7,8 +7,10 @@ import { getCoreStore } from '../utils';
  */
 const defaultConfig: Settings = {
   speechmaticsApiToken: "",
-  translatorApiToken: "",
-  notifyCallbackUrl: ""
+  notifyCallbackUrl: "",
+  googleTranslateApiToken: "",
+  targetLanguage: "",
+  googleCloudProjectId: ""
 }
 
 /**

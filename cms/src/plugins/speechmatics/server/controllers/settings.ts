@@ -22,7 +22,8 @@ export default {
     const { body } = ctx.request;
     try {
       await getService('settings').setSettings(body);
-      ctx.body = getService('settings').getSettings();
+      const config = await getService('settings').getSettings();
+      ctx.send(config);
     } catch (err) {
       ctx.throw(500, err);
     }

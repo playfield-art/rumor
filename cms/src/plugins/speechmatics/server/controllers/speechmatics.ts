@@ -35,6 +35,21 @@ export default {
   },
 
   /**
+   * Start translating a session
+   * @param ctx
+   */
+  translateSession: async (ctx) => {
+    const { body } = ctx.request;
+    try {
+      const { sessionId } = body;
+      await getService('speechmatics').translateSession(sessionId);
+      ctx.send({ message: `Translations for ${sessionId} are done!` });
+    } catch (err) {
+      ctx.throw(500, err);
+    }
+  },
+
+  /**
    * The callback when a transcription is ready
    * @param ctx
    */

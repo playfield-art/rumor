@@ -4,6 +4,8 @@
 
 export interface Settings {
   speechmaticsApiToken: string
-  translatorApiToken: string
   notifyCallbackUrl: string
+  googleTranslateApiToken: string
+  targetLanguage: string
+  googleCloudProjectId: string
 }

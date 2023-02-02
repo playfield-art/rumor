@@ -31,6 +31,20 @@ const routes: StrapiRoute[] = [
       },
     },
   },
+  {
+    method: "POST",
+    path: "/translateSession",
+    handler: "speechmatics.translateSession",
+    config: {
+      policies: [],
+      description: "Translates the moderated texts in a session",
+      tag: {
+        plugin: "speechmatics",
+        name: "Speechmatics",
+        actionType: "update",
+      },
+    },
+  },
 ];
 
 export default routes;
