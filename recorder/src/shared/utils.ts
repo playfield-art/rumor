@@ -16,7 +16,6 @@ export const Utils = {
     return incoming < 10 ? `0${incoming}` : `${incoming}`;
   },
 
-
   /**
    * Generates a unique name by date
    * @returns
@@ -41,7 +40,7 @@ export const Utils = {
     const currentYear = Utils.addLeadingZero(currentDate.getFullYear());
     const currentMonth = Utils.addLeadingZero(currentDate.getMonth() + 1);
     const currentDay = Utils.addLeadingZero(currentDate.getUTCDate());
-    return `${currentDay}/${currentMonth}/${currentYear}`
+    return `${currentDay}/${currentMonth}/${currentYear}`;
   },
 
   /**
