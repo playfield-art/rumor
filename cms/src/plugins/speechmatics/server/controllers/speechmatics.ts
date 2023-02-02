@@ -58,7 +58,6 @@ export default {
     try {
       const fullUrl = new URL(`https://example.com${url}`);
       const id = fullUrl.searchParams.get('id');
-      console.log(`Notification received for ${id}`);
       const text = await getService('speechmatics').getTextFromJob(id);
       await getService('speechmatics').addTextToAnswerViaJobId(text, id);
       ctx.send({ jobId: id, text });

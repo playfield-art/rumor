@@ -41,11 +41,15 @@ export default ({ strapi }: { strapi: Strapi }) => ({
    * @param jobId
    */
   addTextToAnswerViaJobId: async(text: string, jobId: string) => {
-    await strapi.db.connection.raw(`
-      UPDATE public.components_answers_anwsers
-      SET original_transcript='${text}', moderated_transcript='${text}', speechmatics_job_id = '', transcribed = true
-      WHERE speechmatics_job_id = '${jobId}'
-    `);
+    await strapi.db
+      .connection('public.components_answers_anwsers')
+      .where('speechmatics_job_id', '=', jobId)
+      .update({
+        original_transcript: text,
+        moderated_transcript: text,
+        speechmatics_job_id: '',
+        transcribed: true
+      });
   },
 
   /**
