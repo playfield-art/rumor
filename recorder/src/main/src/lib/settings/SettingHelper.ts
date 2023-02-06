@@ -16,4 +16,36 @@ export default class SettingHelper {
     }
     return null;
   }
+
+  private static async getSettingValue(
+    key: string,
+    defaultValue: any
+  ): Promise<any> {
+    const setting = await SettingHelper.getSetting(key);
+    if (!setting || !setting.value) {
+      return defaultValue;
+    }
+    return setting.value;
+  }
+
+  public static async getBoothSlug(defaultValue = ""): Promise<string> {
+    return (await SettingHelper.getSettingValue(
+      "boothSlug",
+      defaultValue
+    )) as string;
+  }
+
+  public static async getRumorCmsApiUrl(defaultValue = ""): Promise<string> {
+    return (await SettingHelper.getSettingValue(
+      "rumorCmsApiUrl",
+      defaultValue
+    )) as string;
+  }
+
+  public static async getRumorCmsApiToken(defaultValue = ""): Promise<string> {
+    return (await SettingHelper.getSettingValue(
+      "rumorCmsApiToken",
+      defaultValue
+    )) as string;
+  }
 }

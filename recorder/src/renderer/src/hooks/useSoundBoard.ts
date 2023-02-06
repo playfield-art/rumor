@@ -9,8 +9,8 @@ import {
 import { OnPlayChange, OnVOEnd, SoundBoard } from "../lib/SoundBoard";
 
 const useSoundBoard = (onError?: (e: Error) => void) => {
-  const [currentVO, setCurrentVO] = useState<VoiceOver>();
-  const [currentSC, setCurrentSC] = useState<SoundScape>();
+  const [currentVO, setCurrentVO] = useState<VoiceOver | null>(null);
+  const [currentSC, setCurrentSC] = useState<SoundScape | null>(null);
   const [started, setStarted] = useState(false);
 
   /**

@@ -40,6 +40,12 @@
         "third",
         "outro"
       ]
+    },
+    "booths": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::booth.booth",
+      "inversedBy": "chapters"
     }
   }
 }

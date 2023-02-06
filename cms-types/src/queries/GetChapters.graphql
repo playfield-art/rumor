@@ -2,8 +2,15 @@
 # This query will get the chapters from the narrative
 #
 
-query getChapters($narrative_part: String) {
-  chapters(filters: { narrative_part: { eq: $narrative_part } }) {
+query getChapters($narrativePart: String, $slug: String) {
+  chapters(
+    filters: {
+      and: [
+        { narrative_part: { eq: $narrativePart } }
+        { booths: { slug: { contains: $slug } } }
+      ]
+    }
+  ) {
     data {
       id
       attributes {

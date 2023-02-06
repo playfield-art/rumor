@@ -2,8 +2,8 @@ import { AudioList, SoundScape, VoiceOver } from "@shared/interfaces";
 import { Howl, HowlCallback } from "howler";
 
 export interface OnPlayChange {
-  VO: VoiceOver | undefined;
-  SC: SoundScape | undefined;
+  VO: VoiceOver | null;
+  SC: SoundScape | null;
   isLast: boolean;
 }
 
@@ -165,7 +165,7 @@ export class SoundBoard {
       if (this._onPlayChange !== undefined)
         this._onPlayChange({
           VO: newCurrentVO,
-          SC: this._audioList?.SC[this._currentSCIndex],
+          SC: this._audioList?.SC[this._currentSCIndex] || null,
           isLast: this._audioList
             ? this._currentVOIndex === this._audioList.VO.length - 1
             : false,
@@ -176,8 +176,8 @@ export class SoundBoard {
   reset() {
     if (this._onPlayChange !== undefined)
       this._onPlayChange({
-        VO: undefined,
-        SC: undefined,
+        VO: null,
+        SC: null,
         isLast: false,
       });
   }

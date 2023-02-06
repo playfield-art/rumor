@@ -6,6 +6,7 @@ import { AudioRecordingSingleton } from "../lib/audio/AudioRecordingSingleton";
 import { Exception } from "../lib/exceptions/Exception";
 import { getAudioList as getAudioListHelper } from "../lib/audio/AudioList";
 import { getRecordingsFolder } from "../lib/filesystem";
+import SettingsHelper from "../lib/settings/SettingHelper";
 
 /**
  * Get the audiolist
@@ -30,6 +31,17 @@ export const createNewSession = async (
   // get the recording folder from settings
   const recordingsFolder = await getRecordingsFolder();
 
+  // get the booth slug
+  const boothSlug = await SettingsHelper.getBoothSlug();
+
+  // if no booth slug, throw an exception
+  if (!boothSlug) {
+    throw new Exception({
+      message: "There was no boothSlug found in the settings.",
+      where: "createNewSession",
+    });
+  }
+
   // if no recording folder, throw an exception
   if (!recordingsFolder) {
     throw new Exception({
@@ -41,7 +53,7 @@ export const createNewSession = async (
   // generate a session id
   const recordingMeta: RecordingMeta = {
     language,
-    boothSlug: "ru1", // @TODO get this from settings
+    boothSlug,
     sessionId: Utils.generateUniqueNameByDate(),
     recordingDate: Utils.currentDate(),
     recordingTime: Utils.currentTime(),

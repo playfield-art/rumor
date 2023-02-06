@@ -20,6 +20,12 @@
       "type": "uid",
       "targetField": "title",
       "required": true
+    },
+    "chapters": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::chapter.chapter",
+      "inversedBy": "booths"
     }
   }
 }

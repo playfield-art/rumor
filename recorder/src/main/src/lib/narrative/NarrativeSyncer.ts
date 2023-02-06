@@ -139,6 +139,7 @@ export class NarrativeSyncer {
           downloadOptionsPromises = [
             ...downloadOptionsPromises,
             ...block.audio.map(async (audio) => {
+              if (!audio.audioUrl) return Promise.resolve();
               await new Downloader({
                 url: `${audio.audioUrl}`,
                 directory: `${chapterOptionFolder}`,
@@ -146,6 +147,7 @@ export class NarrativeSyncer {
                   block.type
                 }-${block.cms_id}${audio.ext}`,
               }).download();
+              return Promise.resolve();
             }),
           ];
         });

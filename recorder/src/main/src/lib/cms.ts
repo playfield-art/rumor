@@ -30,6 +30,7 @@ import {
 } from "./filesystem";
 import { convertSessionIdToDateAndTime } from "./sessions/SessionUtils";
 import { Exception } from "./exceptions/Exception";
+import SettingHelper from "./settings/SettingHelper";
 
 let graphQLClient: GraphQLClient | null = null;
 
@@ -37,21 +38,39 @@ let graphQLClient: GraphQLClient | null = null;
  * Get the API endpoint
  * @returns
  */
-const getApiEndpoint = (): string => process.env.CMS_API_URL || "";
+const getApiEndpoint = async (): Promise<string> => {
+  const rumorCmsApiUrl = SettingHelper.getRumorCmsApiUrl();
+  if (!rumorCmsApiUrl) {
+    throw new Exception({
+      where: "getApiEndpoint",
+      message: "The endpoint of the API was not defined.",
+    });
+  }
+  return rumorCmsApiUrl;
+};
 
 /**
  * Get the API token
  * @returns
  */
-const getApiToken = (): string => process.env.CMS_API_TOKEN || "";
+const getApiToken = async (): Promise<string> => {
+  const rumorCmsApiToken = SettingHelper.getRumorCmsApiToken();
+  if (!rumorCmsApiToken) {
+    throw new Exception({
+      where: "getApiToken",
+      message: "The token of the API was not defined.",
+    });
+  }
+  return rumorCmsApiToken;
+};
 
 /**
  * Returns a GraphQL client to work with
  * @returns
  */
-const getGraphQLClient = (): GraphQLClient => {
+const getGraphQLClient = async (): Promise<GraphQLClient> => {
   if (!graphQLClient) {
-    graphQLClient = new GraphQLClient(getApiEndpoint(), {
+    graphQLClient = new GraphQLClient(await getApiEndpoint(), {
       headers: {
         authorization: `Bearer ${getApiToken()}`,
       },
@@ -65,8 +84,11 @@ const getGraphQLClient = (): GraphQLClient => {
  * @param boothSlug
  */
 export const getBoothId = async (boothSlug: string): Promise<string> => {
+  // get the graphql client
+  const gqlClient = await getGraphQLClient();
+
   // do the request
-  const { booths } = await getGraphQLClient().request(GetBoothIdDocument, {
+  const { booths } = await gqlClient.request(GetBoothIdDocument, {
     slug: boothSlug,
   });
 
@@ -86,7 +108,10 @@ export const getBoothId = async (boothSlug: string): Promise<string> => {
  * Gets the narrative from the CMS
  * @returns
  */
-export const getNarrative = async () => {
+export const getNarrative = async (boothSlug: string) => {
+  // get the graphql client
+  const gqlClient = await getGraphQLClient();
+
   // define the output
   const output: Narrative = {
     introChapters: [],
@@ -116,13 +141,16 @@ export const getNarrative = async () => {
     async (narrativePart) => {
       narrativeChapterData[
         `${narrativePart}Chapters` as keyof NarrativeChapterData
-      ] = await getGraphQLClient().request(GetChaptersDocument, {
-        narrative_part: narrativePart,
+      ] = await gqlClient.request(GetChaptersDocument, {
+        narrativePart: narrativePart,
+        slug: boothSlug,
       });
     }
   );
 
   await Promise.all(narrativeChapterDataPromises);
+
+  console.log(narrativeChapters);
 
   /**
    * ----
@@ -217,9 +245,10 @@ export const getNarrative = async () => {
  * @returns
  */
 export const getLastPathId = async () => {
-  const { uploadFolders } = await getGraphQLClient().request(
-    GetLastPathIdDocument
-  );
+  // get the graphql client
+  const gqlClient = await getGraphQLClient();
+
+  const { uploadFolders } = await gqlClient.request(GetLastPathIdDocument);
   let lastPathId = 0;
   if (uploadFolders?.data && uploadFolders.data.length > 0) {
     lastPathId = uploadFolders.data.pop()?.attributes?.pathId || 0;
@@ -233,11 +262,13 @@ export const getLastPathId = async () => {
 export const getUploadFolderIdForBooth = async (
   boothSlug: string
 ): Promise<string> => {
+  // get the graphql client
+  const gqlClient = await getGraphQLClient();
+
   // find the upload folder in the root of our media library
-  const { uploadFolders } = await getGraphQLClient().request(
-    FindUploadFolderDocument,
-    { folderName: boothSlug }
-  );
+  const { uploadFolders } = await gqlClient.request(FindUploadFolderDocument, {
+    folderName: boothSlug,
+  });
 
   // if we found data, return that folder
   if (uploadFolders?.data && uploadFolders.data.length > 0) {
@@ -247,7 +278,7 @@ export const getUploadFolderIdForBooth = async (
   // we didn't find data, so let's create the folder
   const lastPathId = await getLastPathId();
   const newPathId = lastPathId + 1;
-  await getGraphQLClient().request(CreateUploadFolderInRootDocument, {
+  await gqlClient.request(CreateUploadFolderInRootDocument, {
     name: boothSlug,
     path: `/${boothSlug}`,
     pathId: newPathId,
@@ -267,11 +298,14 @@ export const uploadFolderForSessionExists = async (
   boothSlug: string,
   sessionId: string
 ) => {
+  // get the graphql client
+  const gqlClient = await getGraphQLClient();
+
   // get the upload folder for a booth
   const uploadFolderIdForBooth = await getUploadFolderIdForBooth(boothSlug);
 
   // find the upload folder for this session in the booth folder
-  const uploadFolderForSession = await getGraphQLClient().request(
+  const uploadFolderForSession = await gqlClient.request(
     FindUploadFolderInParentDocument,
     {
       parent: uploadFolderIdForBooth,
@@ -296,6 +330,9 @@ export const createUploadFolderForSession = async (
   sessionId: string,
   files: string[]
 ) => {
+  // get the graphql client
+  const gqlClient = await getGraphQLClient();
+
   // get the folder id for a booth
   const uploadFolderIdForBooth = await getUploadFolderIdForBooth(boothSlug);
 
@@ -304,7 +341,7 @@ export const createUploadFolderForSession = async (
   const newPathId = lastPathId + 1;
 
   // create a new upload folder in a session
-  return getGraphQLClient().request(CreateUploadFolderInParentDocument, {
+  return gqlClient.request(CreateUploadFolderInParentDocument, {
     pathId: newPathId,
     path: `/${sessionId}`,
     name: sessionId,
@@ -318,6 +355,9 @@ export const createUploadFolderForSession = async (
  * @param sessions
  */
 export const uploadSessions = async (sessions: Session[]) => {
+  // get the graphql client
+  const gqlClient = await getGraphQLClient();
+
   // loop over the different sessions and create worker promises
   const uploadPromises = sessions.map(async (session) => {
     // let them now
@@ -345,7 +385,7 @@ export const uploadSessions = async (sessions: Session[]) => {
     };
 
     // upload the files
-    const { multipleUpload } = await getGraphQLClient().request(
+    const { multipleUpload } = await gqlClient.request(
       UploadFilesDocument,
       files
     );
@@ -355,7 +395,7 @@ export const uploadSessions = async (sessions: Session[]) => {
       multipleUpload.map(async (upload) => {
         if (upload?.data && upload?.data.id && upload.data.attributes) {
           // update file name with the correct name
-          await getGraphQLClient().request(UpdateFileNameDocument, {
+          await gqlClient.request(UpdateFileNameDocument, {
             id: upload?.data.id,
             fileName: `${session.meta.boothSlug}-${session.meta.sessionId}-${upload.data.attributes.name}`,
           });
@@ -390,7 +430,7 @@ export const uploadSessions = async (sessions: Session[]) => {
     );
 
     // create a new session
-    await getGraphQLClient().request(CreateSessionDocument, {
+    await gqlClient.request(CreateSessionDocument, {
       boothId: await getBoothId(session.meta.boothSlug),
       sessionId: session.meta.sessionId,
       language: session.meta.language as Enum_Session_Language,
