@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+import store from "../store";
 
 const LoaderWrapper = styled.div`
   display: flex;
@@ -11,10 +12,11 @@ const LoaderWrapper = styled.div`
   background-color: var(--background-color-popup);
   height: 100vh;
   width: 100vw;
+  font-size: 1.5rem;
 `;
 
 function Loader() {
-  return <LoaderWrapper>Loader</LoaderWrapper>;
+  return <LoaderWrapper>{store.procesStatus.message}</LoaderWrapper>;
 }
 
 export default Loader;

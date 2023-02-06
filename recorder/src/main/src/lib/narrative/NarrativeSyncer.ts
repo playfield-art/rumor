@@ -2,7 +2,12 @@
  * A Library to sync the narrative in the recorder
  */
 
-import { Chapter, ChapterMeta, Narrative } from "@shared/interfaces";
+import {
+  Chapter,
+  ChapterMeta,
+  Narrative,
+  StatusCallback,
+} from "@shared/interfaces";
 import fsExtra from "fs-extra";
 import Downloader from "nodejs-file-downloader";
 import { join } from "path";
@@ -18,9 +23,16 @@ export class NarrativeSyncer {
 
   private narrative: Narrative;
 
-  constructor(folderPath: string, narrative: Narrative) {
+  private statusCallback: StatusCallback | null;
+
+  constructor(
+    folderPath: string,
+    narrative: Narrative,
+    statusCallback: StatusCallback | null
+  ) {
     this.folderPath = folderPath;
     this.narrative = narrative;
+    this.statusCallback = statusCallback;
   }
 
   async cleanNarrativesFolder() {
@@ -98,7 +110,6 @@ export class NarrativeSyncer {
 
           // if we have a soundscape, create the promise for this scape
           if (chapter.soundScape) {
-            // console.log("downloading", chapter.soundScape.audioUrl);
             await new Downloader({
               url: `${chapter.soundScape.audioUrl}`,
               directory: `${chapterOptionFolder}`,
@@ -109,7 +120,10 @@ export class NarrativeSyncer {
       ];
     });
 
-    console.log("Creating option folders, adding soundscape...");
+    // let them know
+    if (this.statusCallback)
+      this.statusCallback("Creating option folders, adding soundscapes...");
+
     await Promise.all(createOptionFoldersPromises);
 
     // loop over every narrative chapter
@@ -139,14 +153,26 @@ export class NarrativeSyncer {
           downloadOptionsPromises = [
             ...downloadOptionsPromises,
             ...block.audio.map(async (audio) => {
+              // if no audio, resolve immediatly
               if (!audio.audioUrl) return Promise.resolve();
+
+              // create the filename
+              const fileName = `${audio.language}-${(blockOrder += 1)}-${
+                block.type
+              }-${block.cms_id}${audio.ext}`;
+
+              // start downloading the audio
               await new Downloader({
                 url: `${audio.audioUrl}`,
                 directory: `${chapterOptionFolder}`,
-                fileName: `${audio.language}-${(blockOrder += 1)}-${
-                  block.type
-                }-${block.cms_id}${audio.ext}`,
+                fileName,
               }).download();
+
+              // let them know
+              if (this.statusCallback)
+                this.statusCallback(`Downloaded ${fileName}`);
+
+              // resolve the promise
               return Promise.resolve();
             }),
           ];
@@ -154,11 +180,15 @@ export class NarrativeSyncer {
       });
     });
 
+    // let them know
+    if (this.statusCallback)
+      this.statusCallback("Downloading all the narrative audio...");
+
     // start executing the logic
-    console.log("Downloading all the narrative audio...");
     await Promise.all(downloadOptionsPromises);
 
-    // we are done with the work..
-    console.log("Narratives synced succesfully!");
+    // let them know
+    if (this.statusCallback)
+      this.statusCallback("Narratives synced succesfully!");
   }
 }

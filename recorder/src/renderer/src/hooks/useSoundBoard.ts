@@ -1,11 +1,6 @@
 import { VoiceOver, VoiceOverType, SoundScape } from "@shared/interfaces";
 import { useState, useCallback, useMemo } from "react";
-import {
-  CAN_CONTINUE_WHILE_PLAYING,
-  CAN_RECORD,
-  FADING_TIME,
-  NARRATIVE_LANGUAGE,
-} from "../consts";
+import { CAN_CONTINUE_WHILE_PLAYING, CAN_RECORD, FADING_TIME } from "../consts";
 import { OnPlayChange, OnVOEnd, SoundBoard } from "../lib/SoundBoard";
 
 const useSoundBoard = (onError?: (e: Error) => void) => {
@@ -67,9 +62,7 @@ const useSoundBoard = (onError?: (e: Error) => void) => {
     if (!started) {
       try {
         // create a new session
-        const audioList = await window.rumor.methods.createNewSession(
-          NARRATIVE_LANGUAGE
-        );
+        const audioList = await window.rumor.methods.createNewSession();
 
         // init the soundboard (load up the audio)
         await soundBoard.init(audioList);

@@ -1,3 +1,4 @@
+import { ProcesStatus, Notifciation } from "@shared/interfaces";
 import { BrowserWindow } from "electron";
 import { AudioRecording } from "./lib/audio/AudioRecording";
 import { AudioRecordingSingleton } from "./lib/audio/AudioRecordingSingleton";
@@ -59,5 +60,13 @@ export class Recorder {
         })
       );
     }
+  }
+
+  public static changeProces(procesStatus: ProcesStatus) {
+    Recorder._mainWindow.webContents.send("on-proces", procesStatus);
+  }
+
+  public static notifcation(notifcation: Notifciation) {
+    Recorder._mainWindow.webContents.send("on-notification", notifcation);
   }
 }

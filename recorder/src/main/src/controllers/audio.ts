@@ -21,10 +21,10 @@ export const getAudioList = async (
  * Creates a new recording folder and adds this to the internale AudioRecording
  * @returns
  */
-export const createNewSession = async (
-  event: Electron.IpcMainInvokeEvent,
-  language: string
-) => {
+export const createNewSession = async () => {
+  // get the language
+  const language = await SettingsHelper.getLanguage();
+
   // create new audiolist
   const audioList = await getAudioListHelper(language);
 

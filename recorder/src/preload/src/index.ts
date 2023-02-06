@@ -29,21 +29,30 @@ contextBridge.exposeInMainWorld("rumor", {
     stopRecording: () => ipcRenderer.send("stopRecording"),
   },
   methods: {
-    createNewSession: (language: string) =>
-      ipcRenderer.invoke("createNewSession", language),
+    createNewSession: () => ipcRenderer.invoke("createNewSession"),
     getAudioList: (language: string) =>
       ipcRenderer.invoke("getAudioList", language),
     getSetting: (key: string) => ipcRenderer.invoke("getSetting", key),
     setFolderSetting: (key: string) =>
       ipcRenderer.invoke("setFolderSetting", key),
     setRecordingsFolder: () => ipcRenderer.invoke("setRecordingsFolder"),
-    syncNarrative: () => ipcRenderer.invoke("syncNarrative"),
+    syncNarrative: () => {
+      ipcRenderer.invoke("syncNarrative");
+    },
     uploadToCms: () => ipcRenderer.invoke("uploadToCms"),
   },
   events: {
     onNextVO: (callback: any) => {
       ipcRenderer.on("next-vo", callback);
       return () => ipcRenderer.removeAllListeners("next-vo");
+    },
+    onProces: (callback: any) => {
+      ipcRenderer.on("on-proces", callback);
+      return () => ipcRenderer.removeAllListeners("on-proces");
+    },
+    onNotification: (callback: any) => {
+      ipcRenderer.on("on-notification", callback);
+      return () => ipcRenderer.removeAllListeners("on-notification");
     },
   },
 });

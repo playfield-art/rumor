@@ -134,3 +134,24 @@ export interface IError {
   message: string;
   where: string;
 }
+
+/**
+ * Proces and Notifciation
+ */
+
+export interface ProcesStatus {
+  procesIsRunning: boolean;
+  message?: string;
+}
+
+export enum NotifciationType {
+  INFO,
+  ERROR,
+}
+
+export interface Notifciation {
+  message?: string;
+  type: NotifciationType;
+}
+
+export type StatusCallback = (message: string) => void;

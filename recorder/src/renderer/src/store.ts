@@ -1,4 +1,4 @@
-import { SoundScape, VoiceOver } from "@shared/interfaces";
+import { ProcesStatus, SoundScape, VoiceOver } from "@shared/interfaces";
 import { makeAutoObservable } from "mobx";
 import { toast } from "react-toastify";
 
@@ -7,7 +7,12 @@ class Store {
 
   currentVO: VoiceOver | null;
 
-  loading: boolean = false;
+  private defaultProcesStatus = {
+    procesIsRunning: false,
+    message: "Loading...",
+  };
+
+  procesStatus: ProcesStatus = this.defaultProcesStatus;
 
   constructor() {
     makeAutoObservable(this);
@@ -15,6 +20,17 @@ class Store {
 
   notify(message: string) {
     toast(message);
+  }
+
+  stopProces() {
+    this.procesStatus = this.defaultProcesStatus;
+  }
+
+  runProces(message: string = "") {
+    this.procesStatus = {
+      procesIsRunning: true,
+      message,
+    };
   }
 }
 

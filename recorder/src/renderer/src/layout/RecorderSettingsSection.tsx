@@ -51,7 +51,7 @@ export function RecorderSettingsSection() {
   });
 
   useEffect(() => {
-    store.loading = true;
+    store.runProces();
     const getInitialValues = async (): Promise<InitialValues> => {
       // get the keys of the initial values
       const valuesKeys = Object.keys(initialValues);
@@ -72,11 +72,11 @@ export function RecorderSettingsSection() {
     };
     getInitialValues().then((v) => {
       setInitialValues(v);
-      store.loading = false;
+      store.stopProces();
     });
   }, []);
 
-  if (store.loading) return <div />;
+  if (store.procesStatus.procesIsRunning) return <div />;
 
   return (
     <Section title="Recording Settings">

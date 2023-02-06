@@ -41,7 +41,9 @@ function ActionsSection() {
       <ButtonContainer>
         <button
           type="button"
-          onClick={async () => window.rumor.methods.syncNarrative()}
+          onClick={async () => {
+            window.rumor.methods.syncNarrative();
+          }}
         >
           Sync Narrative
         </button>

@@ -20,8 +20,10 @@ import {
   Session,
   NarrativeChapterData,
   UploadedRecording,
+  StatusCallback,
 } from "@shared/interfaces";
 import fsExtra from "fs-extra";
+import { Utils } from "@shared/utils";
 import { narrativeChapters } from "../consts";
 import {
   getArchiveFolder,
@@ -72,7 +74,7 @@ const getGraphQLClient = async (): Promise<GraphQLClient> => {
   if (!graphQLClient) {
     graphQLClient = new GraphQLClient(await getApiEndpoint(), {
       headers: {
-        authorization: `Bearer ${getApiToken()}`,
+        authorization: `Bearer ${await getApiToken()}`,
       },
     });
   }
@@ -127,8 +129,6 @@ export const getNarrative = async (boothSlug: string) => {
    * ----
    */
 
-  console.log("Fetching the narrative data from CMS...");
-
   const narrativeChapterData: NarrativeChapterData = {
     introChapters: {},
     firstChapters: {},
@@ -149,8 +149,6 @@ export const getNarrative = async (boothSlug: string) => {
   );
 
   await Promise.all(narrativeChapterDataPromises);
-
-  console.log(narrativeChapters);
 
   /**
    * ----
@@ -351,17 +349,42 @@ export const createUploadFolderForSession = async (
 };
 
 /**
+ * Archive a session by moving it to the archive folder
+ * @param sessionId
+ */
+const archiveSession = async (sessionId: string) => {
+  // move folder to the archive directory
+  // first check if folder already exists, otherwise add a random id
+  const sessionRecordingFolder = `${await getRecordingsFolder()}/${sessionId}`;
+  const archivedSessionRecordingFolder = `${await getArchiveFolder()}/${sessionId}`;
+  const archivedSessionFolderExists = fsExtra.existsSync(
+    archivedSessionRecordingFolder
+  );
+
+  await moveFolder(
+    sessionRecordingFolder,
+    archivedSessionFolderExists
+      ? `${archivedSessionRecordingFolder}-${Utils.makeRandomId(5)}`
+      : archivedSessionRecordingFolder
+  );
+};
+
+/**
  * Upload Sessions
  * @param sessions
  */
-export const uploadSessions = async (sessions: Session[]) => {
+export const uploadSessions = async (
+  sessions: Session[],
+  statusCallback: StatusCallback | null = null
+) => {
   // get the graphql client
   const gqlClient = await getGraphQLClient();
 
   // loop over the different sessions and create worker promises
   const uploadPromises = sessions.map(async (session) => {
     // let them now
-    console.log(`Uploading session ${session.meta.sessionId} started...`);
+    if (statusCallback)
+      statusCallback(`Uploading session ${session.meta.sessionId} started...`);
 
     // check if the upload folder for the session exists
     const doesFolderForSessionExist = await uploadFolderForSessionExists(
@@ -371,9 +394,16 @@ export const uploadSessions = async (sessions: Session[]) => {
 
     // validate
     if (doesFolderForSessionExist) {
-      console.log(
-        `Upload folder for session ${session.meta.sessionId} in booth ${session.meta.boothSlug} already exists`
-      );
+      // let them now
+      if (statusCallback)
+        statusCallback(
+          `Upload folder for session "${session.meta.sessionId}" on booth "${session.meta.boothSlug}" already exists`
+        );
+
+      // archive the folder
+      await archiveSession(session.meta.sessionId);
+
+      // exit here
       return;
     }
 
@@ -399,7 +429,10 @@ export const uploadSessions = async (sessions: Session[]) => {
             id: upload?.data.id,
             fileName: `${session.meta.boothSlug}-${session.meta.sessionId}-${upload.data.attributes.name}`,
           });
-          console.log(`Uploaded ${upload.data.attributes.name}.`);
+
+          // let them know
+          if (statusCallback)
+            statusCallback(`Uploaded ${upload.data.attributes.name}`);
         }
       })
     );
@@ -447,16 +480,13 @@ export const uploadSessions = async (sessions: Session[]) => {
       })),
     });
 
-    // move folder to the archive directory
-    await moveFolder(
-      `${await getRecordingsFolder()}/${session.meta.sessionId}`,
-      `${await getArchiveFolder()}/${session.meta.sessionId}`
-    );
+    // archive the session
+    await archiveSession(session.meta.sessionId);
   });
 
   // Upload everyting
   await Promise.all(uploadPromises);
 
-  // let them now
-  console.log("All sessions were uploaded.");
+  // let them know
+  if (statusCallback) statusCallback("All sessions were uploaded.");
 };

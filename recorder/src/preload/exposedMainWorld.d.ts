@@ -1,5 +1,10 @@
 import { IpcMessageEvent } from "electron";
-import { AudioList, ISetting } from "@shared/interfaces";
+import {
+  AudioList,
+  ISetting,
+  ProcesStatus,
+  Notification,
+} from "@shared/interfaces";
 
 declare global {
   interface Window {
@@ -10,7 +15,7 @@ declare global {
         stopRecording(): void;
       };
       readonly methods: {
-        createNewSession(language: string): Promise<AudioList>;
+        createNewSession(): Promise<AudioList>;
         getAudioList(language: string): Promise<AudioList>;
         getSetting(key: string): string | null;
         setFolderSetting(key: string): Promise<string>;
@@ -20,6 +25,12 @@ declare global {
       };
       readonly events: {
         onNextVO(callback: (event: IpcMessageEvent) => void): () => void;
+        onProces(
+          callback: (event: IpcMessageEvent, procesStatus: ProcesStatus) => void
+        ): () => void;
+        onNotification(
+          callback: (event: IpcMessageEvent, notification: Notification) => void
+        ): () => void;
       };
     };
   }

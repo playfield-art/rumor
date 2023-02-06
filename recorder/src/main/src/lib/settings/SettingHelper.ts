@@ -28,6 +28,11 @@ export default class SettingHelper {
     return setting.value;
   }
 
+  /**
+   * Get the slug of our booth from settings
+   * @param defaultValue
+   * @returns
+   */
   public static async getBoothSlug(defaultValue = ""): Promise<string> {
     return (await SettingHelper.getSettingValue(
       "boothSlug",
@@ -35,6 +40,11 @@ export default class SettingHelper {
     )) as string;
   }
 
+  /**
+   * Get the Rumor CMS API url from settings
+   * @param defaultValue
+   * @returns
+   */
   public static async getRumorCmsApiUrl(defaultValue = ""): Promise<string> {
     return (await SettingHelper.getSettingValue(
       "rumorCmsApiUrl",
@@ -42,9 +52,26 @@ export default class SettingHelper {
     )) as string;
   }
 
+  /**
+   * Get the Rumor CMS Token from settings
+   * @param defaultValue
+   * @returns
+   */
   public static async getRumorCmsApiToken(defaultValue = ""): Promise<string> {
     return (await SettingHelper.getSettingValue(
       "rumorCmsApiToken",
+      defaultValue
+    )) as string;
+  }
+
+  /**
+   * Get the current language from settings
+   * @param defaultValue
+   * @returns
+   */
+  public static async getLanguage(defaultValue = ""): Promise<string> {
+    return (await SettingHelper.getSettingValue(
+      "language",
       defaultValue
     )) as string;
   }

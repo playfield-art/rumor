@@ -7,7 +7,7 @@ query getChapters($narrativePart: String, $slug: String) {
     filters: {
       and: [
         { narrative_part: { eq: $narrativePart } }
-        { booths: { slug: { contains: $slug } } }
+        { booths: { slug: { eq: $slug } } }
       ]
     }
   ) {
