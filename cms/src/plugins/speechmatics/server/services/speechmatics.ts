@@ -95,8 +95,6 @@ export default ({ strapi }: { strapi: Strapi }) => ({
    * @param answerId
    */
   addSpeechmaticsJobIdToAnswer: async (jobId: string, answerId: string) => {
-    console.log("answer id", answerId);
-    console.log("job id", jobId);
     await strapi.db
       .connection('public.components_answers_anwsers')
       .where('id', '=', answerId)
