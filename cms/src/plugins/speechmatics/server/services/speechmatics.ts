@@ -1,7 +1,7 @@
 import { Strapi } from '@strapi/strapi';
 import FormData from 'form-data';
 import axios from "axios";
-import { getCoreStore } from '../utils';
+import { getCoreStore, getService } from '../utils';
 import { Settings } from '../../types';
 const { Translate } = require('@google-cloud/translate').v2;
 
@@ -53,6 +53,57 @@ export default ({ strapi }: { strapi: Strapi }) => ({
   },
 
   /**
+   * Get not transcribed answers
+   * @param limit
+   */
+  cronUntranscribedAnswers: async(limit: number = 20) => {
+    // gets untranscribed answers (limit by incoming parameter)
+    const data = await strapi.db.connection.raw(
+      `SELECT i.id as answerId, s.id as sessionId, f.url, s."language"
+       FROM components_answers_anwsers AS i
+       JOIN files_related_morphs AS frm ON frm.related_id = i.id
+       JOIN files AS f ON frm.file_id = f.id
+       JOIN sessions_components AS sc ON sc.component_id = i.id
+       JOIN sessions AS s ON s.id = sc.entity_id
+       WHERE transcribed = FALSE AND related_type = 'answers.anwser'
+       LIMIT ${limit}`
+    );
+
+    // validate
+    if(!data.rows && data.rows.length <= 0) return;
+
+    // answers to transcribe
+    const answersToTranscribePromises = data.rows.map(async(row) => {
+      // start a speecmatics job
+      const jobId = await getService('speechmatics').startSpeechmaticsJob(
+        row.language,
+        row.url
+      );
+
+      // update answer with the job id
+      if(jobId) {
+        await getService('speechmatics').addSpeechmaticsJobIdToAnswer(jobId, row.answerId);
+      }
+    });
+
+    // wait until all answers ran a speechmatics job
+    await Promise.all(answersToTranscribePromises);
+  },
+
+  /**
+   * The answer id to add a job to
+   * @param answerId
+   */
+  addSpeechmaticsJobIdToAnswer: async (jobId: string, answerId: string) => {
+    await strapi.db
+      .connection('components_answers_anwsers')
+      .where('id', '=', answerId)
+      .update({
+        speechmatics_job_id: jobId
+      });
+  },
+
+  /**
    * Gets the text, coming from a Speechmatics job
    * @param jobId
    */
@@ -86,6 +137,58 @@ export default ({ strapi }: { strapi: Strapi }) => ({
   },
 
   /**
+   * Starts a Speechmatics job
+   */
+  startSpeechmaticsJob: async (language: string, audioUrl: string): Promise<string> => {
+    // get the plugin settings
+    let config = await getCoreStore().get({ key: 'settings' });
+
+    // validate
+    if(!config || !config.speechmaticsApiToken) return;
+
+    // get the token
+    const token = config.speechmaticsApiToken;
+
+    // get the notification url
+    const notifyCallbackUrl = config?.notifyCallbackUrl || "";
+
+    // get the speechmatics URL
+    const speechmaticsUrl = getSpeechmaticsUrl();
+
+    // get the speechmatics configuration
+    const speechmaticsConfig = getSpeechmaticsConfig(
+      language,
+      audioUrl,
+      notifyCallbackUrl
+    );
+
+    // create the form data
+    const formData = new FormData();
+    formData.append(
+      'config',
+      JSON.stringify(speechmaticsConfig)
+    );
+
+    // do the post
+    const { data } = await axios.post(
+      speechmaticsUrl,
+      formData.getBuffer(),
+      {
+        headers: {
+          ...formData.getHeaders(),
+          'Authorization': `Bearer ${token}`
+        }
+      }
+    );
+
+    // update answer with the job id
+    if(data && data.id) return data.id
+
+    // return empty string if no job id was created
+    return null;
+  },
+
+  /**
    * Transcibes a session (starts job at speechmatics)
    * @param sessionId The ID of the session
    * @returns
@@ -107,64 +210,22 @@ export default ({ strapi }: { strapi: Strapi }) => ({
     // validate
     if(answersToTranscribe.length <= 0) return;
 
-    // get the plugin settings
-    let config = await getCoreStore().get({ key: 'settings' });
-
-    // validate
-    if(!config || !config.speechmaticsApiToken) return;
-
-    // get the token
-    const token = config.speechmaticsApiToken;
-
-    // get the notification url
-    const notifyCallbackUrl = config?.notifyCallbackUrl || "";
-
-    // get the speechmatics URL
-    const speechmaticsUrl = getSpeechmaticsUrl();
-
     // answers to transcribe
     const answersToTranscribePromises = answersToTranscribe.map(async(answer) => {
-      const speechmaticsConfig = getSpeechmaticsConfig(
+      // start a speecmatics job
+      const jobId = await getService('speechmatics').startSpeechmaticsJob(
         session.language,
-        answer.audio.url,
-        notifyCallbackUrl
-      )
-
-      const formData = new FormData();
-      formData.append(
-        'config',
-        JSON.stringify(speechmaticsConfig)
-      );
-
-      // do the post
-      const { data } = await axios.post(
-        speechmaticsUrl,
-        formData.getBuffer(),
-        {
-          headers: {
-            ...formData.getHeaders(),
-            'Authorization': `Bearer ${token}`
-          }
-        }
+        answer.audio.url
       );
 
       // update answer with the job id
-      if(data && data.id) { answer.speechmatics_job_id = data.id; }
+      if(jobId) {
+        await getService('speechmatics').addSpeechmaticsJobIdToAnswer(jobId, answer.id);
+      }
     });
 
     // wait until all answers ran a speechmatics job
     await Promise.all(answersToTranscribePromises);
-
-    // update the session
-    const updatedSession = await strapi.entityService.update('api::session.session', sessionId, {
-      data: {
-        answers: [...session.answers]
-      },
-      populate: ['answers']
-    });
-
-    // return the updated session
-    return updatedSession;
   },
 
   /**
