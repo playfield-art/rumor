@@ -72,6 +72,8 @@ export default ({ strapi }: { strapi: Strapi }) => ({
     // validate
     if(!data.rows && data.rows.length <= 0) return;
 
+    console.log(data.rows);
+
     // answers to transcribe
     const answersToTranscribePromises = data.rows.map(async(row) => {
       // start a speecmatics job
@@ -95,8 +97,10 @@ export default ({ strapi }: { strapi: Strapi }) => ({
    * @param answerId
    */
   addSpeechmaticsJobIdToAnswer: async (jobId: string, answerId: string) => {
+    console.log("answer id", answerId);
+    console.log("job id", jobId);
     await strapi.db
-      .connection('components_answers_anwsers')
+      .connection('public.components_answers_anwsers')
       .where('id', '=', answerId)
       .update({
         speechmatics_job_id: jobId
