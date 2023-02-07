@@ -59,7 +59,7 @@ export default ({ strapi }: { strapi: Strapi }) => ({
   cronUntranscribedAnswers: async(limit: number = 20) => {
     // gets untranscribed answers (limit by incoming parameter)
     const data = await strapi.db.connection.raw(
-      `SELECT i.id as answerId, s.id as sessionId, f.url, s."language"
+      `SELECT i.id as answerid, s.id as sessionid, f.url, s."language"
        FROM components_answers_anwsers AS i
        JOIN files_related_morphs AS frm ON frm.related_id = i.id
        JOIN files AS f ON frm.file_id = f.id
@@ -72,8 +72,6 @@ export default ({ strapi }: { strapi: Strapi }) => ({
     // validate
     if(!data.rows && data.rows.length <= 0) return;
 
-    console.log(data.rows);
-
     // answers to transcribe
     const answersToTranscribePromises = data.rows.map(async(row) => {
       // start a speecmatics job
@@ -84,7 +82,7 @@ export default ({ strapi }: { strapi: Strapi }) => ({
 
       // update answer with the job id
       if(jobId) {
-        await getService('speechmatics').addSpeechmaticsJobIdToAnswer(jobId, row.answerId);
+        await getService('speechmatics').addSpeechmaticsJobIdToAnswer(jobId, row.answerid);
       }
     });
 
