@@ -212,6 +212,7 @@ export default ({ strapi }: { strapi: Strapi }) => ({
 
     // answers to transcribe
     const answersToTranscribePromises = answersToTranscribe.map(async(answer) => {
+      console.log('test');
       // start a speecmatics job
       const jobId = await getService('speechmatics').startSpeechmaticsJob(
         session.language,
