@@ -381,10 +381,12 @@ export const uploadSessions = async (
   const gqlClient = await getGraphQLClient();
 
   // loop over the different sessions and create worker promises
-  const uploadPromises = sessions.map(async (session) => {
+  // const uploadPromises = sessions.map(async (session) => {
+  // eslint-disable-next-line no-restricted-syntax
+  for await (const session of sessions) {
     // let them now
     if (statusCallback)
-      statusCallback(`Uploading session ${session.meta.sessionId} started...`);
+      statusCallback(`Uploading session ${session.meta.sessionId}...`);
 
     // check if the upload folder for the session exists
     const doesFolderForSessionExist = await uploadFolderForSessionExists(
@@ -429,10 +431,6 @@ export const uploadSessions = async (
             id: upload?.data.id,
             fileName: `${session.meta.boothSlug}-${session.meta.sessionId}-${upload.data.attributes.name}`,
           });
-
-          // let them know
-          if (statusCallback)
-            statusCallback(`Uploaded ${upload.data.attributes.name}`);
         }
       })
     );
@@ -482,10 +480,11 @@ export const uploadSessions = async (
 
     // archive the session
     await archiveSession(session.meta.sessionId);
-  });
+    // });
+  }
 
   // Upload everyting
-  await Promise.all(uploadPromises);
+  // await Promise.all(uploadPromises);
 
   // let them know
   if (statusCallback) statusCallback("All sessions were uploaded.");

@@ -1,5 +1,5 @@
 import { VoiceOver, VoiceOverType, SoundScape } from "@shared/interfaces";
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import { CAN_CONTINUE_WHILE_PLAYING, CAN_RECORD, FADING_TIME } from "../consts";
 import { OnPlayChange, OnVOEnd, SoundBoard } from "../lib/SoundBoard";
 
@@ -88,6 +88,24 @@ const useSoundBoard = (onError?: (e: Error) => void) => {
       soundBoard.reset();
     }
   }, [started]);
+
+  /**
+   * When hooking the component
+   */
+
+  useEffect(() => {
+    const removeEventListenerOnNextVO = window.rumor.events.onNextVO(() => {
+      console.log(soundBoard.isPlaying);
+      if (!soundBoard.isPlaying) {
+        start();
+      } else {
+        playNextVO();
+      }
+    });
+    return () => {
+      removeEventListenerOnNextVO();
+    };
+  }, []);
 
   return {
     playNextVO,

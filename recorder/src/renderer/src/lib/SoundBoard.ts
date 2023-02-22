@@ -82,6 +82,10 @@ export class SoundBoard {
     this._randomNumber = Math.floor(Math.random() * 100);
   }
 
+  get isPlaying() {
+    return this._currentSCIndex !== -1 && this._currentVOIndex !== -1;
+  }
+
   async init(audioList: AudioList) {
     this._audioList = audioList;
     this._howlVOList = this._audioList.VO.map(
