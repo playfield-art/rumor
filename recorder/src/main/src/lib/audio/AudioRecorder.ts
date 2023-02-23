@@ -64,81 +64,100 @@ export default class AudioRecorder extends EventEmitter {
       },
     };
 
-    switch (this._options.program) {
-      case "sox":
-        this._command.arguments.unshift("-d");
-        break;
-      case "rec":
-        // Add sample size and encoding type.
+    // get the used program for recording (from the absolute path)
+    const splittedPath = this._options.program.toString().split("/");
+    const usedProgram = splittedPath[splittedPath.length - 1];
+
+    /**
+     * SOX
+     */
+
+    if (usedProgram === "sox") {
+      this._command.arguments.unshift("-d");
+      this._command.arguments.push(
+        // Pipe
+        "-"
+      );
+    }
+
+    /**
+     * rec
+     */
+
+    if (usedProgram === "rec") {
+      // Add sample size and encoding type.
+      this._command.arguments.push(
+        // Show no error messages
+        // Use the `close` event to listen for an exit code.
+        "-V0",
+        // Endian
+        //   -L = little
+        //   -B = big
+        //   -X = swap
+        "-L",
+        // Bit rate
+        "-b",
+        this._options.bits.toString(),
+        // Encoding type
+        "-e",
+        this._options.encoding,
+        // Pipe
+        "-"
+      );
+
+      if (this._options.silence) {
         this._command.arguments.push(
-          // Show no error messages
-          //   Use the `close` event to listen for an exit code.
-          "-V0",
-          // Endian
-          //   -L = little
-          //   -B = big
-          //   -X = swap
-          "-L",
-          // Bit rate
-          "-b",
-          this._options.bits.toString(),
-          // Encoding type
-          "-e",
-          this._options.encoding,
-          // Pipe
-          "-"
+          // Effect
+          "silence"
         );
 
-        if (this._options.silence) {
+        // Keep the silence of the recording.
+        if (this._options.keepSilence) {
           this._command.arguments.push(
-            // Effect
-            "silence"
-          );
-
-          // Keep the silence of the recording.
-          if (this._options.keepSilence) {
-            this._command.arguments.push(
-              // Keep silence in results
-              "-l"
-            );
-          }
-
-          // Stop recording after duration has passed below threshold.
-          this._command.arguments.push(
-            // Enable above-periods
-            "1",
-            // Duration
-            "0.1",
-            // Starting threshold
-            this._options.thresholdStart.toFixed(1).concat("%"),
-            // Enable below-periods
-            "1",
-            // Duration
-            this._options.silence.toFixed(1),
-            // Stopping threshold
-            this._options.thresholdStop.toFixed(1).concat("%")
+            // Keep silence in results
+            "-l"
           );
         }
 
-        // Setup environment variables.
-        if (this._options.device) {
-          this._command.options.env.AUDIODEV = this._options.device;
-        }
-        if (this._options.driver) {
-          this._command.options.env.AUDIODRIVER = this._options.driver;
-        }
-        break;
-      case "arecord":
-        if (this._options.device) {
-          this._command.arguments.unshift("-D", this._options.device);
-        }
+        // Stop recording after duration has passed below threshold.
         this._command.arguments.push(
-          // Format type
-          "-f",
-          "S16_LE"
+          // Enable above-periods
+          "1",
+          // Duration
+          "0.1",
+          // Starting threshold
+          this._options.thresholdStart.toFixed(1).concat("%"),
+          // Enable below-periods
+          "1",
+          // Duration
+          this._options.silence.toFixed(1),
+          // Stopping threshold
+          this._options.thresholdStop.toFixed(1).concat("%")
         );
-        break;
-      default:
+      }
+
+      // Setup environment variables.
+      if (this._options.device) {
+        this._command.options.env.AUDIODEV = this._options.device;
+      }
+      if (this._options.driver) {
+        this._command.options.env.AUDIODRIVER = this._options.driver;
+      }
+    }
+
+    /**
+     * arecord
+     */
+
+    if (usedProgram === "arecord") {
+      if (this._options.device) {
+        this._command.arguments.unshift("-D", this._options.device);
+      }
+      this._command.arguments.push(
+        // Format type
+        "-f",
+        "S16_LE"
+      );
     }
 
     if (this._logger) {
@@ -190,6 +209,7 @@ export default class AudioRecorder extends EventEmitter {
       self.emit("close", exitCode);
     });
     this._childProcess.on("error", (error: any) => {
+      console.log(error);
       self.emit("error", error);
     });
     this._childProcess.on("end", () => {
