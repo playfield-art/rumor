@@ -12,11 +12,11 @@
     "strapi": "strapi"
   },
   "dependencies": {
-    "@strapi-community/strapi-provider-upload-google-cloud-storage": "^4.5.6",
-    "@strapi/plugin-graphql": "^4.5.6",
-    "@strapi/plugin-i18n": "4.5.6",
-    "@strapi/plugin-users-permissions": "4.5.6",
-    "@strapi/strapi": "4.6.0",
+    "@strapi-community/strapi-provider-upload-google-cloud-storage": "^4.6.1",
+    "@strapi/plugin-graphql": "^4.9.2",
+    "@strapi/plugin-i18n": "4.9.2",
+    "@strapi/plugin-users-permissions": "4.9.2",
+    "@strapi/strapi": "4.9.2",
     "form-data": "^4.0.0",
     "pg": "8.6.0",
     "strapi-typed": "^1.0.15",

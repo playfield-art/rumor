@@ -1,6 +1,6 @@
 {
   "name": "recorder",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "license": "MIT",
   "description": "Recorder is an audio recorder used in the installation Rumor, created by playField.",
   "author": "playField.",
@@ -15,8 +15,8 @@
     "build:preload": "cd ./src/preload && vite build",
     "compile": "cross-env MODE=production npm run build && electron-builder build --config .electron-builder.config.js",
     "prepare-publish": "node scripts/prepare_publish.js",
-    "publish": "yarn run prepare-publish && yarn run compile && yarn ./scripts/publish.js",
-    "publish-test": "node scripts/publish.js",
+    "publish": "yarn run prepare-publish && yarn run compile && yarn run publish-to-github",
+    "publish-to-github": "node scripts/publish.js",
     "typecheck": "yarn run typecheck:main && yarn run typecheck:preload && yarn run typecheck:renderer",
     "typecheck:main": "tsc --noEmit -p src/main/tsconfig.json",
     "typecheck:preload": "tsc --noEmit -p src/preload/tsconfig.json",
