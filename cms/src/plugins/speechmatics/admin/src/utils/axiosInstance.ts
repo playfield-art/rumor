@@ -2,22 +2,25 @@
  * axios with a custom config.
  */
 
-import axios from 'axios';
+import axios, { RawAxiosRequestConfig, AxiosRequestHeaders, AxiosHeaders } from 'axios';
 import { auth, wrapAxiosInstance } from '@strapi/helper-plugin';
 
 const instance = axios.create({
   baseURL: process.env.STRAPI_ADMIN_BACKEND_URL,
 });
 
+
+
 instance.interceptors.request.use(
   async (config) => {
-    config.headers = {
-      Authorization: `Bearer ${auth.getToken()}`,
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-    };
+    // create the headers
+    const headers: AxiosRequestHeaders = new AxiosHeaders();
+    headers.Authorization = `Bearer ${auth.getToken()}`;
+    headers.Accept =  'application/json';
+    headers['Content-Type'] = 'application/json';
 
-    return config;
+    // return the config
+    return { ...config, headers };
   },
   (error) => {
     Promise.reject(error);

@@ -3430,29 +3430,7 @@
     react-intl "6.3.2"
     yup "^0.32.9"
 
-"@strapi/plugin-graphql@^4.5.4":
-  version "4.6.0"
-  resolved "https://registry.yarnpkg.com/@strapi/plugin-graphql/-/plugin-graphql-4.6.0.tgz#8df14514f79172b95dd26c2049ec10aa6f7732b3"
-  integrity sha512-Lko67aao1w0VBiUhFES3/L8iQYNiWTuX2eaJ/ANuUiIh+dC3mXjJGn/5wd6dxRdXrKpKVOtaEqrtVQRTaTFIFQ==
-  dependencies:
-    "@graphql-tools/schema" "8.5.1"
-    "@graphql-tools/utils" "^8.12.0"
-    "@strapi/utils" "4.6.0"
-    apollo-server-core "3.11.1"
-    apollo-server-koa "3.10.0"
-    glob "^7.1.7"
-    graphql "^15.5.1"
-    graphql-depth-limit "^1.1.0"
-    graphql-playground-middleware-koa "^1.6.21"
-    graphql-scalars "1.20.1"
-    graphql-upload "^13.0.0"
-    koa-compose "^4.1.0"
-    lodash "4.17.21"
-    nexus "1.3.0"
-    pluralize "^8.0.0"
-    subscriptions-transport-ws "0.9.19"
-
-"@strapi/plugin-graphql@^4.9.2":
+"@strapi/plugin-graphql@^4.7.1", "@strapi/plugin-graphql@^4.9.2":
   version "4.9.2"
   resolved "https://registry.yarnpkg.com/@strapi/plugin-graphql/-/plugin-graphql-4.9.2.tgz#7d2375efc2a30880bcd23211b968d209b9191ca4"
   integrity sha512-dlsVxUh8HxeIYMj0QasoKHt1hHiOUIOnHJ9aWO4s51vu2EQHGLrPcuxEhP47Se4HykV1yZggutZPzy1LnWlCjQ==
@@ -3648,18 +3626,7 @@
     prettier "2.8.4"
     typescript "4.6.2"
 
-"@strapi/utils@4.6.0", "@strapi/utils@^4.3.8":
-  version "4.6.0"
-  resolved "https://registry.yarnpkg.com/@strapi/utils/-/utils-4.6.0.tgz#d2deec97fd21f9b802c858aa7a19c5d05850a467"
-  integrity sha512-zJfcGVlGLVGTs4Lc5OH+g4vO/+MD5UA6DzMzlSvJ1gsObYpA/a+IMRIMG90nfEKZ9R52LLdaYyGU8ALzxulEmQ==
-  dependencies:
-    "@sindresorhus/slugify" "1.1.0"
-    date-fns "2.29.3"
-    http-errors "1.8.1"
-    lodash "4.17.21"
-    yup "0.32.9"
-
-"@strapi/utils@4.9.2":
+"@strapi/utils@4.9.2", "@strapi/utils@^4.7.1":
   version "4.9.2"
   resolved "https://registry.yarnpkg.com/@strapi/utils/-/utils-4.9.2.tgz#fed14ff4d67aa996c55c5559f623036415119ff3"
   integrity sha512-qYVgOzohrM5eXRoPdnzwmgBK1Vbgfl2K+NAQ7nhCRUFn36qC8RwawxyJGEgek+DzERSP9gnYqH9vFQruPhCbbg==
@@ -4104,10 +4071,10 @@
     "@types/scheduler" "*"
     csstype "^3.0.2"
 
-"@types/react@^18.0.18":
-  version "18.0.27"
-  resolved "https://registry.yarnpkg.com/@types/react/-/react-18.0.27.tgz#d9425abe187a00f8a5ec182b010d4fd9da703b71"
-  integrity sha512-3vtRKHgVxu3Jp9t718R9BuzoD4NcQ8YJ5XRzsSKxNDiDonD2MXIT1TmSkenxuCycZJoQT5d2vE8LwWJxBC1gmA==
+"@types/react@^18.0.28":
+  version "18.0.38"
+  resolved "https://registry.yarnpkg.com/@types/react/-/react-18.0.38.tgz#02a23bef8848b360a0d1dceef4432c15c21c600c"
+  integrity sha512-ExsidLLSzYj4cvaQjGnQCk4HFfVT9+EZ9XZsQ8Hsrcn8QNgXtpZ3m9vSIC2MWtx7jHictK6wYhQgGh6ic58oOw==
   dependencies:
     "@types/prop-types" "*"
     "@types/scheduler" "*"
@@ -5224,11 +5191,6 @@ babel-preset-fbjs@^3.4.0:
     "@babel/plugin-transform-spread" "^7.0.0"
     "@babel/plugin-transform-template-literals" "^7.0.0"
     babel-plugin-syntax-trailing-function-commas "^7.0.0-beta.0"
-
-backo2@^1.0.2:
-  version "1.0.2"
-  resolved "https://registry.npmjs.org/backo2/-/backo2-1.0.2.tgz"
-  integrity sha512-zj6Z6M7Eq+PBZ7PQxl5NT665MvJdAkzp0f60nAJ+sLaSCBPMwVak5ZegFbgVCzFcCJTKFoMizvM5Ld7+JrRJHA==
 
 balanced-match@^1.0.0:
   version "1.0.2"
@@ -7866,11 +7828,6 @@ event-target-shim@^5.0.0:
   resolved "https://registry.npmjs.org/event-target-shim/-/event-target-shim-5.0.1.tgz"
   integrity sha512-i/2XbnSz/uxRCU6+NdVJgKWDTM427+MqYbkQzD321DuCQJUqOuJKIA0IM2+W2xtYHdKOmZ4dR6fExsd4SXL+WQ==
 
-eventemitter3@^3.1.0:
-  version "3.1.2"
-  resolved "https://registry.npmjs.org/eventemitter3/-/eventemitter3-3.1.2.tgz"
-  integrity sha512-tvtQIeLVHjDkJYnzf2dgVMxfuSGJeM/7UCG17TT4EumTfNtF+0nebF/4zWOIkCreAbtNqhGEboB6BWrwqNaw4Q==
-
 eventemitter3@^4.0.0:
   version "4.0.7"
   resolved "https://registry.npmjs.org/eventemitter3/-/eventemitter3-4.0.7.tgz"
@@ -10076,7 +10033,7 @@ isstream@^0.1.2, isstream@~0.1.2:
   resolved "https://registry.npmjs.org/isstream/-/isstream-0.1.2.tgz"
   integrity sha512-Yljz7ffyPbrLpLngrMtZ7NduUgVvi6wG9RJ9IUcyCd59YQ911PBJphODUcbOVbqYfxe1wuYf/LJ8PauMRwsM/g==
 
-iterall@^1.2.1, iterall@^1.3.0:
+iterall@^1.3.0:
   version "1.3.0"
   resolved "https://registry.npmjs.org/iterall/-/iterall-1.3.0.tgz"
   integrity sha512-QZ9qOMdF+QLHxy1QIpUHUU1D5pS2CG2P69LF6L6CPjPYA/XMOmKV3PZpawHoAjHNyB0swdVTRxdYT4tbBbxqwg==
@@ -13989,14 +13946,14 @@ stop-iteration-iterator@^1.0.0:
   dependencies:
     internal-slot "^1.0.4"
 
-strapi-typed@^1.0.15:
-  version "1.0.15"
-  resolved "https://registry.yarnpkg.com/strapi-typed/-/strapi-typed-1.0.15.tgz#847257a6ef5baf68ede2a0efacb7738bcd3ac7ab"
-  integrity sha512-+CaUlJt/wqyXBJYBVXdFOco3e52F/SIuEkmlD0NHDLSnQd0VlXNC2MQTRv01mu8LWTmInuZsBQwid3IQ0bJMAQ==
+strapi-typed@^1.0.16:
+  version "1.0.16"
+  resolved "https://registry.yarnpkg.com/strapi-typed/-/strapi-typed-1.0.16.tgz#6d0810b4200093c0c60135c9c89a6445cb3461c6"
+  integrity sha512-k7mWLZUa9Kfezr/NDzPns70clDJIPbDGIG7BFueWiCFy8WotKVCasDIysh9HJfzInGfGWUvF+IBQX7sY4XSAmQ==
   dependencies:
-    "@strapi/plugin-graphql" "^4.5.4"
-    "@strapi/utils" "^4.3.8"
-    "@types/react" "^18.0.18"
+    "@strapi/plugin-graphql" "^4.7.1"
+    "@strapi/utils" "^4.7.1"
+    "@types/react" "^18.0.28"
     "@types/react-intl" "^3.0.0"
 
 stream-chain@2.2.5, stream-chain@^2.2.5:
@@ -14210,17 +14167,6 @@ stylis@4.1.3:
   resolved "https://registry.npmjs.org/stylis/-/stylis-4.1.3.tgz"
   integrity sha512-GP6WDNWf+o403jrEp9c5jibKavrtLW+/qYGhFxFrG8maXhwTBI7gLLhiBb0o7uFccWN+EOS9aMO6cGHWAO07OA==
 
-subscriptions-transport-ws@0.9.19:
-  version "0.9.19"
-  resolved "https://registry.npmjs.org/subscriptions-transport-ws/-/subscriptions-transport-ws-0.9.19.tgz"
-  integrity sha512-dxdemxFFB0ppCLg10FTtRqH/31FNRL1y1BQv8209MK5I4CwALb7iihQg+7p65lFcIl8MHatINWBLOqpgU4Kyyw==
-  dependencies:
-    backo2 "^1.0.2"
-    eventemitter3 "^3.1.0"
-    iterall "^1.2.1"
-    symbol-observable "^1.0.4"
-    ws "^5.2.0 || ^6.0.0 || ^7.0.0"
-
 sumchecker@^3.0.1:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/sumchecker/-/sumchecker-3.0.1.tgz#6377e996795abb0b6d348e9b3e1dfb24345a8e42"
@@ -14273,11 +14219,6 @@ swap-case@^2.0.2:
   integrity sha512-kc6S2YS/2yXbtkSMunBtKdah4VFETZ8Oh6ONSmSd9bRxhqTrtARUCBUiWXH3xVPpvR7tz2CSnkuXVE42EcGnMw==
   dependencies:
     tslib "^2.0.3"
-
-symbol-observable@^1.0.4:
-  version "1.2.0"
-  resolved "https://registry.npmjs.org/symbol-observable/-/symbol-observable-1.2.0.tgz"
-  integrity sha512-e900nM8RRtGhlV36KGEU9k65K3mPb1WV70OdjfxlG2EAuM1noi/E/BaW/uMhL7bPEssK8QV57vN3esixjUvcXQ==
 
 table@^5.2.3:
   version "5.4.6"
@@ -15451,11 +15392,6 @@ ws@8.12.0:
   version "8.12.0"
   resolved "https://registry.npmjs.org/ws/-/ws-8.12.0.tgz"
   integrity sha512-kU62emKIdKVeEIOIKVegvqpXMSTAMLJozpHZaJNDYqBjzlSYXQGviYwN1osDLJ9av68qHd4a2oSjd7yD4pacig==
-
-"ws@^5.2.0 || ^6.0.0 || ^7.0.0":
-  version "7.5.9"
-  resolved "https://registry.npmjs.org/ws/-/ws-7.5.9.tgz"
-  integrity sha512-F+P9Jil7UiSKSkppIiD94dN07AwvFixvLIj1Og1Rl9GGMuNipJnV9JzjD6XuqmAeiswGvUmNLjr5cFuXwNS77Q==
 
 ws@^8.13.0:
   version "8.13.0"
