@@ -179,6 +179,14 @@ export default class AudioRecorder extends EventEmitter {
   }
 
   /**
+   * Check status if the recorder is recording
+   */
+  get isRecording() {
+    // do the logic
+    return false;
+  }
+
+  /**
    * Creates and starts the audio recording process.
    * @returns {AudioRecorder} this
    */

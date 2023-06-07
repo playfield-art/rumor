@@ -80,7 +80,7 @@ export const getAudioList = async (language: string) => {
               : VoiceOverType.VoiceOver,
           id: parseInt(audioFileSplitted[3]),
           chapter: narrativeChapter,
-          url: `file://${randomChapterOptionPath}${audioFile}`,
+          url: `${randomChapterOptionPath}${audioFile}`,
         };
       })
       .sort((a, b) => a.order - b.order);

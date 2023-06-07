@@ -1,7 +1,9 @@
 import { ipcMain } from "electron";
 import {
+  VOPlaylistDo,
   createNewSession,
   getAudioList,
+  initPlaylist,
   startRecording,
   stopRecording,
 } from "./controllers/audio";
@@ -23,8 +25,10 @@ export const registerMethods = () => {
   ipcMain.handle("createNewSession", createNewSession);
   ipcMain.handle("getAudioList", getAudioList);
   ipcMain.handle("getSetting", getSetting);
+  ipcMain.handle("initPlaylist", initPlaylist);
   ipcMain.handle("setFolderSetting", setFolderSetting);
   ipcMain.handle("setRecordingsFolder", setRecordingsFolder);
   ipcMain.handle("syncNarrative", syncNarrative);
   ipcMain.handle("uploadToCms", uploadToCms);
+  ipcMain.handle("VOPlaylistDo", VOPlaylistDo);
 };

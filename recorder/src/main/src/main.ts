@@ -12,6 +12,7 @@ import { app, systemPreferences } from "electron";
 import { ElectronApp } from "./lib";
 import { registerActions, registerMethods } from "./register";
 import { Recorder } from "./recorder";
+import SoundBoard from "./lib/audio/SoundBoard";
 
 /**
  * Get the resources path
@@ -82,6 +83,7 @@ const initApp = async () => {
       if (mainWindow && !mainWindow.isDestroyed()) {
         mainWindow.webContents.send("closing");
       }
+      SoundBoard.destroy();
       app.exit(0);
     });
   } catch (e: any) {

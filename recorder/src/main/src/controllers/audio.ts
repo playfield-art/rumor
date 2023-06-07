@@ -4,6 +4,7 @@ import { Utils } from "@shared/utils";
 import { AudioList, RecordingMeta } from "../../../shared/interfaces";
 import { AudioRecordingSingleton } from "../lib/audio/AudioRecordingSingleton";
 import { Exception } from "../lib/exceptions/Exception";
+import SoundBoard from "../lib/audio/SoundBoard";
 import { getAudioList as getAudioListHelper } from "../lib/audio/AudioList";
 import { getRecordingsFolder } from "../lib/filesystem";
 import SettingsHelper from "../lib/settings/SettingHelper";
@@ -72,6 +73,42 @@ export const createNewSession = async () => {
 
   // return the audio list to work with
   return audioList;
+};
+
+/**
+ * Set new voice overs for the internal voice overs playlist
+ * @param voiceOvers
+ */
+export const initPlaylist = (
+  event: Electron.IpcMainInvokeEvent,
+  audioList: AudioList
+) => {
+  SoundBoard.initPlaylist(audioList);
+};
+
+/**
+ * Voice Over playlist do something...
+ * @param event
+ * @param VOPlaylistAction
+ */
+export const VOPlaylistDo = (
+  event: Electron.IpcMainInvokeEvent,
+  VOPlaylistAction: "start" | "stop" | "next"
+) => {
+  switch (VOPlaylistAction) {
+    case "start":
+      SoundBoard.VOPlaylist.start();
+      break;
+    case "stop":
+      SoundBoard.VOPlaylist.stop();
+      break;
+    case "next":
+      if (!SoundBoard.VOPlaylist) break;
+      SoundBoard.VOPlaylist.next();
+      break;
+    default:
+      SoundBoard.VOPlaylist.stop();
+  }
 };
 
 /**

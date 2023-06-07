@@ -4,6 +4,7 @@ import {
   ISetting,
   ProcesStatus,
   Notification,
+  SoundScape,
 } from "@shared/interfaces";
 
 declare global {
@@ -18,18 +19,23 @@ declare global {
         createNewSession(): Promise<AudioList>;
         getAudioList(language: string): Promise<AudioList>;
         getSetting(key: string): string | null;
+        initPlaylist(audioList: AudioList): void;
         setFolderSetting(key: string): Promise<string>;
         setRecordingsFolder(): string;
         syncNarrative(): Promise<void>;
         uploadToCms(): Promise<void>;
+        VOPlaylistDo(action: "start" | "stop" | "next");
       };
       readonly events: {
         onNextVO(callback: (event: IpcMessageEvent) => void): () => void;
-        onProces(
-          callback: (event: IpcMessageEvent, procesStatus: ProcesStatus) => void
-        ): () => void;
         onNotification(
           callback: (event: IpcMessageEvent, notification: Notification) => void
+        ): () => void;
+        onPlaySoundscape(
+          callback: (event: IpcMessageEvent, soundscape: SoundScape) => void
+        ): () => void;
+        onProces(
+          callback: (event: IpcMessageEvent, procesStatus: ProcesStatus) => void
         ): () => void;
       };
     };

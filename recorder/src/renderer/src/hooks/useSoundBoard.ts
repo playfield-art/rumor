@@ -1,117 +1,88 @@
-import { VoiceOver, VoiceOverType, SoundScape } from "@shared/interfaces";
-import { useState, useCallback, useMemo, useEffect } from "react";
-import { CAN_CONTINUE_WHILE_PLAYING, CAN_RECORD, FADING_TIME } from "../consts";
-import { OnPlayChange, OnVOEnd, SoundBoard } from "../lib/SoundBoard";
+import { VoiceOver, SoundScape } from "@shared/interfaces";
+import { useState, useCallback, useEffect } from "react";
+// import { CAN_CONTINUE_WHILE_PLAYING, CAN_RECORD, FADING_TIME } from "../consts";
+// import { OnPlayChange, OnVOEnd, SoundBoard } from "../lib/SoundBoard";
+import { useRecorderStore } from "./useRecorderStore";
+import { AudioPlayer } from "../lib/Player";
 
 const useSoundBoard = (onError?: (e: Error) => void) => {
-  const [currentVO, setCurrentVO] = useState<VoiceOver | null>(null);
-  const [currentSC, setCurrentSC] = useState<SoundScape | null>(null);
-  const [started, setStarted] = useState(false);
-
-  /**
-   * When a VO or SC changed
-   */
-
-  const onPlayChange = useCallback((e: OnPlayChange) => {
-    setCurrentVO(e.VO);
-    setCurrentSC(e.SC);
-    if (CAN_RECORD) window.rumor.actions.stopRecording();
-  }, []);
-
-  /**
-   * When a VO ends
-   */
-
-  const onVOEnd = useCallback((e: OnVOEnd) => {
-    if (CAN_RECORD && !e.isLast && e.VO?.type === VoiceOverType.Question) {
-      window.rumor.actions.startRecording(e.VO.language, e.VO.id);
-    }
-    // eslint-disable-next-line @typescript-eslint/no-use-before-define
-    if (e.VO?.type === VoiceOverType.VoiceOver) soundBoard.playNextVO();
-  }, []);
-
-  /**
-   * Create a new soundboard
-   */
-
-  const soundBoard = useMemo(
-    () =>
-      new SoundBoard({
-        onPlayChange,
-        onVOEnd,
-        onStop: () => {
-          setStarted(false);
-        },
-        fadingTime: FADING_TIME,
-        canContinueWhilePlaying: CAN_CONTINUE_WHILE_PLAYING,
-      }),
-    []
-  );
+  const [currentVO] = useState<VoiceOver | null>(null);
+  const [currentSC] = useState<SoundScape | null>(null);
+  const isPlaying = useRecorderStore((state) => state.isPlaying);
+  const startPlaying = useRecorderStore((state) => state.startPlaying);
+  const stopPlaying = useRecorderStore((state) => state.stopPlaying);
 
   /**
    * Plays next VO
    */
 
-  const playNextVO = useCallback(() => soundBoard.playNextVO(), []);
+  const playNextVO = useCallback(
+    () => window.rumor.methods.VOPlaylistDo("next"),
+    []
+  );
 
   /**
    * Start the soundboard
    */
 
   const start = useCallback(async () => {
-    if (!started) {
+    if (!isPlaying) {
       try {
+        // set the internal "started" state
+        startPlaying();
+
         // create a new session
         const audioList = await window.rumor.methods.createNewSession();
 
-        // init the soundboard (load up the audio)
-        await soundBoard.init(audioList);
-
-        // set the internal "started" state
-        setStarted(true);
+        // init the VOPlaylist in backend
+        window.rumor.methods.initPlaylist(audioList);
 
         // play the first audio file
-        soundBoard.playNextVO();
+        window.rumor.methods.VOPlaylistDo("next");
       } catch (e: any) {
         if (onError) onError(e);
       }
     }
-  }, [started]);
+  }, [isPlaying]);
 
   /**
    * Stops the soundboard
    */
 
   const stop = useCallback(() => {
-    if (started) {
-      soundBoard.stop();
-      soundBoard.reset();
+    if (isPlaying) {
+      // stop the voice overs
+      window.rumor.methods.VOPlaylistDo("stop");
+
+      // clean up th audioplayer
+      AudioPlayer.cleanUp();
+
+      // stop play (in frontend)
+      stopPlaying();
     }
-  }, [started]);
+  }, [isPlaying]);
 
   /**
-   * When hooking the component
+   * Whenever
    */
 
   useEffect(() => {
-    const removeEventListenerOnNextVO = window.rumor.events.onNextVO(() => {
-      console.log(soundBoard.isPlaying);
-      if (!soundBoard.isPlaying) {
-        start();
-      } else {
-        playNextVO();
-      }
-    });
+    const removeEventListenerOnPlaySoundscape =
+      window.rumor.events.onPlaySoundscape((event, soundscape) => {
+        if (isPlaying) {
+          AudioPlayer.play(soundscape.url);
+        }
+      });
     return () => {
-      removeEventListenerOnNextVO();
+      removeEventListenerOnPlaySoundscape();
     };
-  }, []);
+  }, [isPlaying]);
 
   return {
     playNextVO,
     start,
     stop,
-    started,
+    isPlaying,
     currentVO,
     currentSC,
   };

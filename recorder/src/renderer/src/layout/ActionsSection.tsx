@@ -6,7 +6,7 @@ import { observer } from "mobx-react";
 import store from "../store";
 
 function ActionsSection() {
-  const { playNextVO, stop, start, started, currentSC, currentVO } =
+  const { playNextVO, stop, start, isPlaying, currentSC, currentVO } =
     useSoundBoard((e) => store.notify(e.message));
 
   useEffect(() => {
@@ -19,14 +19,14 @@ function ActionsSection() {
 
   return (
     <Section title="Actions">
-      {!started && (
+      {!isPlaying && (
         <ButtonContainer>
           <button type="button" onClick={() => start()}>
             Start Soundboard
           </button>
         </ButtonContainer>
       )}
-      {started && (
+      {isPlaying && (
         <ButtonContainer>
           <button type="button" onClick={() => stop()}>
             Stop Soundboard
@@ -34,7 +34,11 @@ function ActionsSection() {
         </ButtonContainer>
       )}
       <ButtonContainer>
-        <button type="button" onClick={() => playNextVO()}>
+        <button
+          disabled={isPlaying === false}
+          type="button"
+          onClick={() => playNextVO()}
+        >
           Next Voice Over
         </button>
       </ButtonContainer>

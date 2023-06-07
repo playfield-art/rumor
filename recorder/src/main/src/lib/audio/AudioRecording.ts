@@ -47,6 +47,10 @@ export class AudioRecording {
     this._outDir = dir;
   }
 
+  get isRecording() {
+    return this._audioRecorder.isRecording;
+  }
+
   private onError() {
     if (this._debug) {
       console.warn("Recording error.");

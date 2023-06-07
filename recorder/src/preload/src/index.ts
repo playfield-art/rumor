@@ -1,5 +1,5 @@
 import { contextBridge, ipcRenderer } from "electron";
-import { ISetting } from "@shared/interfaces";
+import { AudioList, ISetting } from "@shared/interfaces";
 
 /**
  * The "Main World" is the JavaScript context that your main renderer code runs in.
@@ -33,6 +33,8 @@ contextBridge.exposeInMainWorld("rumor", {
     getAudioList: (language: string) =>
       ipcRenderer.invoke("getAudioList", language),
     getSetting: (key: string) => ipcRenderer.invoke("getSetting", key),
+    initPlaylist: (audioList: AudioList) =>
+      ipcRenderer.invoke("initPlaylist", audioList),
     setFolderSetting: (key: string) =>
       ipcRenderer.invoke("setFolderSetting", key),
     setRecordingsFolder: () => ipcRenderer.invoke("setRecordingsFolder"),
@@ -40,19 +42,25 @@ contextBridge.exposeInMainWorld("rumor", {
       ipcRenderer.invoke("syncNarrative");
     },
     uploadToCms: () => ipcRenderer.invoke("uploadToCms"),
+    VOPlaylistDo: (action: "start" | "stop" | "next") =>
+      ipcRenderer.invoke("VOPlaylistDo", action),
   },
   events: {
     onNextVO: (callback: any) => {
       ipcRenderer.on("next-vo", callback);
       return () => ipcRenderer.removeAllListeners("next-vo");
     },
-    onProces: (callback: any) => {
-      ipcRenderer.on("on-proces", callback);
-      return () => ipcRenderer.removeAllListeners("on-proces");
-    },
     onNotification: (callback: any) => {
       ipcRenderer.on("on-notification", callback);
       return () => ipcRenderer.removeAllListeners("on-notification");
+    },
+    onPlaySoundscape: (callback: any) => {
+      ipcRenderer.on("play-soundscape", callback);
+      return () => ipcRenderer.removeAllListeners("play-soundscape");
+    },
+    onProces: (callback: any) => {
+      ipcRenderer.on("on-proces", callback);
+      return () => ipcRenderer.removeAllListeners("on-proces");
     },
   },
 });
