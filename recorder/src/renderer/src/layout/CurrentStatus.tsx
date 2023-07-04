@@ -1,11 +1,9 @@
-import { StatusContainer } from "@components/StatusContainer";
-import { observer } from "mobx-react";
 import React from "react";
 import store from "../store";
 
-function SoundboardStatus() {
+export function CurrentStatus() {
   return (
-    <StatusContainer>
+    <>
       {!store.currentVO && !store.currentSC && "No current status."}
       {store.currentVO && (
         <div>
@@ -26,8 +24,6 @@ function SoundboardStatus() {
             : ""}
         </div>
       )}
-    </StatusContainer>
+    </>
   );
 }
-
-export default observer(SoundboardStatus);

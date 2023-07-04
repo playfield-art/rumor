@@ -4,7 +4,6 @@ export const AppContainer = styled.div`
   display: grid;
   gap: 0 20px;
   justify-content: center;
-  padding: 20px;
   grid-template-columns: 1fr 300px;
 `;
 

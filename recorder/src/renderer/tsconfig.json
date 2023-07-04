@@ -8,6 +8,7 @@
       "@hooks": ["./src/hooks"],
       "@hooks/*": ["./src/hooks/*"],
       "@shared/*": ["./../shared/*"],
+      "@mui/styled-engine": ["../node_modules/@mui/styled-engine-sc"]
     },
   },
   "include": [

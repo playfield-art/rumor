@@ -3,7 +3,8 @@ import { Form, Formik } from "formik";
 import { Section } from "@components/layout/Section";
 import styled from "styled-components";
 import * as Yup from "yup";
-import store from "../store";
+import Button from "@mui/material/Button";
+import store from "../../../store";
 
 const InputWrapper = styled.div`
   input {
@@ -177,9 +178,9 @@ export function RecorderSettingsSection() {
                 errors.rumorCmsApiToken}
             </InputWrapper>
             <FormActionsButtonWrapper>
-              <button type="submit" disabled={isSubmitting}>
+              <Button type="submit" variant="contained" disabled={isSubmitting}>
                 Save
-              </button>
+              </Button>
             </FormActionsButtonWrapper>
           </Form>
         )}

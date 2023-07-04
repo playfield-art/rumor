@@ -1,9 +1,42 @@
 :root {
-  /* Colors */
-  --white: rgba(255, 255, 255, 0.87);
-  --primary-color: rgb(36, 36, 36);
+  /* Gray Color */
+  --black: #000000;
+  --grey-1400: #111111;
+  --grey-1300: #222222;
+  --grey-1200: #333333;
+  --grey-1100: #444444;
+  --grey-1000: #555555;
+  --grey-900: #666666;
+  --grey-800: #777777;
+  --grey-700: #888888;
+  --grey-600: #999999;
+  --grey-500: #aaaaaa;
+  --grey-400: #bbbbbb;
+  --grey-300: #cccccc;
+  --grey-200: #dddddd;
+  --grey-100: #eeeeee;
+
+  /* Red Color */
+  --red-1000: #531B1B;
+  --red-900: #752D2D;
+  --red-800: #974343;
+  --red-700: #B95C5C;
+  --red-600: #DB7979;
+  --red-500: #FD9A9A;
+  --red-400: #FFB2B2;
+  --red-300: #FFC8C8;
+  --red-200: #FFDEDE;
+  --red-100: #FFF5F5;
+
+  /* Color Intentions */
+  --white: var(--grey-400);
+  --whiteLight: var(--grey-700);
+  --whiteExtraLight: var(--grey-1000);
+  --primary-color: var(--grey-1300);
+  --accentColor: #646cff;
   --background-color-section: hsla(0, 0%, 25%, 0.4);
   --background-color-popup: hsla(0, 0%, 25%, 0.6);
+  --background-color-button: var(--grey-1300);
 
   /* Scales */
   --default-padding: 1.25rem;
@@ -51,30 +84,6 @@ body {
 h1 {
   font-size: 3.2em;
   line-height: 1.1;
-}
-
-button {
-  border-radius: var(--default-border-radius);
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button[disabled],
-button[disabled]:hover {
-  border:none;
-  cursor: not-allowed;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
 }
 
 @media (prefers-color-scheme: light) {

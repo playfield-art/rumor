@@ -40,7 +40,9 @@ const config = {
     assetsDir: ".",
     rollupOptions: {
       input: join(__dirname, "index.html"),
-      external: [...builtinModules],
+      external: [
+        ...builtinModules
+      ],
     },
     emptyOutDir: true,
     brotliSize: false,

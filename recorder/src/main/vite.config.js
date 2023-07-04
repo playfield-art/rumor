@@ -29,6 +29,8 @@ export default defineConfig({
         'serialport',
         'graphql',
         'graphql-request',
+        '@emotion/styled',
+        '@mui/styled-engine',
         ...builtinModules
       ],
       output: {

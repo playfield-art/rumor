@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
+import Button from "@mui/material/Button";
 
 type SelectFolderProps = {
   path: string;
@@ -29,9 +30,9 @@ function SelectFolder({ path, label = "...", onClick }: SelectFolderProps) {
       >
         {currentPath}
       </div>
-      <button type="button" onClick={onClick}>
+      <Button variant="contained" type="button" onClick={onClick}>
         {label}
-      </button>
+      </Button>
     </SelectFolderContainer>
   );
 }
