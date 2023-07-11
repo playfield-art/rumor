@@ -1,4 +1,5 @@
 import { createTheme } from "@mui/material/styles";
+import type {} from "@mui/x-data-grid/themeAugmentation";
 
 declare module "@mui/material/Button" {
   interface ButtonPropsVariantOverrides {
@@ -16,13 +17,6 @@ export default createTheme({
     },
   },
   components: {
-    MuiSvgIcon: {
-      styleOverrides: {
-        root: {
-          color: "var(--white)",
-        },
-      },
-    },
     MuiDataGrid: {
       styleOverrides: {
         columnHeader: {
@@ -66,6 +60,11 @@ export default createTheme({
         },
         selectIcon: {
           color: "var(--white)",
+        },
+        actions: {
+          "& button > svg": {
+            color: "var(--white)",
+          },
         },
       },
     },
@@ -174,7 +173,7 @@ export default createTheme({
     MuiListItemIcon: {
       styleOverrides: {
         root: {
-          color: "var(--whiteLight)",
+          color: "var(--grey-1000)",
           minWidth: 40,
         },
       },
