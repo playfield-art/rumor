@@ -50,9 +50,13 @@ export default createTheme({
         root: {
           border: "none",
           color: "var(--white)",
+          "& svg": {
+            color: "var(--white)",
+          },
         },
       },
     },
+
     MuiTablePagination: {
       styleOverrides: {
         root: {

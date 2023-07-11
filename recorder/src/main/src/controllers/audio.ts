@@ -72,6 +72,7 @@ export const createNewSession = async () => {
   fs.writeFileSync(`${folder}/meta.json`, JSON.stringify(recordingMeta));
   fs.writeFileSync(`${folder}/audiolist.json`, JSON.stringify(audioList));
 
+  // log out the new session
   Logger.info(`Created new session: ${recordingMeta.sessionId}`);
 
   // return the audio list to work with
@@ -115,20 +116,12 @@ export const VOPlaylistDo = (
 };
 
 /**
- * Start the recording
- * @param fileName
+ * Stop a session
  */
-export const startRecording = (
-  event: Electron.IpcMainInvokeEvent,
-  language: string,
-  id: number
-) => {
-  AudioRecordingSingleton.getInstance().startRecording(language, id);
-};
+export const stopSession = async () => {
+  // stop the playlist
+  await SoundBoard.destroy();
 
-/**
- * Stop the recording
- */
-export const stopRecording = async () => {
-  await AudioRecordingSingleton.getInstance().stopRecording();
+  // log
+  await Logger.warn("Session force stopped.");
 };

@@ -1,6 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import { resourcesPath } from "@shared/resources";
+import { Utils } from "@shared/utils";
 import AudioRecorder from "./AudioRecorder";
 import { UNWANTED_FILES } from "../../consts";
 import { killProcess } from "../process/killProcess";
@@ -27,12 +28,20 @@ export interface AudioRecordingParams {
   outDir: string;
 }
 
+export interface AudioRecordingStats {
+  bytes: number;
+  sizeReadable: string;
+  filePath: string;
+}
+
 export class AudioRecording {
   private _audioRecorder;
 
   private _debug = false;
 
   private _outDir;
+
+  private _currentRecordingFilePath: string;
 
   constructor({ outDir }: AudioRecordingParams) {
     this._outDir = outDir;
@@ -61,7 +70,13 @@ export class AudioRecording {
     }
   }
 
-  startRecording(language: string, id: number) {
+  /**
+   * Start the recording and ID of the question
+   * @param language The language to record
+   * @param id The id of the recording
+   * @returns The file path of the recording
+   */
+  startRecording(language: string, id: number): string {
     // get the current order number (new recordings wil get a new number)
     const recordedFiles = fs
       .readdirSync(this._outDir)
@@ -76,24 +91,53 @@ export class AudioRecording {
       );
     }
 
+    // const file name
+    const fileName = `${language}-${(maxOrder += 1)}-${id}.wav`;
+
     // create the file path
-    const filePath = path.join(
-      this._outDir,
-      `${language}-${(maxOrder += 1)}-${id}.wav`
-    );
+    const filePath = path.join(this._outDir, fileName);
 
     // create write stream.
     const fileStream = fs.createWriteStream(filePath, { encoding: "binary" });
 
     // start and write to the file.
     this._audioRecorder?.start()?.stream()?.pipe(fileStream);
+
+    // set the current recording file path
+    this._currentRecordingFilePath = filePath;
+
+    // return the file path
+    return this._currentRecordingFilePath;
   }
 
-  async stopRecording() {
+  async stopRecording(): Promise<AudioRecordingStats> {
     // stop the audio recorder
     this._audioRecorder.stop();
 
     // kill all sox processes running on the system
     await killProcess("sox");
+
+    // small delay until stream is closed
+    await Utils.delay(500);
+
+    // output
+    let stats: AudioRecordingStats = {
+      filePath: "",
+      sizeReadable: "",
+      bytes: 0,
+    };
+
+    // if we have a recording path
+    if (this._currentRecordingFilePath) {
+      const bytes = fs.statSync(this._currentRecordingFilePath).size;
+      stats = {
+        filePath: this._currentRecordingFilePath,
+        bytes,
+        sizeReadable: Utils.formatBytes(bytes, 2),
+      };
+    }
+
+    // return the stats
+    return stats;
   }
 }

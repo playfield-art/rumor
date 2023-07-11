@@ -1,5 +1,5 @@
 import { contextBridge, ipcRenderer } from "electron";
-import { AudioList, ISetting } from "@shared/interfaces";
+import { AudioList, ILogType, ISetting } from "@shared/interfaces";
 
 /**
  * The "Main World" is the JavaScript context that your main renderer code runs in.
@@ -22,11 +22,10 @@ import { AudioList, ISetting } from "@shared/interfaces";
  */
 contextBridge.exposeInMainWorld("rumor", {
   actions: {
+    log: (message: string, type: ILogType) =>
+      ipcRenderer.send("log", message, type),
     saveSetting: (setting: ISetting) =>
       ipcRenderer.send("saveSetting", setting),
-    startRecording: (language: string, id: number) =>
-      ipcRenderer.send("startRecording", language, id),
-    stopRecording: () => ipcRenderer.send("stopRecording"),
   },
   methods: {
     createNewSession: () => ipcRenderer.invoke("createNewSession"),
@@ -36,9 +35,11 @@ contextBridge.exposeInMainWorld("rumor", {
     getSetting: (key: string) => ipcRenderer.invoke("getSetting", key),
     initPlaylist: (audioList: AudioList) =>
       ipcRenderer.invoke("initPlaylist", audioList),
+    removeAllLogging: () => ipcRenderer.invoke("removeAllLogging"),
     setFolderSetting: (key: string) =>
       ipcRenderer.invoke("setFolderSetting", key),
     setRecordingsFolder: () => ipcRenderer.invoke("setRecordingsFolder"),
+    stopSession: () => ipcRenderer.invoke("stopSession"),
     syncNarrative: () => {
       ipcRenderer.invoke("syncNarrative");
     },
@@ -47,6 +48,10 @@ contextBridge.exposeInMainWorld("rumor", {
       ipcRenderer.invoke("VOPlaylistDo", action),
   },
   events: {
+    onCleanupSoundscape: (callback: any) => {
+      ipcRenderer.on("cleanup-soundscape", callback);
+      return () => ipcRenderer.removeAllListeners("cleanup-soundscape");
+    },
     onNextVO: (callback: any) => {
       ipcRenderer.on("next-vo", callback);
       return () => ipcRenderer.removeAllListeners("next-vo");

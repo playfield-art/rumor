@@ -76,20 +76,6 @@ export default class VOPlaylist {
       }
     });
 
-    // this function will be triggerd when the audio is done
-    // const audioDone = () => {
-    //   // if we have no error, the voice over file was stopped
-    //   if (voiceOver.type === VoiceOverType.VoiceOver) {
-    //     this.next();
-    //   }
-    //   if (voiceOver.type === VoiceOverType.Question) {
-    //     AudioRecordingSingleton.getInstance().startRecording(
-    //       voiceOver.language,
-    //       voiceOver.id
-    //     );
-    //   }
-    // };
-
     // when closing the process, the process is done
     // exit code 0 is success, null is error
     childProcess.on("close", (code) => {

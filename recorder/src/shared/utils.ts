@@ -16,6 +16,39 @@ export const Utils = {
     return incoming < 10 ? `0${incoming}` : `${incoming}`;
   },
 
+  delay: async (time: number) =>
+    new Promise((resolve) => {
+      setTimeout(resolve, time);
+    }),
+
+  /**
+   * A function that will format bytes to a human readable format
+   * @param bytes The bytes to format
+   * @param decimals The amount of decimals to use
+   * @returns
+   */
+  formatBytes: (bytes: number, decimals = 2) => {
+    if (!+bytes) return "0 Bytes";
+
+    const k = 1024;
+    const dm = decimals < 0 ? 0 : decimals;
+    const sizes = [
+      "Bytes",
+      "KiB",
+      "MiB",
+      "GiB",
+      "TiB",
+      "PiB",
+      "EiB",
+      "ZiB",
+      "YiB",
+    ];
+
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+    return `${parseFloat((bytes / k ** i).toFixed(dm))} ${sizes[i]}`;
+  },
+
   /**
    * Generates a unique name by date
    * @returns

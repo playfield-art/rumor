@@ -3,6 +3,7 @@ import { useState, useCallback, useEffect } from "react";
 // import { CAN_CONTINUE_WHILE_PLAYING, CAN_RECORD, FADING_TIME } from "../consts";
 // import { OnPlayChange, OnVOEnd, SoundBoard } from "../lib/SoundBoard";
 import { useRecorderStore } from "./useRecorderStore";
+import { useLogger } from "./useLogger";
 import { AudioPlayer } from "../lib/Player";
 
 const useSoundBoard = (onError?: (e: Error) => void) => {
@@ -11,6 +12,7 @@ const useSoundBoard = (onError?: (e: Error) => void) => {
   const isPlaying = useRecorderStore((state) => state.isPlaying);
   const startPlaying = useRecorderStore((state) => state.startPlaying);
   const stopPlaying = useRecorderStore((state) => state.stopPlaying);
+  const { success } = useLogger();
 
   /**
    * Plays next VO
@@ -39,6 +41,9 @@ const useSoundBoard = (onError?: (e: Error) => void) => {
 
         // play the first audio file
         window.rumor.methods.VOPlaylistDo("next");
+
+        // session started
+        success("Session started.");
       } catch (e: any) {
         if (onError) onError(e);
       }
@@ -52,13 +57,7 @@ const useSoundBoard = (onError?: (e: Error) => void) => {
   const stop = useCallback(async () => {
     if (isPlaying) {
       // stop the voice overs
-      window.rumor.methods.VOPlaylistDo("stop");
-
-      // stop the recording (even if it is not recording, just to be sure)
-      await window.rumor.actions.stopRecording();
-
-      // clean up th audioplayer
-      AudioPlayer.cleanUp();
+      window.rumor.methods.stopSession();
 
       // stop play (in frontend)
       stopPlaying();
@@ -76,8 +75,13 @@ const useSoundBoard = (onError?: (e: Error) => void) => {
           AudioPlayer.play(soundscape.url);
         }
       });
+    const removeEventListenerOnCleanupSoundscape =
+      window.rumor.events.onCleanupSoundscape(() => {
+        AudioPlayer.cleanUp();
+      });
     return () => {
       removeEventListenerOnPlaySoundscape();
+      removeEventListenerOnCleanupSoundscape();
     };
   }, [isPlaying]);
 

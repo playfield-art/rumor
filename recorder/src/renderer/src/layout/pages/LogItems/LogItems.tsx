@@ -33,18 +33,23 @@ const columns: GridColDef[] = [
 export function LogItems() {
   const logging = useLogItems();
   return (
-    <DataGrid
-      getRowClassName={(params) => `log-${params.row.type}`}
-      initialState={{
-        sorting: {
-          sortModel: [{ field: "time", sort: "desc" }],
-        },
-        pagination: { paginationModel: { pageSize: 30 } },
-      }}
-      rowHeight={30}
-      rowSelection={false}
-      rows={logging}
-      columns={columns}
-    />
+    <>
+      {!logging || (logging.length === 0 && <div>There is no logging.</div>)}
+      {logging && logging.length > 0 && (
+        <DataGrid
+          getRowClassName={(params) => `log-${params.row.type}`}
+          initialState={{
+            sorting: {
+              sortModel: [{ field: "time", sort: "desc" }],
+            },
+            pagination: { paginationModel: { pageSize: 30 } },
+          }}
+          rowHeight={30}
+          rowSelection={false}
+          rows={logging}
+          columns={columns}
+        />
+      )}
+    </>
   );
 }

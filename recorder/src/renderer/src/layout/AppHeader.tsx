@@ -26,6 +26,7 @@ export function AppHeader({ title }: AppHeaderProps) {
         </Typography>
         {!isPlaying && (
           <Button
+            tabIndex={-1}
             variant="record"
             size="small"
             startIcon={<FiberManualRecordIcon />}
@@ -43,6 +44,7 @@ export function AppHeader({ title }: AppHeaderProps) {
             }}
           >
             <Button
+              tabIndex={-1}
               variant="contained"
               startIcon={<StopIcon />}
               onClick={() => stop()}

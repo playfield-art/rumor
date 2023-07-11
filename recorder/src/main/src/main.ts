@@ -14,6 +14,7 @@ import { registerActions, registerMethods } from "./register";
 import { Recorder } from "./recorder";
 import SoundBoard from "./lib/audio/SoundBoard";
 import { killProcess } from "./lib/process/killProcess";
+import Logger from "./lib/logging/Logger";
 
 /**
  * Get the resources path
@@ -41,8 +42,8 @@ const initApp = async () => {
     // when the application is ready
     await app.whenReady();
 
-    // install react extension
-    // await installExtension(REACT_DEVELOPER_TOOLS);
+    // log out
+    Logger.info("Application started.");
 
     // ask for microphone access
     systemPreferences.askForMediaAccess("microphone");
@@ -80,15 +81,22 @@ const initApp = async () => {
      * Before quiting, close the kweenb application by killing all other processes
      */
     app.on("before-quit", async (event: any) => {
+      // prevent the application from quitting
       event.preventDefault();
-      if (mainWindow && !mainWindow.isDestroyed()) {
-        mainWindow.webContents.send("closing");
-      }
+
       // destroy the soundboard
       await SoundBoard.destroy();
 
       // to be sure, kill everything like a terminator
       await killProcess("afplay");
+
+      // save logs
+      await Logger.info("Application has been closed.");
+
+      // Start closing
+      if (mainWindow && !mainWindow.isDestroyed()) {
+        mainWindow.webContents.send("closing");
+      }
 
       // exit the application
       app.exit(0);

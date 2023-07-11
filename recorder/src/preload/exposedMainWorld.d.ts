@@ -6,15 +6,15 @@ import {
   Notification,
   SoundScape,
   ILogRow,
+  ILogType,
 } from "@shared/interfaces";
 
 declare global {
   interface Window {
     readonly rumor: {
       readonly actions: {
+        log(message: string, log: ILogType): void;
         saveSetting(setting: ISetting): void;
-        startRecording(language: string, id: number): void;
-        stopRecording(): Promise<void>;
       };
       readonly methods: {
         createNewSession(): Promise<AudioList>;
@@ -22,13 +22,18 @@ declare global {
         getAudioList(language: string): Promise<AudioList>;
         getSetting(key: string): string | null;
         initPlaylist(audioList: AudioList): void;
+        removeAllLogging(): Promise<void>;
         setFolderSetting(key: string): Promise<string>;
         setRecordingsFolder(): string;
+        stopSession(): Promise<void>;
         syncNarrative(): Promise<void>;
         uploadToCms(): Promise<void>;
         VOPlaylistDo(action: "start" | "stop" | "next");
       };
       readonly events: {
+        onCleanupSoundscape(
+          callback: (event: IpcMessageEvent) => void
+        ): () => void;
         onNextVO(callback: (event: IpcMessageEvent) => void): () => void;
         onNotification(
           callback: (event: IpcMessageEvent, notification: Notification) => void
