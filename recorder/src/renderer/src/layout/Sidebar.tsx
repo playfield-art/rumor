@@ -9,6 +9,7 @@ import {
 } from "@mui/material";
 import SettingsSystemDaydreamIcon from "@mui/icons-material/SettingsSystemDaydream";
 import SettingsIcon from "@mui/icons-material/Settings";
+import ArticleIcon from "@mui/icons-material/Article";
 import { useNavigate } from "react-router-dom";
 
 export function Sidebar() {
@@ -18,8 +19,13 @@ export function Sidebar() {
       <List>
         {[
           {
-            label: "CMS",
+            label: "Logging",
             path: "/",
+            icon: <ArticleIcon />,
+          },
+          {
+            label: "CMS",
+            path: "/cms",
             icon: <SettingsSystemDaydreamIcon />,
           },
           {

@@ -28,6 +28,15 @@
   --red-200: #FFDEDE;
   --red-100: #FFF5F5;
 
+  /* Accent Colors */
+  --yellow: #515216;
+  --green: #1f3d1a;
+
+  /* Log Colors */
+  --error: var(--red-1000);
+  --warn: var(--yellow);
+  --success: var(--green);
+
   /* Color Intentions */
   --white: var(--grey-400);
   --whiteLight: var(--grey-700);

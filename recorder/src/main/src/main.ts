@@ -13,6 +13,7 @@ import { ElectronApp } from "./lib";
 import { registerActions, registerMethods } from "./register";
 import { Recorder } from "./recorder";
 import SoundBoard from "./lib/audio/SoundBoard";
+import { killProcess } from "./lib/process/killProcess";
 
 /**
  * Get the resources path
@@ -83,7 +84,13 @@ const initApp = async () => {
       if (mainWindow && !mainWindow.isDestroyed()) {
         mainWindow.webContents.send("closing");
       }
-      SoundBoard.destroy();
+      // destroy the soundboard
+      await SoundBoard.destroy();
+
+      // to be sure, kill everything like a terminator
+      await killProcess("afplay");
+
+      // exit the application
       app.exit(0);
     });
   } catch (e: any) {

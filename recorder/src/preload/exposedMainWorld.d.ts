@@ -5,6 +5,7 @@ import {
   ProcesStatus,
   Notification,
   SoundScape,
+  ILogRow,
 } from "@shared/interfaces";
 
 declare global {
@@ -13,10 +14,11 @@ declare global {
       readonly actions: {
         saveSetting(setting: ISetting): void;
         startRecording(language: string, id: number): void;
-        stopRecording(): void;
+        stopRecording(): Promise<void>;
       };
       readonly methods: {
         createNewSession(): Promise<AudioList>;
+        getAllLogRows(): Promise<ILogRow[]>;
         getAudioList(language: string): Promise<AudioList>;
         getSetting(key: string): string | null;
         initPlaylist(audioList: AudioList): void;

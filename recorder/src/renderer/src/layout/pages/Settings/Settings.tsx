@@ -9,7 +9,7 @@ export function Settings() {
       <Grid item xs={12} md={6}>
         <RecorderSettingsSection />
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid item xs={12} md={12}>
         <FolderSettingsSection />
       </Grid>
     </Grid>

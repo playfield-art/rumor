@@ -1,6 +1,25 @@
 import { spawn, ChildProcessWithoutNullStreams } from "child_process";
 import { EventEmitter } from "events";
 
+const defaultOptions: any = {
+  program: "sox", // Which program to use, either `arecord`, `rec`, and `sox`.
+  device: null, // Recording device to use.
+  driver: null, // Recording driver to use.
+
+  bits: 16, // Sample size. (only for `rec` and `sox`)
+  channels: 1, // Channel count.
+  encoding: "signed-integer", // Encoding type. (only for `rec` and `sox`)
+  format: "S16_LE", // Format type. (only for `arecord`)
+  rate: 48000, // Sample rate.
+  type: "wav", // File type.
+
+  // Following options only available when using `rec` or `sox`.
+  silence: 60, // Duration of silence in seconds before it stops recording.
+  thresholdStart: 0.5, // Silence threshold to start recording.
+  thresholdStop: 0.5, // Silence threshold to stop recording.
+  keepSilence: true, // Keep the silence in the recording.
+};
+
 export default class AudioRecorder extends EventEmitter {
   private _options;
 
@@ -16,47 +35,38 @@ export default class AudioRecorder extends EventEmitter {
    * @param {Object} logger Object with log, warn, and error functions
    * @returns {AudioRecorder} this
    */
-  constructor(options: any, logger: any) {
+  constructor(options: any, debug: boolean = false) {
     super();
 
-    // For the `rec` and `sox` only options the default is applied if a more general option is not specified.
+    // the default options
     this._options = {
-      program: "sox", // Which program to use, either `arecord`, `rec`, and `sox`.
-      device: null, // Recording device to use.
-      driver: null, // Recording driver to use.
-
-      bits: 16, // Sample size. (only for `rec` and `sox`)
-      channels: 1, // Channel count.
-      encoding: "signed-integer", // Encoding type. (only for `rec` and `sox`)
-      format: "S16_LE", // Format type. (only for `arecord`)
-      rate: 16000, // Sample rate.
-      type: "wav", // File type.
-
-      // Following options only available when using `rec` or `sox`.
-      silence: 2, // Duration of silence in seconds before it stops recording.
-      thresholdStart: 0.5, // Silence threshold to start recording.
-      thresholdStop: 0.5, // Silence threshold to stop recording.
-      keepSilence: true, // Keep the silence in the recording.
+      ...defaultOptions,
       ...options,
     };
 
-    this._logger = logger;
+    // sets a logger if we are in debug mode
+    if (debug) this._logger = console;
 
+    // initialize the child process
     this._childProcess = null;
 
+    // create the arguments for the sox command
     this._command = {
       arguments: [
-        // Show no progress
-        "-q",
-        // Channel count
-        "-c",
+        "-d", // Use the default recording device
+        "-q", // Show no progress
+        "-c", // Channel count
         this._options.channels.toString(),
-        // Sample rate
-        "-r",
+        "-r", // Sample rate
         this._options.rate.toString(),
-        // Format type
-        "-t",
+        "-t", // Format type
         this._options.type,
+        "-V0", // Show no error messages
+        "-b", // Bit rate
+        this._options.bits.toString(),
+        "-e", // Encoding type
+        this._options.encoding,
+        "-", // Pipe
       ],
       options: {
         encoding: "binary",
@@ -64,103 +74,8 @@ export default class AudioRecorder extends EventEmitter {
       },
     };
 
-    // get the used program for recording (from the absolute path)
-    const splittedPath = this._options.program.toString().split("/");
-    const usedProgram = splittedPath[splittedPath.length - 1];
-
-    /**
-     * SOX
-     */
-
-    if (usedProgram === "sox") {
-      this._command.arguments.unshift("-d");
-      this._command.arguments.push(
-        // Pipe
-        "-"
-      );
-    }
-
-    /**
-     * rec
-     */
-
-    if (usedProgram === "rec") {
-      // Add sample size and encoding type.
-      this._command.arguments.push(
-        // Show no error messages
-        // Use the `close` event to listen for an exit code.
-        "-V0",
-        // Endian
-        //   -L = little
-        //   -B = big
-        //   -X = swap
-        "-L",
-        // Bit rate
-        "-b",
-        this._options.bits.toString(),
-        // Encoding type
-        "-e",
-        this._options.encoding,
-        // Pipe
-        "-"
-      );
-
-      if (this._options.silence) {
-        this._command.arguments.push(
-          // Effect
-          "silence"
-        );
-
-        // Keep the silence of the recording.
-        if (this._options.keepSilence) {
-          this._command.arguments.push(
-            // Keep silence in results
-            "-l"
-          );
-        }
-
-        // Stop recording after duration has passed below threshold.
-        this._command.arguments.push(
-          // Enable above-periods
-          "1",
-          // Duration
-          "0.1",
-          // Starting threshold
-          this._options.thresholdStart.toFixed(1).concat("%"),
-          // Enable below-periods
-          "1",
-          // Duration
-          this._options.silence.toFixed(1),
-          // Stopping threshold
-          this._options.thresholdStop.toFixed(1).concat("%")
-        );
-      }
-
-      // Setup environment variables.
-      if (this._options.device) {
-        this._command.options.env.AUDIODEV = this._options.device;
-      }
-      if (this._options.driver) {
-        this._command.options.env.AUDIODRIVER = this._options.driver;
-      }
-    }
-
-    /**
-     * arecord
-     */
-
-    if (usedProgram === "arecord") {
-      if (this._options.device) {
-        this._command.arguments.unshift("-D", this._options.device);
-      }
-      this._command.arguments.push(
-        // Format type
-        "-f",
-        "S16_LE"
-      );
-    }
-
-    if (this._logger) {
+    // If we have a logger, log the command.
+    if (this._logger && debug) {
       // Log command.
       this._logger.log(
         `AudioRecorder: Command '${
@@ -182,8 +97,7 @@ export default class AudioRecorder extends EventEmitter {
    * Check status if the recorder is recording
    */
   get isRecording() {
-    // do the logic
-    return false;
+    return this._childProcess !== null;
   }
 
   /**
@@ -236,6 +150,7 @@ export default class AudioRecorder extends EventEmitter {
    * @returns {AudioRecorder} this
    */
   stop() {
+    // if we don't have a child process, we can't stop it
     if (!this._childProcess) {
       if (this._logger) {
         this._logger.warn(

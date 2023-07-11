@@ -1,6 +1,7 @@
 import { VoiceOver } from "@shared/interfaces";
 import player from "play-sound";
 import { ChildProcess } from "child_process";
+import { killProcess } from "../process/killProcess";
 
 export interface VOPlaylistOptions {
   onNext?: (voiceOver: VoiceOver) => void;
@@ -24,7 +25,7 @@ export default class VOPlaylist {
   constructor(voiceOvers: VoiceOver[], options?: VOPlaylistOptions) {
     this.voiceOvers = voiceOvers;
     this.currentIndex = -1;
-    this.internalPlayer = player();
+    this.internalPlayer = player({ player: "afplay" });
     this.options = { ...this.options, ...options };
   }
 
@@ -99,11 +100,14 @@ export default class VOPlaylist {
     return childProcess;
   }
 
-  stop() {
+  async stop() {
     // check if we have a running process, if yes.. kill it
     if (this.currentAudio && !this.currentAudio.killed) {
       this.currentAudio.kill();
     }
+
+    // to be sure, kill everything like a terminator
+    await killProcess("afplay");
 
     // set the current index back to -1
     this.currentIndex = -1;

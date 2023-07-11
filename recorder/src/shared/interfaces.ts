@@ -135,6 +135,23 @@ export interface IError {
   where: string;
 }
 
+export enum ILogType {
+  INFO = "info",
+  ERROR = "error",
+  WARN = "warn",
+  SUCCESS = "success",
+}
+
+export interface ILog {
+  time: Date;
+  message: string;
+  type: string;
+}
+
+export interface ILogRow extends ILog {
+  id: string;
+}
+
 /**
  * Proces and Notifciation
  */

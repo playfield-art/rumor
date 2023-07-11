@@ -16,6 +16,79 @@ export default createTheme({
     },
   },
   components: {
+    MuiSvgIcon: {
+      styleOverrides: {
+        root: {
+          color: "var(--white)",
+        },
+      },
+    },
+    MuiDataGrid: {
+      styleOverrides: {
+        columnHeader: {
+          textAlign: "right",
+        },
+        columnHeaders: {
+          marginBottom: "15px",
+        },
+        cell: {
+          borderBottom: "none",
+        },
+        row: {
+          "&:hover": {
+            backgroundColor: "var(--grey-1100)",
+            cursor: "pointer",
+          },
+          "&.log-warn": {
+            backgroundColor: "var(--warn)",
+          },
+          "&.log-success": {
+            backgroundColor: "var(--success)",
+          },
+          "&.log-error": {
+            backgroundColor: "var(--error)",
+          },
+        },
+        footerContainer: {
+          marginTop: "15px",
+          color: "var(--white)",
+        },
+        root: {
+          border: "none",
+          color: "var(--white)",
+        },
+      },
+    },
+    MuiTablePagination: {
+      styleOverrides: {
+        root: {
+          color: "var(--white)",
+        },
+        selectIcon: {
+          color: "var(--white)",
+        },
+      },
+    },
+    MuiTableHead: {
+      styleOverrides: {
+        root: {
+          backgroundColor: "var(--primary-100)",
+          "& .MuiTableCell-head": {
+            color: "white",
+            backgroundColor: "var(--primary-700)",
+          },
+        },
+      },
+    },
+    MuiTableCell: {
+      styleOverrides: {
+        root: {
+          padding: "0",
+          color: "var(--white)",
+          borderBottom: "1px solid var(--primary-100)",
+        },
+      },
+    },
     MuiButton: {
       variants: [
         {

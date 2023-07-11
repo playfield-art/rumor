@@ -14,6 +14,7 @@ import {
   setFolderSetting,
   setRecordingsFolder,
 } from "./controllers/setting";
+import { getAllLogRows } from "./controllers/logging";
 
 export const registerActions = () => {
   ipcMain.on("saveSetting", saveSetting);
@@ -23,6 +24,7 @@ export const registerActions = () => {
 
 export const registerMethods = () => {
   ipcMain.handle("createNewSession", createNewSession);
+  ipcMain.handle("getAllLogRows", getAllLogRows);
   ipcMain.handle("getAudioList", getAudioList);
   ipcMain.handle("getSetting", getSetting);
   ipcMain.handle("initPlaylist", initPlaylist);

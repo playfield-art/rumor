@@ -6,7 +6,7 @@ import Button from "@mui/material/Button";
 
 function CmsActionsSection() {
   return (
-    <Section title="Actions">
+    <Section title="CMS Actions">
       <ButtonContainer>
         <Button
           type="button"

@@ -3,6 +3,7 @@ import * as path from "path";
 import { resourcesPath } from "@shared/resources";
 import AudioRecorder from "./AudioRecorder";
 import { UNWANTED_FILES } from "../../consts";
+import { killProcess } from "../process/killProcess";
 
 const AudioRecordingOptions = {
   program: `${resourcesPath}/sox`, // Which program to use, either `arecord`, `rec`, or `sox`.
@@ -35,10 +36,7 @@ export class AudioRecording {
 
   constructor({ outDir }: AudioRecordingParams) {
     this._outDir = outDir;
-    this._audioRecorder = new AudioRecorder(
-      AudioRecordingOptions,
-      this._debug ? console : null
-    );
+    this._audioRecorder = new AudioRecorder(AudioRecordingOptions, true);
     this._audioRecorder.on("error", this.onError);
     this._audioRecorder.on("end", this.onEnd);
   }
@@ -91,7 +89,11 @@ export class AudioRecording {
     this._audioRecorder?.start()?.stream()?.pipe(fileStream);
   }
 
-  stopRecording() {
+  async stopRecording() {
+    // stop the audio recorder
     this._audioRecorder.stop();
+
+    // kill all sox processes running on the system
+    await killProcess("sox");
   }
 }

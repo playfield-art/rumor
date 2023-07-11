@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import Button from "@mui/material/Button";
+import { Button } from "@mui/material";
 
 type SelectFolderProps = {
   path: string;

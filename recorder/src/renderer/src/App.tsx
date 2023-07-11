@@ -16,6 +16,7 @@ import { Cms } from "./layout/pages/Cms/Cms";
 import { Settings } from "./layout/pages/Settings/Settings";
 import { AppHeader } from "./layout/AppHeader";
 import { CurrentStatus } from "./layout/CurrentStatus";
+import { LogItems } from "./layout/pages/LogItems/LogItems";
 
 function App() {
   useApp();
@@ -49,7 +50,8 @@ function App() {
             >
               {store.procesStatus.procesIsRunning && <Loader />}
               <Routes>
-                <Route path="/" element={<Cms />} />
+                <Route path="/" element={<LogItems />} />
+                <Route path="/cms" element={<Cms />} />
                 <Route path="/settings" element={<Settings />} />
               </Routes>
               <ToastContainer />

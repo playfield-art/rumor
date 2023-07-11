@@ -8,6 +8,7 @@ import SoundBoard from "../lib/audio/SoundBoard";
 import { getAudioList as getAudioListHelper } from "../lib/audio/AudioList";
 import { getRecordingsFolder } from "../lib/filesystem";
 import SettingsHelper from "../lib/settings/SettingHelper";
+import Logger from "../lib/logging/Logger";
 
 /**
  * Get the audiolist
@@ -71,6 +72,8 @@ export const createNewSession = async () => {
   fs.writeFileSync(`${folder}/meta.json`, JSON.stringify(recordingMeta));
   fs.writeFileSync(`${folder}/audiolist.json`, JSON.stringify(audioList));
 
+  Logger.info(`Created new session: ${recordingMeta.sessionId}`);
+
   // return the audio list to work with
   return audioList;
 };
@@ -126,6 +129,6 @@ export const startRecording = (
 /**
  * Stop the recording
  */
-export const stopRecording = () => {
-  AudioRecordingSingleton.getInstance().stopRecording();
+export const stopRecording = async () => {
+  await AudioRecordingSingleton.getInstance().stopRecording();
 };

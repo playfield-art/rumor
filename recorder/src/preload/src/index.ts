@@ -30,6 +30,7 @@ contextBridge.exposeInMainWorld("rumor", {
   },
   methods: {
     createNewSession: () => ipcRenderer.invoke("createNewSession"),
+    getAllLogRows: () => ipcRenderer.invoke("getAllLogRows"),
     getAudioList: (language: string) =>
       ipcRenderer.invoke("getAudioList", language),
     getSetting: (key: string) => ipcRenderer.invoke("getSetting", key),

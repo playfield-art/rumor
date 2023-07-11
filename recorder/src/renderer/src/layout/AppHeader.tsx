@@ -39,7 +39,7 @@ export function AppHeader({ title }: AppHeaderProps) {
             sx={{
               display: "grid",
               gap: "20px",
-              gridTemplateColumns: "1fr 50px",
+              gridTemplateColumns: "1fr 45px",
             }}
           >
             <Button

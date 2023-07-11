@@ -49,10 +49,13 @@ const useSoundBoard = (onError?: (e: Error) => void) => {
    * Stops the soundboard
    */
 
-  const stop = useCallback(() => {
+  const stop = useCallback(async () => {
     if (isPlaying) {
       // stop the voice overs
       window.rumor.methods.VOPlaylistDo("stop");
+
+      // stop the recording (even if it is not recording, just to be sure)
+      await window.rumor.actions.stopRecording();
 
       // clean up th audioplayer
       AudioPlayer.cleanUp();
