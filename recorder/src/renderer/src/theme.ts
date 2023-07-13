@@ -17,6 +17,81 @@ export default createTheme({
     },
   },
   components: {
+    /**
+     * Forms
+     */
+
+    MuiInputBase: {
+      styleOverrides: {
+        root: {
+          display: "block",
+          color: "var(--white)",
+          fontSize: "1rem",
+          borderRadius: "var(--default-border-radius)",
+          border: "1px solid var(--white)",
+          backgroundColor: "var(--grey-1200)",
+          "& input": {
+            padding: "1.5rem 1.2rem",
+            boxSizing: "border-box",
+          },
+        },
+      },
+    },
+    MuiOutlinedInput: {
+      styleOverrides: {
+        root: {
+          "& fieldset": {
+            border: "none",
+          },
+          "&:hover fieldset": {
+            border: "none",
+          },
+          "&.Mui-focused fieldset": {
+            border: "none",
+          },
+        },
+      },
+    },
+    MuiTextField: {
+      styleOverrides: {},
+    },
+    MuiFormControl: {
+      styleOverrides: {
+        root: {
+          marginBottom: "1.5rem",
+        },
+      },
+    },
+    MuiFormLabel: {
+      styleOverrides: {
+        root: {
+          color: "var(--grey-100)",
+          backgroundColor: "var(--grey-1200)",
+          padding: "0 0.5rem",
+          fontSize: "0.8rem",
+          "&.Mui-focused": {
+            color: "var(--grey-100)",
+            backgroundColor: "var(--grey-1200)",
+          },
+          "&.Mui-error": {
+            color: "var(--red-600)",
+            backgroundColor: "var(--grey-1200)",
+          },
+        },
+      },
+    },
+    MuiInput: {
+      styleOverrides: {
+        root: {
+          backgroundColor: "var(--grey-800)",
+        },
+      },
+    },
+
+    /**
+     * Datagrid
+     */
+
     MuiDataGrid: {
       styleOverrides: {
         columnHeader: {
@@ -56,7 +131,6 @@ export default createTheme({
         },
       },
     },
-
     MuiTablePagination: {
       styleOverrides: {
         root: {
@@ -92,6 +166,10 @@ export default createTheme({
         },
       },
     },
+
+    /**
+     * Components
+     */
     MuiButton: {
       variants: [
         {

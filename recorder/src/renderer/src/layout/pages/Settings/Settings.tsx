@@ -3,6 +3,7 @@ import { Grid } from "@mui/material";
 import { FolderSettingsSection } from "./FolderSettingsSection";
 import { RecorderSettingsSection } from "./RecorderSettingsSection";
 import { LoggingSettingsSection } from "./LoggingSettingsSection";
+import { MqttSettingsSection } from "./MqttSettingsSection";
 
 export function Settings() {
   return (
@@ -12,6 +13,7 @@ export function Settings() {
       </Grid>
       <Grid item xs={12} md={6}>
         <LoggingSettingsSection />
+        <MqttSettingsSection />
       </Grid>
       <Grid item xs={12} md={12}>
         <FolderSettingsSection />

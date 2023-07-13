@@ -43,13 +43,13 @@
   --whiteExtraLight: var(--grey-1000);
   --primary-color: var(--grey-1300);
   --accentColor: #646cff;
-  --background-color-section: hsla(0, 0%, 25%, 0.4);
+  --background-color-section: var(--grey-1200);
   --background-color-popup: hsla(0, 0%, 25%, 0.6);
   --background-color-button: var(--grey-1300);
 
   /* Scales */
   --default-padding: 1.25rem;
-  --default-margin: 1.25rem;
+  --default-margin: 0.2rem;
   --default-border-radius: 8px;
 
   /* Root */

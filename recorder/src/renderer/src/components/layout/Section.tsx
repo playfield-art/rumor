@@ -21,6 +21,12 @@ export const SectionContainerBody = styled.div`
   }
 `;
 
+export const SectionFooter = styled.div`
+  margin-top: var(--default-margin);
+  width: 100%;
+  text-align: right;
+`;
+
 export function Section({ title, children }: SectionProps) {
   return (
     <SectionContainer className="section-container">

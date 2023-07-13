@@ -1,42 +1,20 @@
-import React, { useEffect, useState } from "react";
-import { Form, Formik } from "formik";
-import { Section } from "@components/layout/Section";
-import styled from "styled-components";
+import React from "react";
+import { useFormik } from "formik";
+import { Section, SectionFooter } from "@components/layout/Section";
 import * as Yup from "yup";
 import Button from "@mui/material/Button";
+import { useSettingsBucket } from "@hooks/useSettingsBucket";
+import { TextField } from "@mui/material";
 import store from "../../../store";
 
-const InputWrapper = styled.div`
-  input {
-    display: block;
-    width: 100%;
-    box-sizing: border-box;
-    padding: 0.7rem;
-    font-size: 1rem;
-    border-radius: var(--default-border-radius);
-    border: 1px solid var(--white);
-    margin: 3px 0 3px 0;
-  }
-  label {
-    font-size: 0.8rem;
-  }
-  margin-bottom: calc(var(--default-margin) / 2);
-`;
-
-const FormActionsButtonWrapper = styled.div`
-  margin-top: var(--default-margin);
-  width: 100%;
-  text-align: right;
-`;
-
-const recordingSettingsSchema = Yup.object().shape({
-  language: Yup.string(),
-  boothSlug: Yup.string(),
+const validationSchema = Yup.object().shape({
+  language: Yup.string().required("Language is required"),
+  boothSlug: Yup.string().required("Booth Slug is required"),
   rumorCmsApiUrl: Yup.string(),
   rumorCmsApiToken: Yup.string(),
 });
 
-interface InitialValues {
+interface RecorderSettingsInitialValues extends Record<string, string> {
   language: string;
   boothSlug: string;
   rumorCmsApiUrl: string;
@@ -44,147 +22,101 @@ interface InitialValues {
 }
 
 export function RecorderSettingsSection() {
-  const [initialValues, setInitialValues] = useState<InitialValues>({
-    language: "",
-    boothSlug: "",
-    rumorCmsApiUrl: "",
-    rumorCmsApiToken: "",
-  });
-
-  useEffect(() => {
-    store.runProces();
-    const getInitialValues = async (): Promise<InitialValues> => {
-      // get the keys of the initial values
-      const valuesKeys = Object.keys(initialValues);
-
-      // create the default initialvalues
-      const newInitialValues = {} as InitialValues;
-
-      // loop over keys and get the values
-      await Promise.all(
-        valuesKeys.map(async (k) => {
-          newInitialValues[k as keyof InitialValues] =
-            (await window.rumor.methods.getSetting(k)) || "";
-        })
-      );
-
-      // return the fetched initial values
-      return newInitialValues;
-    };
-    getInitialValues().then((v) => {
-      setInitialValues(v);
-      store.stopProces();
+  const { currentInitialValues, saveValues } =
+    useSettingsBucket<RecorderSettingsInitialValues>({
+      language: "",
+      boothSlug: "",
+      rumorCmsApiUrl: "",
+      rumorCmsApiToken: "",
     });
-  }, []);
 
-  if (store.procesStatus.procesIsRunning) return <div />;
+  // create the formik form
+  const formik = useFormik({
+    initialValues: currentInitialValues,
+    validationSchema,
+    onSubmit: async (v) => {
+      await saveValues(v);
+      store.notify("Recorder settings were saved!");
+    },
+  });
 
   return (
     <Section title="Recording Settings">
-      <Formik
-        initialValues={initialValues}
-        validationSchema={recordingSettingsSchema}
-        onSubmit={async (v, { setSubmitting }) => {
-          // we are submitting, let the form know
-          setSubmitting(true);
-
-          // get all the values keys
-          const valuesKeys = Object.keys(v);
-
-          // save everything in the form
-          await Promise.all(
-            valuesKeys.map(async (vk: string) => {
-              await window.rumor.actions.saveSetting({
-                key: vk,
-                value: v[vk as keyof InitialValues] ?? "",
-              });
-            })
-          );
-
-          // done, so clear submitting state
-          setSubmitting(false);
-
-          // notify in the frontend
-          store.notify("Settings were saved!");
-        }}
-      >
-        {({
-          values,
-          errors,
-          touched,
-          handleChange,
-          handleBlur,
-          isSubmitting,
-        }) => (
-          <Form>
-            <InputWrapper>
-              <label htmlFor="language">
-                Language
-                <input
-                  type="text"
-                  id="language"
-                  name="language"
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  value={values.language}
-                />
-              </label>
-              {errors.language && touched.language && errors.language}
-            </InputWrapper>
-            <InputWrapper>
-              <label htmlFor="boothSlug">
-                Booth Slug
-                <input
-                  type="text"
-                  id="boothSlug"
-                  name="boothSlug"
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  value={values.boothSlug}
-                />
-              </label>
-              {errors.boothSlug && touched.boothSlug && errors.boothSlug}
-            </InputWrapper>
-            <InputWrapper>
-              <label htmlFor="rumorCmsApiUrl">
-                Rumor CMS Api URL
-                <input
-                  type="text"
-                  id="rumorCmsApiUrl"
-                  name="rumorCmsApiUrl"
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  value={values.rumorCmsApiUrl}
-                />
-              </label>
-              {errors.rumorCmsApiUrl &&
-                touched.rumorCmsApiUrl &&
-                errors.rumorCmsApiUrl}
-            </InputWrapper>
-            <InputWrapper>
-              <label htmlFor="rumorCmsApiToken">
-                Rumor CMS Api Token
-                <input
-                  type="text"
-                  id="rumorCmsApiToken"
-                  name="rumorCmsApiToken"
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  value={values.rumorCmsApiToken}
-                />
-              </label>
-              {errors.rumorCmsApiToken &&
-                touched.rumorCmsApiToken &&
-                errors.rumorCmsApiToken}
-            </InputWrapper>
-            <FormActionsButtonWrapper>
-              <Button type="submit" variant="contained" disabled={isSubmitting}>
-                Save
-              </Button>
-            </FormActionsButtonWrapper>
-          </Form>
-        )}
-      </Formik>
+      <form onSubmit={formik.handleSubmit}>
+        <TextField
+          fullWidth
+          label="Language"
+          type="text"
+          id="language"
+          name="language"
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+          value={formik.values.language}
+          error={formik.touched.language && Boolean(formik.errors.language)}
+          InputLabelProps={{
+            shrink: true,
+          }}
+        />
+        <TextField
+          fullWidth
+          label="Booth Slug"
+          type="text"
+          id="boothSlug"
+          name="boothSlug"
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+          value={formik.values.boothSlug}
+          error={formik.touched.boothSlug && Boolean(formik.errors.boothSlug)}
+          InputLabelProps={{
+            shrink: true,
+          }}
+        />
+        <TextField
+          fullWidth
+          label="Rumor CMS Api URL"
+          type="text"
+          id="rumorCmsApiUrl"
+          name="rumorCmsApiUrl"
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+          value={formik.values.rumorCmsApiUrl}
+          error={
+            formik.touched.rumorCmsApiUrl &&
+            Boolean(formik.errors.rumorCmsApiUrl)
+          }
+          InputLabelProps={{
+            shrink: true,
+          }}
+        />
+        <TextField
+          fullWidth
+          label="Rumor CMS Api Token"
+          type="text"
+          id="rumorCmsApiToken"
+          name="rumorCmsApiToken"
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+          value={formik.values.rumorCmsApiToken}
+          error={
+            formik.touched.rumorCmsApiToken &&
+            Boolean(formik.errors.rumorCmsApiToken)
+          }
+          InputLabelProps={{
+            shrink: true,
+          }}
+        />
+        <SectionFooter>
+          <Button
+            sx={{ width: "auto" }}
+            color="primary"
+            variant="contained"
+            fullWidth
+            type="submit"
+          >
+            Save
+          </Button>
+        </SectionFooter>
+      </form>
     </Section>
   );
 }
