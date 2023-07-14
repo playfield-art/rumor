@@ -1,14 +1,9 @@
-import fs from "fs";
-import path from "path";
-import { Utils } from "@shared/utils";
-import { AudioList, RecordingMeta } from "../../../shared/interfaces";
-import { AudioRecordingSingleton } from "../lib/audio/AudioRecordingSingleton";
+import { AudioList } from "../../../shared/interfaces";
 import { Exception } from "../lib/exceptions/Exception";
 import SoundBoard from "../lib/audio/SoundBoard";
 import { getAudioList as getAudioListHelper } from "../lib/audio/AudioList";
-import { getRecordingsFolder } from "../lib/filesystem";
-import SettingsHelper from "../lib/settings/SettingHelper";
 import Logger from "../lib/logging/Logger";
+import { Recorder } from "../recorder";
 
 /**
  * Get the audiolist
@@ -18,66 +13,6 @@ export const getAudioList = async (
   event: Electron.IpcMainInvokeEvent,
   language: string
 ): Promise<AudioList> => getAudioListHelper(language);
-
-/**
- * Creates a new recording folder and adds this to the internale AudioRecording
- * @returns
- */
-export const createNewSession = async () => {
-  // get the language
-  const language = await SettingsHelper.getLanguage();
-
-  // create new audiolist
-  const audioList = await getAudioListHelper(language);
-
-  // get the recording folder from settings
-  const recordingsFolder = await getRecordingsFolder();
-
-  // get the booth slug
-  const boothSlug = await SettingsHelper.getBoothSlug();
-
-  // if no booth slug, throw an exception
-  if (!boothSlug) {
-    throw new Exception({
-      message: "There was no boothSlug found in the settings.",
-      where: "createNewSession",
-    });
-  }
-
-  // if no recording folder, throw an exception
-  if (!recordingsFolder) {
-    throw new Exception({
-      message: "There was no recordings folder provided.",
-      where: "createNewSession",
-    });
-  }
-
-  // generate a session id
-  const recordingMeta: RecordingMeta = {
-    language,
-    boothSlug,
-    sessionId: Utils.generateUniqueNameByDate(),
-    recordingDate: Utils.currentDate(),
-    recordingTime: Utils.currentTime(),
-  };
-
-  // create a new folder
-  const folder = path.join(recordingsFolder, recordingMeta.sessionId);
-  if (!fs.existsSync(folder)) {
-    fs.mkdirSync(folder);
-    AudioRecordingSingleton.getInstance().outDir = folder;
-  }
-
-  // add some meta information to the folder
-  fs.writeFileSync(`${folder}/meta.json`, JSON.stringify(recordingMeta));
-  fs.writeFileSync(`${folder}/audiolist.json`, JSON.stringify(audioList));
-
-  // log out the new session
-  Logger.info(`Created new session: ${recordingMeta.sessionId}`);
-
-  // return the audio list to work with
-  return audioList;
-};
 
 /**
  * Set new voice overs for the internal voice overs playlist
@@ -91,18 +26,35 @@ export const initPlaylist = (
 };
 
 /**
+ * Start a new session
+ */
+export const startSession = async () => {
+  try {
+    // start a new session, trigger frontend if a soundscape needs to be played
+    await SoundBoard.startSession((soundscape) => {
+      Recorder.mainWindow.webContents.send("play-soundscape", soundscape);
+    });
+
+    // let the frontend know
+    Recorder.mainWindow.webContents.send("session-started");
+
+    // Log
+    Logger.success("Session started.");
+  } catch (e: any) {
+    throw new Exception({ where: "startSession", message: e.message });
+  }
+};
+
+/**
  * Voice Over playlist do something...
  * @param event
  * @param VOPlaylistAction
  */
 export const VOPlaylistDo = (
   event: Electron.IpcMainInvokeEvent,
-  VOPlaylistAction: "start" | "stop" | "next"
+  VOPlaylistAction: "stop" | "next"
 ) => {
   switch (VOPlaylistAction) {
-    case "start":
-      SoundBoard.VOPlaylist.start();
-      break;
     case "stop":
       SoundBoard.VOPlaylist.stop();
       break;
@@ -121,6 +73,9 @@ export const VOPlaylistDo = (
 export const stopSession = async () => {
   // stop the playlist
   await SoundBoard.destroy();
+
+  // let the frontend know and ask to cleanup the soundscape
+  Recorder.mainWindow.webContents.send("session-stopped");
 
   // log
   await Logger.warn("Session force stopped.");

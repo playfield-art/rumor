@@ -15,6 +15,7 @@ import { Recorder } from "./recorder";
 import SoundBoard from "./lib/audio/SoundBoard";
 import { killProcess } from "./lib/process/killProcess";
 import Logger from "./lib/logging/Logger";
+import { MqttSingleton } from "./lib/mqtt/MqttSingleton";
 
 /**
  * Get the resources path
@@ -84,6 +85,10 @@ const initApp = async () => {
       // prevent the application from quitting
       event.preventDefault();
 
+      // Start closing
+      if (mainWindow && !mainWindow.isDestroyed()) {
+        mainWindow.webContents.send("closing");
+      }
       // destroy the soundboard
       await SoundBoard.destroy();
 
@@ -93,10 +98,8 @@ const initApp = async () => {
       // save logs
       await Logger.info("Application has been closed.");
 
-      // Start closing
-      if (mainWindow && !mainWindow.isDestroyed()) {
-        mainWindow.webContents.send("closing");
-      }
+      // close the mqtt client
+      MqttSingleton.getInstance()._mqttClient.end(true);
 
       // exit the application
       app.exit(0);

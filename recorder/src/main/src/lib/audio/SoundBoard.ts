@@ -1,10 +1,21 @@
-import { AudioList, VoiceOver, VoiceOverType } from "@shared/interfaces";
-
+import fs from "fs";
+import path from "path";
+import {
+  AudioList,
+  RecordingMeta,
+  SoundScape,
+  VoiceOver,
+  VoiceOverType,
+} from "@shared/interfaces";
+import { Utils } from "@shared/utils";
+import { Exception } from "../exceptions/Exception";
 import VOPlaylist, { VOPlaylistOptions } from "./VOPlaylist";
 import { AudioRecordingSingleton } from "./AudioRecordingSingleton";
 import SCPlaylist from "./SCPlaylist";
-import { Recorder } from "../../recorder";
+import { getAudioList as getAudioListHelper } from "./AudioList";
 import Logger from "../logging/Logger";
+import SettingHelper from "../settings/SettingHelper";
+import { getRecordingsFolder } from "../filesystem";
 
 export default class SoundBoard {
   public static VOPlaylist: VOPlaylist;
@@ -12,24 +23,127 @@ export default class SoundBoard {
   public static SCPlaylist: SCPlaylist;
 
   /**
+   * Create a new session in the soundboard
+   * @returns The audio list
+   */
+  private static createNewSession = async () => {
+    // get the language
+    const language = await SettingHelper.getLanguage();
+
+    // create new audiolist
+    const audioList = await getAudioListHelper(language);
+
+    // get the recording folder from settings
+    const recordingsFolder = await getRecordingsFolder();
+
+    // get the booth slug
+    const boothSlug = await SettingHelper.getBoothSlug();
+
+    // if no booth slug, throw an exception
+    if (!boothSlug) {
+      throw new Exception({
+        message: "There was no boothSlug found in the settings.",
+        where: "createNewSession",
+      });
+    }
+
+    // if no recording folder, throw an exception
+    if (!recordingsFolder) {
+      throw new Exception({
+        message: "There was no recordings folder provided.",
+        where: "createNewSession",
+      });
+    }
+
+    // generate a session id
+    const recordingMeta: RecordingMeta = {
+      language,
+      boothSlug,
+      sessionId: Utils.generateUniqueNameByDate(),
+      recordingDate: Utils.currentDate(),
+      recordingTime: Utils.currentTime(),
+    };
+
+    // create a new folder
+    const folder = path.join(recordingsFolder, recordingMeta.sessionId);
+    if (!fs.existsSync(folder)) {
+      fs.mkdirSync(folder);
+      AudioRecordingSingleton.getInstance().outDir = folder;
+    }
+
+    // add some meta information to the folder
+    fs.writeFileSync(`${folder}/meta.json`, JSON.stringify(recordingMeta));
+    fs.writeFileSync(`${folder}/audiolist.json`, JSON.stringify(audioList));
+
+    // log out the new session
+    Logger.info(`Created new session: ${recordingMeta.sessionId}`);
+
+    // return the audio list to work with
+    return audioList;
+  };
+
+  /**
+   * Destroy the soundboard
+   * 1. Stop the recording if it is recording
+   * 2. Stop the playlist
+   * 3. Ask the frontend to cleanup the soundscape
+   */
+  public static async destroy() {
+    // stop the recording if it is recording
+    if (AudioRecordingSingleton.getInstance().isRecording) {
+      await AudioRecordingSingleton.getInstance().stopRecording();
+    }
+
+    // stop the playlist
+    if (SoundBoard.VOPlaylist) {
+      await SoundBoard.VOPlaylist.stop();
+    }
+  }
+
+  /**
+   * Init the playlist with the given audio list
+   * @param audioList The audio list to init the playlist with
+   */
+  public static initPlaylist(
+    audioList: AudioList,
+    onTriggerSoundscape?: (soundscape: SoundScape) => void
+  ) {
+    // define the options needed for our playlist
+    const voPlaylistOptions: VOPlaylistOptions = {
+      onNext: (voiceOver: VoiceOver) => {
+        // do something when we are the next voice over
+        SoundBoard.onNextInPLaylist();
+
+        // if we have a trigger event defined
+        if (onTriggerSoundscape) {
+          // get the soundscape corresponding to the voice over
+          const soundscape =
+            SoundBoard.SCPlaylist.getSCCorrespondingToVoiceOver(voiceOver);
+
+          // if we have a soundscape, send it to the renderer
+          if (soundscape) {
+            onTriggerSoundscape(soundscape);
+            Logger.info(`Playing soundscape ${soundscape.fileName}`);
+          }
+        }
+      },
+      onVODone: this.onVODone,
+    };
+
+    // create new voice over playlist
+    SoundBoard.VOPlaylist = new VOPlaylist(audioList.VO, voPlaylistOptions);
+    SoundBoard.SCPlaylist = new SCPlaylist(audioList.SC);
+  }
+
+  /**
    * On next voice over in playlist
    * @param voiceOver
    */
-  private static async onNextInPLaylist(voiceOver: VoiceOver) {
+  private static async onNextInPLaylist() {
     // stop the recording if it is recording
     if (AudioRecordingSingleton.getInstance().isRecording) {
       const stats = await AudioRecordingSingleton.getInstance().stopRecording();
       Logger.info(`Stopped recording, the filesize is ${stats.sizeReadable}`);
-    }
-
-    // get the soundscape corresponding to the voice over
-    const soundscape =
-      SoundBoard.SCPlaylist.getSCCorrespondingToVoiceOver(voiceOver);
-
-    // if we have a soundscape, send it to the renderer
-    if (soundscape) {
-      Recorder.mainWindow.webContents.send("play-soundscape", soundscape);
-      Logger.info(`Playing soundscape ${soundscape.fileName}`);
     }
   }
 
@@ -54,39 +168,18 @@ export default class SoundBoard {
   }
 
   /**
-   * Init the playlist with the given audio list
-   * @param audioList The audio list to init the playlist with
+   * Start a new session
    */
-  public static initPlaylist(audioList: AudioList) {
-    // define the options needed for our playlist
-    const voPlaylistOptions: VOPlaylistOptions = {
-      onNext: this.onNextInPLaylist,
-      onVODone: this.onVODone,
-    };
+  public static async startSession(
+    onTriggerSoundscape?: (soundscape: SoundScape) => void
+  ) {
+    // create a new session
+    const audioList = await SoundBoard.createNewSession();
 
-    // create new voice over playlist
-    SoundBoard.VOPlaylist = new VOPlaylist(audioList.VO, voPlaylistOptions);
-    SoundBoard.SCPlaylist = new SCPlaylist(audioList.SC);
-  }
+    // init the playlist
+    SoundBoard.initPlaylist(audioList, onTriggerSoundscape);
 
-  /**
-   * Destroy the soundboard
-   * 1. Stop the recording if it is recording
-   * 2. Stop the playlist
-   * 3. Ask the frontend to cleanup the soundscape
-   */
-  public static async destroy() {
-    // stop the recording if it is recording
-    if (AudioRecordingSingleton.getInstance().isRecording) {
-      await AudioRecordingSingleton.getInstance().stopRecording();
-    }
-
-    // stop the playlist
-    if (SoundBoard.VOPlaylist) {
-      await SoundBoard.VOPlaylist.stop();
-    }
-
-    // ask the frontend to cleanup the soundscape
-    Recorder.mainWindow.webContents.send("cleanup-soundscape");
+    // start the playlist
+    SoundBoard.VOPlaylist.next();
   }
 }

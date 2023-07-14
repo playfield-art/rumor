@@ -17,22 +17,24 @@ declare global {
         saveSetting(setting: ISetting): void;
       };
       readonly methods: {
-        createNewSession(): Promise<AudioList>;
         getAllLogRows(): Promise<ILogRow[]>;
         getAudioList(language: string): Promise<AudioList>;
+        getMqttConnection(): Promise<boolean>;
         getSetting(key: string): string | null;
         initPlaylist(audioList: AudioList): void;
+        reInitMqtt(): Promise<void>;
         removeAllLogging(): Promise<void>;
         setFolderSetting(key: string): Promise<string>;
         setRecordingsFolder(): string;
+        startSession(): Promise<void>;
         stopSession(): Promise<void>;
         syncNarrative(): Promise<void>;
         uploadToCms(): Promise<void>;
         VOPlaylistDo(action: "start" | "stop" | "next");
       };
       readonly events: {
-        onCleanupSoundscape(
-          callback: (event: IpcMessageEvent) => void
+        onMqttConnection(
+          callback: (event: IpcMessageEvent, connection: boolean) => void
         ): () => void;
         onNextVO(callback: (event: IpcMessageEvent) => void): () => void;
         onNotification(
@@ -43,6 +45,12 @@ declare global {
         ): () => void;
         onProces(
           callback: (event: IpcMessageEvent, procesStatus: ProcesStatus) => void
+        ): () => void;
+        onSessionStarted(
+          callback: (event: IpcMessageEvent) => void
+        ): () => void;
+        onSessionStopped(
+          callback: (event: IpcMessageEvent) => void
         ): () => void;
       };
     };

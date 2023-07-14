@@ -1,16 +1,17 @@
 import React from "react";
-import { Toolbar, Typography, AppBar, Button, Box } from "@mui/material";
+import { Toolbar, AppBar, Button, Box } from "@mui/material";
 import useSoundBoard from "@hooks/useSoundBoard";
 import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord";
 import SkipNextIcon from "@mui/icons-material/SkipNext";
 import StopIcon from "@mui/icons-material/Stop";
 import store from "../store";
+import { MqttConnection } from "./MqttConnection";
 
 export interface AppHeaderProps {
   title: string;
 }
 
-export function AppHeader({ title }: AppHeaderProps) {
+export function AppHeader() {
   const { isPlaying, start, stop, playNextVO } = useSoundBoard((e) =>
     store.notify(e.message)
   );
@@ -21,9 +22,7 @@ export function AppHeader({ title }: AppHeaderProps) {
       position="fixed"
     >
       <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
-        <Typography variant="h6" noWrap component="div">
-          {title}
-        </Typography>
+        <MqttConnection />
         {!isPlaying && (
           <Button
             tabIndex={-1}

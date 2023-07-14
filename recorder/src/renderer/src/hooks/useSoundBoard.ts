@@ -3,16 +3,12 @@ import { useState, useCallback, useEffect } from "react";
 // import { CAN_CONTINUE_WHILE_PLAYING, CAN_RECORD, FADING_TIME } from "../consts";
 // import { OnPlayChange, OnVOEnd, SoundBoard } from "../lib/SoundBoard";
 import { useRecorderStore } from "./useRecorderStore";
-import { useLogger } from "./useLogger";
 import { AudioPlayer } from "../lib/Player";
 
 const useSoundBoard = (onError?: (e: Error) => void) => {
   const [currentVO] = useState<VoiceOver | null>(null);
   const [currentSC] = useState<SoundScape | null>(null);
   const isPlaying = useRecorderStore((state) => state.isPlaying);
-  const startPlaying = useRecorderStore((state) => state.startPlaying);
-  const stopPlaying = useRecorderStore((state) => state.stopPlaying);
-  const { success } = useLogger();
 
   /**
    * Plays next VO
@@ -30,20 +26,7 @@ const useSoundBoard = (onError?: (e: Error) => void) => {
   const start = useCallback(async () => {
     if (!isPlaying) {
       try {
-        // set the internal "started" state
-        startPlaying();
-
-        // create a new session
-        const audioList = await window.rumor.methods.createNewSession();
-
-        // init the VOPlaylist in backend
-        window.rumor.methods.initPlaylist(audioList);
-
-        // play the first audio file
-        window.rumor.methods.VOPlaylistDo("next");
-
-        // session started
-        success("Session started.");
+        await window.rumor.methods.startSession();
       } catch (e: any) {
         if (onError) onError(e);
       }
@@ -58,9 +41,6 @@ const useSoundBoard = (onError?: (e: Error) => void) => {
     if (isPlaying) {
       // stop the voice overs
       window.rumor.methods.stopSession();
-
-      // stop play (in frontend)
-      stopPlaying();
     }
   }, [isPlaying]);
 
@@ -75,13 +55,8 @@ const useSoundBoard = (onError?: (e: Error) => void) => {
           AudioPlayer.play(soundscape.url);
         }
       });
-    const removeEventListenerOnCleanupSoundscape =
-      window.rumor.events.onCleanupSoundscape(() => {
-        AudioPlayer.cleanUp();
-      });
     return () => {
       removeEventListenerOnPlaySoundscape();
-      removeEventListenerOnCleanupSoundscape();
     };
   }, [isPlaying]);
 

@@ -24,8 +24,7 @@ function App() {
   return (
     <Router>
       <ThemeProvider theme={theme}>
-        <AppHeader title="Rumor" />
-
+        <AppHeader />
         <Box sx={{ display: "flex" }}>
           <Sidebar />
           <Box component="main" sx={{ flexGrow: 1, pt: 8 }}>

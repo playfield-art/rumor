@@ -28,17 +28,19 @@ contextBridge.exposeInMainWorld("rumor", {
       ipcRenderer.send("saveSetting", setting),
   },
   methods: {
-    createNewSession: () => ipcRenderer.invoke("createNewSession"),
     getAllLogRows: () => ipcRenderer.invoke("getAllLogRows"),
     getAudioList: (language: string) =>
       ipcRenderer.invoke("getAudioList", language),
+    getMqttConnection: () => ipcRenderer.invoke("getMqttConnection"),
     getSetting: (key: string) => ipcRenderer.invoke("getSetting", key),
     initPlaylist: (audioList: AudioList) =>
       ipcRenderer.invoke("initPlaylist", audioList),
+    reInitMqtt: () => ipcRenderer.invoke("reInitMqtt"),
     removeAllLogging: () => ipcRenderer.invoke("removeAllLogging"),
     setFolderSetting: (key: string) =>
       ipcRenderer.invoke("setFolderSetting", key),
     setRecordingsFolder: () => ipcRenderer.invoke("setRecordingsFolder"),
+    startSession: () => ipcRenderer.invoke("startSession"),
     stopSession: () => ipcRenderer.invoke("stopSession"),
     syncNarrative: () => {
       ipcRenderer.invoke("syncNarrative");
@@ -48,9 +50,9 @@ contextBridge.exposeInMainWorld("rumor", {
       ipcRenderer.invoke("VOPlaylistDo", action),
   },
   events: {
-    onCleanupSoundscape: (callback: any) => {
-      ipcRenderer.on("cleanup-soundscape", callback);
-      return () => ipcRenderer.removeAllListeners("cleanup-soundscape");
+    onMqttConnection: (callback: any) => {
+      ipcRenderer.on("mqtt-connection", callback);
+      return () => ipcRenderer.removeAllListeners("mqtt-connection");
     },
     onNextVO: (callback: any) => {
       ipcRenderer.on("next-vo", callback);
@@ -67,6 +69,14 @@ contextBridge.exposeInMainWorld("rumor", {
     onProces: (callback: any) => {
       ipcRenderer.on("on-proces", callback);
       return () => ipcRenderer.removeAllListeners("on-proces");
+    },
+    onSessionStarted: (callback: any) => {
+      ipcRenderer.on("session-started", callback);
+      return () => ipcRenderer.removeAllListeners("session-started");
+    },
+    onSessionStopped: (callback: any) => {
+      ipcRenderer.on("session-stopped", callback);
+      return () => ipcRenderer.removeAllListeners("session-stopped");
     },
   },
 });

@@ -17,7 +17,7 @@ export default class SettingHelper {
     return null;
   }
 
-  private static async getSettingValue(
+  public static async getSettingValue(
     key: string,
     defaultValue: any
   ): Promise<any> {
@@ -74,5 +74,14 @@ export default class SettingHelper {
       "language",
       defaultValue
     )) as string;
+  }
+
+  /**
+   * Sets a setting
+   * @param key The key of the setting
+   * @param value The value of the setting
+   */
+  public static async setSetting(key: string, value: any) {
+    await SettingHelper.saveSetting({ key, value });
   }
 }

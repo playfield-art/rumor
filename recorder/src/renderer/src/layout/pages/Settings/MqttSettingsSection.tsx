@@ -35,6 +35,7 @@ export function MqttSettingsSection() {
     validationSchema,
     onSubmit: async (v) => {
       await saveValues(v);
+      await window.rumor.methods.reInitMqtt();
       store.notify("MQTT settings were saved!");
     },
   });

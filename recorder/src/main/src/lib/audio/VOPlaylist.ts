@@ -29,17 +29,6 @@ export default class VOPlaylist {
     this.options = { ...this.options, ...options };
   }
 
-  start() {
-    // check if we have files to play
-    if (this.voiceOvers.length === 0) throw new Error("No voiceovers found");
-
-    // get the voiceover
-    const voiceOver = this.voiceOvers[this.currentIndex];
-
-    // play the voice over
-    this.internalPlayer.play(voiceOver.fileName, () => {});
-  }
-
   next() {
     // check if we have files to play
     if (this.voiceOvers.length === 0) throw new Error("No voiceovers found");
