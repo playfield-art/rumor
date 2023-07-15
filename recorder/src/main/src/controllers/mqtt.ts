@@ -1,6 +1,6 @@
 import { Exception } from "../lib/exceptions/Exception";
 import { MqttSingleton } from "../lib/mqtt/MqttSingleton";
-import { Recorder } from "../recorder";
+import { initMQTT } from "../mqtt";
 
 /**
  * Get boolean if we are connected to mqtt
@@ -8,7 +8,7 @@ import { Recorder } from "../recorder";
  */
 export const getMqttConnection = (): boolean => {
   try {
-    return MqttSingleton.getInstance()._mqttClient.connected;
+    return MqttSingleton.getInstance()._mqttClient?.connected ?? false;
   } catch (e: any) {
     throw new Exception({ where: "getMqttConnection", message: e.message });
   }
@@ -19,7 +19,7 @@ export const getMqttConnection = (): boolean => {
  */
 export const reInitMqtt = async () => {
   try {
-    await Recorder.initMqtt();
+    await initMQTT();
   } catch (e: any) {
     throw new Exception({ where: "reInitMqtt", message: e.message });
   }

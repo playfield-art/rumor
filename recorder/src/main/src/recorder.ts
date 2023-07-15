@@ -6,10 +6,6 @@ import { getSerialPorts } from "./lib/serial/Serial";
 import { SerialButton } from "./lib/serial/SerialButton";
 import { SerialButtonSingleton } from "./lib/serial/SerialButtonSingleton";
 import SettingHelper from "./lib/settings/SettingHelper";
-import { MQTT } from "./lib/mqtt/Mqtt";
-import { MqttSingleton } from "./lib/mqtt/MqttSingleton";
-import { MqttTopicHandler } from "./lib/mqtt/MqttTopicHandler";
-import { MQTT_TOPICS_SUBSCRIPTIONS } from "./consts";
 
 /**
  * The app class
@@ -63,58 +59,6 @@ export class Recorder {
           onButtonUp: () => Recorder._mainWindow.webContents.send("next-vo"),
         })
       );
-    }
-
-    /**
-     * MQTT
-     */
-
-    await Recorder.initMqtt();
-  }
-
-  /**
-   * Init MQTT
-   */
-  public static async initMqtt() {
-    // get the mqtt host and port
-    const mqttHost = await SettingHelper.getSettingValue("mqttHost", "");
-    const mqttPort = await SettingHelper.getSettingValue("mqttPort", "");
-    if (!mqttHost || !mqttPort) return;
-
-    // disconnect the mqtt client if it is connected
-    if (
-      MqttSingleton.getInstance() &&
-      MqttSingleton.getInstance()._mqttClient?.connected
-    ) {
-      MqttSingleton.getInstance().disconnectMqttClient();
-      MqttSingleton.getInstance().destroy();
-    }
-
-    // create the mqtt instance
-    const mqtt = new MQTT(`${mqttHost}:${mqttPort}`, {
-      onConnect: () => {
-        Recorder.mainWindow.webContents.send("mqtt-connection", true);
-      },
-      onMessage: async (topic, payload) => {
-        await MqttTopicHandler.handleTopic(topic, payload, (m, p) => {
-          Recorder.mainWindow.webContents.send(m, p);
-        });
-      },
-      onOffline: () => {
-        Recorder.mainWindow.webContents.send("mqtt-connection", false);
-      },
-    });
-
-    // set the instance
-    MqttSingleton.setInstance(mqtt);
-
-    try {
-      await MqttSingleton.getInstance().connectToMqttClient();
-      MQTT_TOPICS_SUBSCRIPTIONS.forEach((topic) => {
-        mqtt.subscribe(`${topic}/+`);
-      });
-    } catch (error) {
-      Recorder.mainWindow.webContents.send("mqtt-connection", false);
     }
   }
 

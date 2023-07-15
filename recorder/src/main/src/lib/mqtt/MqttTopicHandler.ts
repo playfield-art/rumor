@@ -3,17 +3,14 @@
  */
 
 // import { startSession } from "../../controllers/audio";
+import { Recorder } from "../../recorder";
 import SoundBoard from "../audio/SoundBoard";
 import { Exception } from "../exceptions/Exception";
 import Logger from "../logging/Logger";
 import SettingHelper from "../settings/SettingHelper";
 
 export class MqttTopicHandler {
-  public static async handleTopic(
-    topic: string,
-    message: string = "",
-    onFrontendTrigger?: (message: string, payload?: any) => void
-  ) {
+  public static async handleTopic(topic: string, message: string = "") {
     // convert the message to a json object
     const json = JSON.parse(message);
 
@@ -35,30 +32,22 @@ export class MqttTopicHandler {
     const methodName = `${defaultMethod}${methodToCall}`;
     if (Object.prototype.hasOwnProperty.call(MqttTopicHandler, methodName)) {
       // @ts-ignore
-      await MqttTopicHandler[methodName as keyof typeof MqttTopicHandler](
-        json,
-        onFrontendTrigger
-      );
+      await MqttTopicHandler[methodName as keyof typeof MqttTopicHandler](json);
     }
   }
 
   /**
    * Handle the topic recorder/startSession
-   * @param json
    */
-  public static async handleTopicRecorderStartSession(
-    // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
-    json = {},
-    onFrontendTrigger?: (message: string, payload?: any) => void
-  ) {
+  public static async handleTopicRecorderStartSession() {
     try {
       // start a new session, trigger frontend if a soundscape needs to be played
       await SoundBoard.startSession((soundscape) => {
-        if (onFrontendTrigger) onFrontendTrigger("play-soundscape", soundscape);
+        Recorder.mainWindow.webContents.send("play-soundscape", soundscape);
       });
 
       // let the frontend know
-      if (onFrontendTrigger) onFrontendTrigger("session-started", {});
+      Recorder.mainWindow.webContents.send("session-started", {});
 
       // Log
       Logger.success("Session started.");
@@ -72,21 +61,14 @@ export class MqttTopicHandler {
 
   /**
    * Handle the topic recorder/stopSession
-   * @param json
    */
-  public static async handleTopicRecorderStopSession(
-    // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
-    json = {},
-    onFrontendTrigger?: (message: string, payload?: any) => void
-  ) {
+  public static async handleTopicRecorderStopSession() {
     try {
       // stop the playlist
       await SoundBoard.destroy();
 
       // ask the frontend to cleanup the soundscape
-      if (onFrontendTrigger) {
-        onFrontendTrigger("session-stopped");
-      }
+      Recorder.mainWindow.webContents.send("session-stopped", {});
 
       // log
       await Logger.warn("Session force stopped.");
