@@ -48,6 +48,11 @@
     },
     "time": {
       "type": "time"
+    },
+    "language_relation": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::language.language"
     }
   }
 }

@@ -8,14 +8,10 @@
     "description": ""
   },
   "options": {
-    "draftAndPublish": true
+    "draftAndPublish": false
   },
   "pluginOptions": {},
   "attributes": {
-    "text": {
-      "type": "richtext",
-      "required": true
-    },
     "question_tag": {
       "type": "relation",
       "relation": "oneToOne",
@@ -25,6 +21,11 @@
       "type": "boolean",
       "default": true,
       "required": true
+    },
+    "translations": {
+      "type": "component",
+      "repeatable": true,
+      "component": "translations.text-translation"
     }
   }
 }

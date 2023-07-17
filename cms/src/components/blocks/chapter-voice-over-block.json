@@ -10,6 +10,13 @@
       "type": "relation",
       "relation": "oneToOne",
       "target": "api::voice-over.voice-over"
+    },
+    "soundscape": {
+      "allowedTypes": [
+        "audios"
+      ],
+      "type": "media",
+      "multiple": false
     }
   }
 }

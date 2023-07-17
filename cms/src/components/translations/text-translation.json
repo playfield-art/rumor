@@ -1,18 +1,13 @@
 {
-  "collectionName": "components_audio_audio",
+  "collectionName": "components_translations_text_translations",
   "info": {
-    "displayName": "Audio",
+    "displayName": "TextTranslation",
     "description": ""
   },
   "options": {},
   "attributes": {
-    "audio": {
-      "type": "media",
-      "multiple": false,
-      "required": true,
-      "allowedTypes": [
-        "audios"
-      ]
+    "text": {
+      "type": "string"
     },
     "language": {
       "type": "relation",

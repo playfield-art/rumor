@@ -10,6 +10,13 @@
       "type": "relation",
       "relation": "oneToOne",
       "target": "api::question.question"
+    },
+    "soundscape": {
+      "allowedTypes": [
+        "audios"
+      ],
+      "type": "media",
+      "multiple": false
     }
   }
 }
