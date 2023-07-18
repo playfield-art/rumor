@@ -2,11 +2,11 @@
  * This class is used to handle the mqtt topics
  */
 
-// import { startSession } from "../../controllers/audio";
-import { Recorder } from "../../recorder";
+import { QLCFunction } from "@shared/enums";
+import { startSession, stopSession } from "../../controllers/audio";
 import SoundBoard from "../audio/SoundBoard";
 import { Exception } from "../exceptions/Exception";
-import Logger from "../logging/Logger";
+import { QLCSingleton } from "../qlc/QLCSingleton";
 import SettingHelper from "../settings/SettingHelper";
 
 export class MqttTopicHandler {
@@ -37,50 +37,6 @@ export class MqttTopicHandler {
   }
 
   /**
-   * Handle the topic recorder/startSession
-   */
-  public static async handleTopicRecorderStartSession() {
-    try {
-      // start a new session, trigger frontend if a soundscape needs to be played
-      await SoundBoard.startSession((soundscape) => {
-        Recorder.mainWindow.webContents.send("play-soundscape", soundscape);
-      });
-
-      // let the frontend know
-      Recorder.mainWindow.webContents.send("session-started", {});
-
-      // Log
-      Logger.success("Session started.");
-    } catch (e: any) {
-      throw new Exception({
-        where: "handleTopicRecorderStartSession",
-        message: e.message,
-      });
-    }
-  }
-
-  /**
-   * Handle the topic recorder/stopSession
-   */
-  public static async handleTopicRecorderStopSession() {
-    try {
-      // stop the playlist
-      await SoundBoard.destroy();
-
-      // ask the frontend to cleanup the soundscape
-      Recorder.mainWindow.webContents.send("session-stopped", {});
-
-      // log
-      await Logger.warn("Session force stopped.");
-    } catch (e: any) {
-      throw new Exception({
-        where: "handleTopicRecorderStopSession",
-        message: e.message,
-      });
-    }
-  }
-
-  /**
    * Handle the topic recorder/nextVoiceOver
    * @param json
    */
@@ -90,6 +46,58 @@ export class MqttTopicHandler {
     } catch (e: any) {
       throw new Exception({
         where: "handleTopicRecorderNextVoiceOver",
+        message: e.message,
+      });
+    }
+  }
+
+  /**
+   * Sets the color of the light
+   * @param json
+   */
+  public static async handleTopicLightSetColor(json: {
+    color: "red" | "green" | "blue" | "white";
+    value: number;
+  }) {
+    try {
+      const colorToChannelMap = {
+        red: 1,
+        green: 2,
+        blue: 3,
+        white: 4,
+      };
+      if (
+        json.color &&
+        json.value &&
+        json.value >= 0 &&
+        json.value <= 255 &&
+        Object.keys(colorToChannelMap).includes(json.color)
+      ) {
+        QLCSingleton.getInstance().setChannel(
+          colorToChannelMap[json.color],
+          json.value
+        );
+      }
+    } catch (e: any) {
+      throw new Exception({
+        where: "handleTopicLightSetColor",
+        message: e.message,
+      });
+    }
+  }
+
+  /**
+   * Sets the color of the light
+   * @param json
+   */
+  public static async handleTopicLightFunction(json: {
+    function: QLCFunction;
+  }) {
+    try {
+      QLCSingleton.getInstance().triggerFunction(json.function);
+    } catch (e: any) {
+      throw new Exception({
+        where: "handleTopicLightFunction",
         message: e.message,
       });
     }
@@ -107,6 +115,34 @@ export class MqttTopicHandler {
     } catch (e: any) {
       throw new Exception({
         where: "handleTopicRecorderSetLanguage",
+        message: e.message,
+      });
+    }
+  }
+
+  /**
+   * Handle the topic recorder/startSession
+   */
+  public static async handleTopicRecorderStartSession() {
+    try {
+      await startSession();
+    } catch (e: any) {
+      throw new Exception({
+        where: "handleTopicRecorderStartSession",
+        message: e.message,
+      });
+    }
+  }
+
+  /**
+   * Handle the topic recorder/stopSession
+   */
+  public static async handleTopicRecorderStopSession() {
+    try {
+      await stopSession();
+    } catch (e: any) {
+      throw new Exception({
+        where: "handleTopicRecorderStopSession",
         message: e.message,
       });
     }

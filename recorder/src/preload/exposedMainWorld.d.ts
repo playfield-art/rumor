@@ -15,6 +15,13 @@ declare global {
       readonly actions: {
         log(message: string, log: ILogType): void;
         saveSetting(setting: ISetting): void;
+        light: {
+          setColor(
+            color: "red" | "blue" | "green" | "white",
+            value: number
+          ): void;
+          triggerFunction(qlcFunction: QLCFunction): void;
+        };
       };
       readonly methods: {
         getAllLogRows(): Promise<ILogRow[]>;

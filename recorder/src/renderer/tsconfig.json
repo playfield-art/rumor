@@ -14,5 +14,5 @@
   "include": [
     "../renderer/**/*",
     "../preload/exposedMainWorld.d.ts"
-  ],
+, "../main/src/qlc.ts"  ],
 }

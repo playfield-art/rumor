@@ -17,6 +17,7 @@ import { killProcess } from "./lib/process/killProcess";
 import Logger from "./lib/logging/Logger";
 import { MqttSingleton } from "./lib/mqtt/MqttSingleton";
 import { initMQTT } from "./mqtt";
+import { initQLC } from "./qlc";
 
 /**
  * Get the resources path
@@ -66,6 +67,9 @@ const initApp = async () => {
 
     // init MQTT
     initMQTT();
+
+    // init QLC
+    initQLC();
 
     // register actions to execute
     // (one way direction, from renderer to main)

@@ -12,9 +12,9 @@ export function ChannelsSection() {
 
   const handleChange = (event: any, newValue: number | number[]) => {
     const channelName = event.target.name;
-    updateChannel(channelName, newValue as number);
-
-    // do something on backend
+    const value = newValue as number;
+    updateChannel(channelName, value);
+    window.rumor.actions.light.setColor(channelName, value);
   };
 
   return (

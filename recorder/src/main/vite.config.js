@@ -31,6 +31,7 @@ export default defineConfig({
         'graphql-request',
         '@emotion/styled',
         '@mui/styled-engine',
+        'node-osc',
         ...builtinModules
       ],
       output: {

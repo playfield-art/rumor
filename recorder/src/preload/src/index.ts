@@ -26,6 +26,12 @@ contextBridge.exposeInMainWorld("rumor", {
       ipcRenderer.send("log", message, type),
     saveSetting: (setting: ISetting) =>
       ipcRenderer.send("saveSetting", setting),
+    light: {
+      setColor: (color: "red" | "blue" | "green" | "white", value: number) =>
+        ipcRenderer.send("setColor", color, value),
+      triggerFunction: (qlcFunction: QLCFunction) =>
+        ipcRenderer.send("triggerFunction", qlcFunction),
+    },
   },
   methods: {
     getAllLogRows: () => ipcRenderer.invoke("getAllLogRows"),

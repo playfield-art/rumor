@@ -1,10 +1,11 @@
 import { Section } from "@components/layout/Section";
 import { Button, Stack } from "@mui/material";
+import { QLCFunction } from "@shared/enums";
 import React from "react";
 
 export function FunctionsSection() {
-  const handleClick = (functionName: string) => {
-    // do something on backend
+  const handleClick = (qlcFunction: QLCFunction) => {
+    window.rumor.actions.light.triggerFunction(qlcFunction);
   };
   return (
     <Section title="Functions">
@@ -12,7 +13,7 @@ export function FunctionsSection() {
         <Button
           sx={{ width: "100%" }}
           variant="contained"
-          onClick={() => handleClick("fadeToMaxLightIntensity")}
+          onClick={() => handleClick(QLCFunction.FADE_TO_MAX_LIGHT_INTENSITY)}
         >
           Fade to max light intensity
         </Button>
@@ -21,7 +22,9 @@ export function FunctionsSection() {
         <Button
           sx={{ width: "100%" }}
           variant="contained"
-          onClick={() => handleClick("fadeToDimmedLightIntensity")}
+          onClick={() =>
+            handleClick(QLCFunction.FADE_TO_DIMMED_LIGHT_INTENSITY)
+          }
         >
           Fade to dimmed light intensity
         </Button>
@@ -30,7 +33,7 @@ export function FunctionsSection() {
         <Button
           sx={{ width: "100%" }}
           variant="contained"
-          onClick={() => handleClick("fadeToBlackout")}
+          onClick={() => handleClick(QLCFunction.FADE_TO_BLACKOUT)}
         >
           Fade to blackout
         </Button>
@@ -39,7 +42,7 @@ export function FunctionsSection() {
         <Button
           sx={{ width: "100%" }}
           variant="contained"
-          onClick={() => handleClick("blackout")}
+          onClick={() => handleClick(QLCFunction.BLACKOUT)}
         >
           Blackout
         </Button>

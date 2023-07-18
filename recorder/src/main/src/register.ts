@@ -15,10 +15,13 @@ import {
 } from "./controllers/setting";
 import { getAllLogRows, log, removeAllLogging } from "./controllers/logging";
 import { getMqttConnection, reInitMqtt } from "./controllers/mqtt";
+import { setColor, triggerFunction } from "./controllers/qlc";
 
 export const registerActions = () => {
   ipcMain.on("log", log);
   ipcMain.on("saveSetting", saveSetting);
+  ipcMain.on("setColor", setColor);
+  ipcMain.on("triggerFunction", triggerFunction);
 };
 
 export const registerMethods = () => {
