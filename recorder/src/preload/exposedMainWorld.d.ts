@@ -8,6 +8,7 @@ import {
   ILogRow,
   ILogType,
 } from "@shared/interfaces";
+import { IDoorState } from "../shared/interfaces";
 
 declare global {
   interface Window {
@@ -29,6 +30,7 @@ declare global {
         getMqttConnection(): Promise<boolean>;
         getSetting(key: string): Promise<string | null>;
         initPlaylist(audioList: AudioList): void;
+        publishTopic(topic: string, json?: JSON): Promise<void>;
         reInitMqtt(): Promise<void>;
         removeAllLogging(): Promise<void>;
         setFileSetting(
@@ -44,6 +46,9 @@ declare global {
         VOPlaylistDo(action: "start" | "stop" | "next");
       };
       readonly events: {
+        onDoorState(
+          callback: (event: IpcMessageEvent, doorState: IDoorState) => void
+        ): () => void;
         onMqttConnection(
           callback: (event: IpcMessageEvent, connection: boolean) => void
         ): () => void;

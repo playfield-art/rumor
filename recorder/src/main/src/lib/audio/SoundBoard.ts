@@ -22,6 +22,8 @@ export default class SoundBoard {
 
   public static SCPlaylist: SCPlaylist;
 
+  public static sessionRunning: boolean = false;
+
   /**
    * Create a new session in the soundboard
    * @returns The audio list
@@ -98,6 +100,9 @@ export default class SoundBoard {
     if (SoundBoard.VOPlaylist) {
       await SoundBoard.VOPlaylist.stop();
     }
+
+    // set the inner state
+    SoundBoard.sessionRunning = false;
   }
 
   /**
@@ -173,13 +178,18 @@ export default class SoundBoard {
   public static async startSession(
     onTriggerSoundscape?: (soundscape: SoundScape) => void
   ) {
-    // create a new session
-    const audioList = await SoundBoard.createNewSession();
+    if (!SoundBoard.sessionRunning) {
+      // create a new session
+      const audioList = await SoundBoard.createNewSession();
 
-    // init the playlist
-    SoundBoard.initPlaylist(audioList, onTriggerSoundscape);
+      // init the playlist
+      SoundBoard.initPlaylist(audioList, onTriggerSoundscape);
 
-    // start the playlist
-    SoundBoard.VOPlaylist.next();
+      // start the playlist
+      SoundBoard.VOPlaylist.next();
+
+      // set inner state
+      SoundBoard.sessionRunning = true;
+    }
   }
 }

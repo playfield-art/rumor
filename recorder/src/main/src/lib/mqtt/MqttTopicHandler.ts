@@ -8,11 +8,12 @@ import SoundBoard from "../audio/SoundBoard";
 import { Exception } from "../exceptions/Exception";
 import { QLCSingleton } from "../qlc/QLCSingleton";
 import SettingHelper from "../settings/SettingHelper";
+import { doorStateChanged } from "../../controllers/door";
 
 export class MqttTopicHandler {
   public static async handleTopic(topic: string, message: string = "") {
     // convert the message to a json object
-    const json = JSON.parse(message);
+    const json = JSON.parse(message.toString());
 
     // create the method name
     const defaultMethod = `handleTopic`;
@@ -82,6 +83,19 @@ export class MqttTopicHandler {
       throw new Exception({
         where: "handleTopicLightSetColor",
         message: e.message,
+      });
+    }
+  }
+
+  /**
+   * Handle the rumor door sate
+   * @param json
+   */
+  public static async handleTopicShelliesRumordoorInfo(json: any) {
+    if (json.sensor && json.sensor.state && json.bat) {
+      doorStateChanged({
+        open: json.sensor.state === "open",
+        battery: json.bat.value,
       });
     }
   }

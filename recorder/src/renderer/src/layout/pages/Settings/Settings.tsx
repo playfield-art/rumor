@@ -5,6 +5,7 @@ import { RecorderSettingsSection } from "./RecorderSettingsSection";
 import { LoggingSettingsSection } from "./LoggingSettingsSection";
 import { MqttSettingsSection } from "./MqttSettingsSection";
 import { QLCSection } from "./QLCSection";
+import { DoorSettingsSection } from "./DoorSettingsSection";
 
 export function Settings() {
   return (
@@ -12,6 +13,7 @@ export function Settings() {
       <Grid item xs={12} md={6}>
         <Stack spacing={2} display="block">
           <RecorderSettingsSection />
+          <DoorSettingsSection />
         </Stack>
       </Grid>
       <Grid item xs={12} md={6}>

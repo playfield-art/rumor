@@ -4,6 +4,8 @@ import SoundBoard from "../lib/audio/SoundBoard";
 import { getAudioList as getAudioListHelper } from "../lib/audio/AudioList";
 import Logger from "../lib/logging/Logger";
 import { Recorder } from "../recorder";
+import SettingHelper from "../lib/settings/SettingHelper";
+import { Door } from "../door";
 
 /**
  * Get the audiolist
@@ -30,6 +32,19 @@ export const initPlaylist = (
  */
 export const startSession = async () => {
   try {
+    // do we start a session only when door is closed?
+    const startSessionAfterDoorIsClosed = Boolean(
+      Number(
+        (await SettingHelper.getSetting("startSessionAfterDoorIsClosed"))?.value
+      )
+    );
+
+    // if we need to wait for the door to be closed, check if the door is closed
+    if (startSessionAfterDoorIsClosed && Door.open) {
+      Logger.error("Can't start session, door is open.");
+      return;
+    }
+
     // start a new session, trigger frontend if a soundscape needs to be played
     await SoundBoard.startSession((soundscape) => {
       Recorder.mainWindow.webContents.send("play-soundscape", soundscape);
@@ -71,12 +86,16 @@ export const VOPlaylistDo = (
  * Stop a session
  */
 export const stopSession = async () => {
-  // stop the playlist
-  await SoundBoard.destroy();
+  try {
+    // stop the playlist
+    await SoundBoard.destroy();
 
-  // let the frontend know and ask to cleanup the soundscape
-  Recorder.mainWindow.webContents.send("session-stopped");
+    // let the frontend know and ask to cleanup the soundscape
+    Recorder.mainWindow.webContents.send("session-stopped");
 
-  // log
-  await Logger.warn("Session force stopped.");
+    // log
+    await Logger.warn("Session force stopped.");
+  } catch (e: any) {
+    throw new Exception({ where: "stopSession", message: e.message });
+  }
 };

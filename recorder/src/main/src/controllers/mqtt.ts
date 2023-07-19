@@ -15,6 +15,23 @@ export const getMqttConnection = (): boolean => {
 };
 
 /**
+ * Publish an MQTT topic
+ * @param topic The topic
+ * @param json The JSON to publish
+ */
+export const publishTopic = async (
+  event: Electron.IpcMainInvokeEvent,
+  topic: string,
+  json?: JSON
+) => {
+  try {
+    await MqttSingleton.getInstance().publish(topic, json);
+  } catch (e: any) {
+    throw new Exception({ where: "publish", message: e.message });
+  }
+};
+
+/**
  * Reinit mqtt
  */
 export const reInitMqtt = async () => {

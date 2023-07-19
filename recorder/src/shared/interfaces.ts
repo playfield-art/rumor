@@ -152,6 +152,11 @@ export interface ILogRow extends ILog {
   id: string;
 }
 
+export interface IDoorState {
+  open: boolean;
+  battery: number;
+}
+
 /**
  * Proces and Notifciation
  */

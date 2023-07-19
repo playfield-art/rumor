@@ -42,6 +42,8 @@ contextBridge.exposeInMainWorld("rumor", {
     getSetting: (key: string) => ipcRenderer.invoke("getSetting", key),
     initPlaylist: (audioList: AudioList) =>
       ipcRenderer.invoke("initPlaylist", audioList),
+    publishTopic: (topic: string, json?: JSON) =>
+      ipcRenderer.invoke("publishTopic", topic, json),
     reInitMqtt: () => ipcRenderer.invoke("reInitMqtt"),
     removeAllLogging: () => ipcRenderer.invoke("removeAllLogging"),
     setFileSetting: (key: string, filters?: Electron.FileFilter[]) =>
@@ -59,6 +61,10 @@ contextBridge.exposeInMainWorld("rumor", {
       ipcRenderer.invoke("VOPlaylistDo", action),
   },
   events: {
+    onDoorState: (callback: any) => {
+      ipcRenderer.on("door-state", callback);
+      return () => ipcRenderer.removeAllListeners("door-state");
+    },
     onMqttConnection: (callback: any) => {
       ipcRenderer.on("mqtt-connection", callback);
       return () => ipcRenderer.removeAllListeners("mqtt-connection");

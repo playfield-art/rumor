@@ -1,11 +1,12 @@
 import React from "react";
-import { Toolbar, AppBar, Button, Box } from "@mui/material";
+import { Toolbar, AppBar, Button, Box, Divider, Stack } from "@mui/material";
 import useSoundBoard from "@hooks/useSoundBoard";
 import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord";
 import SkipNextIcon from "@mui/icons-material/SkipNext";
 import StopIcon from "@mui/icons-material/Stop";
 import store from "../store";
 import { MqttConnection } from "./MqttConnection";
+import { DoorState } from "./DoorState";
 
 export interface AppHeaderProps {
   title: string;
@@ -22,7 +23,21 @@ export function AppHeader() {
       position="fixed"
     >
       <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
-        <MqttConnection />
+        <Stack
+          direction="row"
+          divider={
+            <Divider
+              sx={{ borderColor: "var(--whiteExtraLight)" }}
+              orientation="vertical"
+              flexItem
+            />
+          }
+          spacing={2}
+        >
+          <MqttConnection />
+          <DoorState />
+        </Stack>
+
         {!isPlaying && (
           <Button
             tabIndex={-1}

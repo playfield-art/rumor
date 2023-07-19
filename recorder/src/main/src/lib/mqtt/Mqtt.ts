@@ -136,6 +136,23 @@ export class MQTT {
   }
 
   /**
+   * Publish something to MQTT
+   * @param topic The topic
+   * @param json The JSON to publish
+   * @returns
+   */
+  public async publish(topic: string, json?: JSON): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if (!this._mqttClient || !this._mqttClient.connected) resolve();
+      // publish
+      this._mqttClient?.publish(topic, JSON.stringify(json || {}), () =>
+        resolve()
+      );
+      reject();
+    });
+  }
+
+  /**
    * Subscribe to a topic
    * @param topic The topic to subscribe
    * @param callback Callback whenever we receive a message

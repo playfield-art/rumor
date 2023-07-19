@@ -15,7 +15,11 @@ import {
   setRecordingsFolder,
 } from "./controllers/setting";
 import { getAllLogRows, log, removeAllLogging } from "./controllers/logging";
-import { getMqttConnection, reInitMqtt } from "./controllers/mqtt";
+import {
+  getMqttConnection,
+  publishTopic,
+  reInitMqtt,
+} from "./controllers/mqtt";
 import { setColor, triggerFunction } from "./controllers/qlc";
 
 export const registerActions = () => {
@@ -31,6 +35,7 @@ export const registerMethods = () => {
   ipcMain.handle("getMqttConnection", getMqttConnection);
   ipcMain.handle("getSetting", getSetting);
   ipcMain.handle("initPlaylist", initPlaylist);
+  ipcMain.handle("publishTopic", publishTopic);
   ipcMain.handle("reInitMqtt", reInitMqtt);
   ipcMain.handle("removeAllLogging", removeAllLogging);
   ipcMain.handle("setFileSetting", setFileSetting);

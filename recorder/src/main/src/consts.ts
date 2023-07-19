@@ -17,4 +17,8 @@ export const SEQUELIZE_LOGGING = false;
 export const narrativeChapters = ["intro", "first", "second", "third", "outro"];
 
 // MQTT topics to listen to
-export const MQTT_TOPICS_SUBSCRIPTIONS = ["recorder", "light"];
+export const MQTT_TOPICS_SUBSCRIPTIONS = [
+  "recorder",
+  "light",
+  "shellies/rumordoor",
+];
