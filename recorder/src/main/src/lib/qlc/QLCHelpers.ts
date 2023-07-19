@@ -1,6 +1,7 @@
 // import * as shelljs from "shelljs";
 import fs from "fs";
 import { join } from "path";
+import Logger from "../logging/Logger";
 
 const { spawn } = require("child_process");
 
@@ -14,7 +15,11 @@ export const openQLC = (file: string = "") => {
     throw new Error("QLC+ not installed");
   const args = ["-k", "-p"];
   if (file) args.push("-o", file);
-  console.log(args);
+  Logger.info(
+    args.includes("-o")
+      ? `Opening QLC+ with file ${file}`
+      : "Opening QLC+ without a file"
+  );
   spawn(join(qlcPath, qlcExecutable), args);
 };
 
