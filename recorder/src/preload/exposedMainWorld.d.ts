@@ -27,10 +27,14 @@ declare global {
         getAllLogRows(): Promise<ILogRow[]>;
         getAudioList(language: string): Promise<AudioList>;
         getMqttConnection(): Promise<boolean>;
-        getSetting(key: string): string | null;
+        getSetting(key: string): Promise<string | null>;
         initPlaylist(audioList: AudioList): void;
         reInitMqtt(): Promise<void>;
         removeAllLogging(): Promise<void>;
+        setFileSetting(
+          key: string,
+          filters?: Electron.FileFilter[]
+        ): Promise<string>;
         setFolderSetting(key: string): Promise<string>;
         setRecordingsFolder(): string;
         startSession(): Promise<void>;

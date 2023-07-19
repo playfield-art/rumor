@@ -1,22 +1,30 @@
 import React from "react";
-import { Grid } from "@mui/material";
+import { Grid, Stack } from "@mui/material";
 import { FolderSettingsSection } from "./FolderSettingsSection";
 import { RecorderSettingsSection } from "./RecorderSettingsSection";
 import { LoggingSettingsSection } from "./LoggingSettingsSection";
 import { MqttSettingsSection } from "./MqttSettingsSection";
+import { QLCSection } from "./QLCSection";
 
 export function Settings() {
   return (
     <Grid container spacing={2}>
       <Grid item xs={12} md={6}>
-        <RecorderSettingsSection />
+        <Stack spacing={2} display="block">
+          <RecorderSettingsSection />
+        </Stack>
       </Grid>
       <Grid item xs={12} md={6}>
-        <LoggingSettingsSection />
-        <MqttSettingsSection />
+        <Stack spacing={2} display="block">
+          <LoggingSettingsSection />
+          <MqttSettingsSection />
+        </Stack>
       </Grid>
       <Grid item xs={12} md={12}>
-        <FolderSettingsSection />
+        <Stack spacing={2} display="block">
+          <QLCSection />
+          <FolderSettingsSection />
+        </Stack>
       </Grid>
     </Grid>
   );

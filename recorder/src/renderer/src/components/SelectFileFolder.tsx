@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { Button } from "@mui/material";
 
-type SelectFolderProps = {
+type SelectFileFolderProps = {
   path: string;
   label: string;
   onClick: React.MouseEventHandler<HTMLButtonElement>;
@@ -15,7 +15,11 @@ const SelectFolderContainer = styled.div`
   width: 100%;
 `;
 
-function SelectFolder({ path, label = "...", onClick }: SelectFolderProps) {
+function SelectFileFolder({
+  path,
+  label = "...",
+  onClick,
+}: SelectFileFolderProps) {
   const [currentPath, setCurrentPath] = useState(path);
 
   useEffect(() => setCurrentPath(path), [path]);
@@ -37,4 +41,4 @@ function SelectFolder({ path, label = "...", onClick }: SelectFolderProps) {
   );
 }
 
-export default SelectFolder;
+export default SelectFileFolder;

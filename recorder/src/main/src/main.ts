@@ -18,6 +18,7 @@ import Logger from "./lib/logging/Logger";
 import { MqttSingleton } from "./lib/mqtt/MqttSingleton";
 import { initMQTT } from "./mqtt";
 import { initQLC } from "./qlc";
+import { closeQLC } from "./lib/qlc/QLCHelpers";
 
 /**
  * Get the resources path
@@ -102,6 +103,9 @@ const initApp = async () => {
 
       // to be sure, kill everything like a terminator
       await killProcess("afplay");
+
+      // close QLC
+      closeQLC();
 
       // save logs
       await Logger.info("Application has been closed.");

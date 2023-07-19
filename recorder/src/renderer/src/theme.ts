@@ -17,6 +17,16 @@ export default createTheme({
     },
   },
   components: {
+    MuiSwitch: {
+      styleOverrides: {
+        switchBase: {
+          color: "var(--grey-1000)",
+          "&.Mui-checked": {
+            color: "var(--grey-500)",
+          },
+        },
+      },
+    },
     /**
      * Forms
      */

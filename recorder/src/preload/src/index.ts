@@ -1,5 +1,6 @@
 import { contextBridge, ipcRenderer } from "electron";
 import { AudioList, ILogType, ISetting } from "@shared/interfaces";
+import { QLCFunction } from "@shared/enums";
 
 /**
  * The "Main World" is the JavaScript context that your main renderer code runs in.
@@ -43,6 +44,8 @@ contextBridge.exposeInMainWorld("rumor", {
       ipcRenderer.invoke("initPlaylist", audioList),
     reInitMqtt: () => ipcRenderer.invoke("reInitMqtt"),
     removeAllLogging: () => ipcRenderer.invoke("removeAllLogging"),
+    setFileSetting: (key: string, filters?: Electron.FileFilter[]) =>
+      ipcRenderer.invoke("setFileSetting", key, filters),
     setFolderSetting: (key: string) =>
       ipcRenderer.invoke("setFolderSetting", key),
     setRecordingsFolder: () => ipcRenderer.invoke("setRecordingsFolder"),

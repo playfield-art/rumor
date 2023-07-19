@@ -1,6 +1,6 @@
 import { ButtonContainer } from "@components";
 import { Section } from "@components/layout/Section";
-import SelectFolder from "@components/SelectFolder";
+import SelectFileFolder from "@components/SelectFileFolder";
 import useSettings from "@hooks/useSettings";
 import React from "react";
 
@@ -17,7 +17,7 @@ export function FolderSettingsSection() {
   return (
     <Section title="Folder Settings">
       <ButtonContainer>
-        <SelectFolder
+        <SelectFileFolder
           path={currentNarrativesFolder || ""}
           label="NAR"
           onClick={async () => {
@@ -28,7 +28,7 @@ export function FolderSettingsSection() {
         />
       </ButtonContainer>
       <ButtonContainer>
-        <SelectFolder
+        <SelectFileFolder
           path={currentRecordingsFolder || ""}
           label="REC"
           onClick={async () => {
@@ -39,7 +39,7 @@ export function FolderSettingsSection() {
         />
       </ButtonContainer>
       <ButtonContainer>
-        <SelectFolder
+        <SelectFileFolder
           path={currentArchiveFolder || ""}
           label="ARH"
           onClick={async () => {

@@ -44,6 +44,36 @@ export const getSetting = async (
 };
 
 /**
+ * Set a file setting
+ * @param event
+ * @param key
+ * @returns
+ */
+export const setFileSetting = async (
+  event: Electron.IpcMainInvokeEvent,
+  key: string,
+  filters: Electron.FileFilter[] = []
+) => {
+  const { canceled, filePaths } = await dialog.showOpenDialog(
+    Recorder.mainWindow,
+    { properties: ["openFile"], filters }
+  );
+
+  // if folder was selected
+  if (!canceled && filePaths.length > 0) {
+    await SettingHelper.saveSetting({
+      key,
+      value: filePaths[0],
+    });
+    return filePaths[0];
+  }
+
+  // if canceled, check DB if not return empty
+  const setting = await SettingHelper.getSetting(key);
+  return setting ? setting.value : "";
+};
+
+/**
  * Set a folder setting
  * @param event
  * @param key

@@ -127,7 +127,7 @@ export interface AudioCmsBlock extends AudioCms {
 
 export interface ISetting {
   key: string;
-  value: string;
+  value: any;
 }
 
 export interface IError {

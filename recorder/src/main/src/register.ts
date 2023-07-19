@@ -10,6 +10,7 @@ import { syncNarrative, uploadToCms } from "./controllers/sync";
 import {
   getSetting,
   saveSetting,
+  setFileSetting,
   setFolderSetting,
   setRecordingsFolder,
 } from "./controllers/setting";
@@ -32,6 +33,7 @@ export const registerMethods = () => {
   ipcMain.handle("initPlaylist", initPlaylist);
   ipcMain.handle("reInitMqtt", reInitMqtt);
   ipcMain.handle("removeAllLogging", removeAllLogging);
+  ipcMain.handle("setFileSetting", setFileSetting);
   ipcMain.handle("setFolderSetting", setFolderSetting);
   ipcMain.handle("setRecordingsFolder", setRecordingsFolder);
   ipcMain.handle("startSession", startSession);
