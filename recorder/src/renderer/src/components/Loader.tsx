@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import store from "../store";
+import { useAppStore } from "@hooks/useAppStore";
 
 const LoaderWrapper = styled.div`
   display: flex;
@@ -16,7 +16,8 @@ const LoaderWrapper = styled.div`
 `;
 
 function Loader() {
-  return <LoaderWrapper>{store.procesStatus.message}</LoaderWrapper>;
+  const procesStatus = useAppStore((state) => state.procesStatus);
+  return <LoaderWrapper>{procesStatus.message}</LoaderWrapper>;
 }
 
 export default Loader;

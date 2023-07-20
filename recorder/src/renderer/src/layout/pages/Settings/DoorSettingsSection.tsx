@@ -11,7 +11,7 @@ import {
 import { useFormik } from "formik";
 import React, { useEffect, useState } from "react";
 import * as yup from "yup";
-import store from "../../../store";
+import { toast } from "react-toastify";
 
 const validationSchema = yup.object({
   doorStopSessionAfter: yup
@@ -34,7 +34,7 @@ export function DoorSettingsSection() {
     validationSchema,
     onSubmit: async (v) => {
       saveSetting("doorStopSessionAfter", v.doorStopSessionAfter);
-      store.notify("Door settings were saved!");
+      toast("Door settings were saved!");
     },
   });
 

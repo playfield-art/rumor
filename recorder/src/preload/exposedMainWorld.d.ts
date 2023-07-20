@@ -7,6 +7,7 @@ import {
   SoundScape,
   ILogRow,
   ILogType,
+  VoiceOver,
 } from "@shared/interfaces";
 import { IDoorState } from "../shared/interfaces";
 
@@ -43,7 +44,7 @@ declare global {
         stopSession(): Promise<void>;
         syncNarrative(): Promise<void>;
         uploadToCms(): Promise<void>;
-        VOPlaylistDo(action: "start" | "stop" | "next");
+        VOPlaylistDo(action: "next"): Promise<void>;
       };
       readonly events: {
         onDoorState(
@@ -52,7 +53,9 @@ declare global {
         onMqttConnection(
           callback: (event: IpcMessageEvent, connection: boolean) => void
         ): () => void;
-        onNextVO(callback: (event: IpcMessageEvent) => void): () => void;
+        onNextVO(
+          callback: (event: IpcMessageEvent, voiceOver: VoiceOver) => void
+        ): () => void;
         onNotification(
           callback: (event: IpcMessageEvent, notification: Notification) => void
         ): () => void;

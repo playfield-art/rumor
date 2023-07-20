@@ -24,7 +24,11 @@ export const initPlaylist = (
   event: Electron.IpcMainInvokeEvent,
   audioList: AudioList
 ) => {
-  SoundBoard.initPlaylist(audioList);
+  try {
+    SoundBoard.initPlaylist(audioList);
+  } catch (e: any) {
+    throw new Exception({ where: "initPlaylist", message: e.message });
+  }
 };
 
 /**
@@ -46,9 +50,14 @@ export const startSession = async () => {
     }
 
     // start a new session, trigger frontend if a soundscape needs to be played
-    await SoundBoard.startSession((soundscape) => {
-      Recorder.mainWindow.webContents.send("play-soundscape", soundscape);
-    });
+    await SoundBoard.startSession(
+      (voiceOver) => {
+        Recorder.mainWindow.webContents.send("next-vo", voiceOver);
+      },
+      (soundscape) => {
+        Recorder.mainWindow.webContents.send("play-soundscape", soundscape);
+      }
+    );
 
     // let the frontend know
     Recorder.mainWindow.webContents.send("session-started");
@@ -65,19 +74,15 @@ export const startSession = async () => {
  * @param event
  * @param VOPlaylistAction
  */
-export const VOPlaylistDo = (
+export const VOPlaylistDo = async (
   event: Electron.IpcMainInvokeEvent,
-  VOPlaylistAction: "stop" | "next"
+  VOPlaylistAction: "next"
 ) => {
   switch (VOPlaylistAction) {
-    case "stop":
-      // SoundBoard.VOPlaylist.stop();
-      break;
     case "next":
-      SoundBoard.next();
+      await SoundBoard.next();
       break;
     default:
-      // SoundBoard.VOPlaylist.stop();
       break;
   }
 };

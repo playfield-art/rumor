@@ -4,7 +4,7 @@ import { Button, TextField } from "@mui/material";
 import * as yup from "yup";
 import { useFormik } from "formik";
 import { useSettingsBucket } from "@hooks/useSettingsBucket";
-import store from "../../../store";
+import { toast } from "react-toastify";
 
 const validationSchema = yup.object({
   mqttPort: yup
@@ -36,7 +36,7 @@ export function MqttSettingsSection() {
     onSubmit: async (v) => {
       await saveValues(v);
       await window.rumor.methods.reInitMqtt();
-      store.notify("MQTT settings were saved!");
+      toast("MQTT settings were saved!");
     },
   });
 

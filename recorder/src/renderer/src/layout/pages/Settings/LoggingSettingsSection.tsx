@@ -1,12 +1,12 @@
 import React, { useCallback } from "react";
 import { Section } from "@components/layout/Section";
 import { Button } from "@mui/material";
-import store from "../../../store";
+import { toast } from "react-toastify";
 
 export function LoggingSettingsSection() {
   const removeAllLogging = useCallback(async () => {
     window.rumor.methods.removeAllLogging().then(() => {
-      store.notify("Logging has been removed");
+      toast("Logging has been removed");
     });
   }, []);
   return (

@@ -111,13 +111,20 @@ export default class SoundBoard {
    */
   public static initPlaylist(
     audioList: AudioList,
+    onNextVO?: (voiceOver: VoiceOver) => void,
     onTriggerSoundscape?: (soundscape: SoundScape) => void
   ) {
     // define the options needed for our playlist
     const voPlaylistOptions: VOPlaylistOptions = {
-      onNext: (voiceOver: VoiceOver) => {
+      onNext: async (voiceOver: VoiceOver) => {
         // do something when we are the next voice over
-        SoundBoard.onNextInPLaylist();
+        if (AudioRecordingSingleton.getInstance().isRecording) {
+          const stats =
+            await AudioRecordingSingleton.getInstance().stopRecording();
+          Logger.info(
+            `Stopped recording, the filesize is ${stats.sizeReadable}`
+          );
+        }
 
         // if we have a trigger event defined
         if (onTriggerSoundscape) {
@@ -128,9 +135,12 @@ export default class SoundBoard {
           // if we have a soundscape, send it to the renderer
           if (soundscape) {
             onTriggerSoundscape(soundscape);
-            Logger.info(`Playing soundscape ${soundscape.fileName}`);
+            Logger.info(`Trigger soundscape ${soundscape.fileName}`);
           }
         }
+
+        // if we have a next voice over, let the frontend know
+        if (onNextVO) onNextVO(voiceOver);
       },
       onVODone: this.onVODone,
     };
@@ -141,23 +151,11 @@ export default class SoundBoard {
   }
 
   /**
-   * On next voice over in playlist
-   * @param voiceOver
-   */
-  private static async onNextInPLaylist() {
-    // stop the recording if it is recording
-    if (AudioRecordingSingleton.getInstance().isRecording) {
-      const stats = await AudioRecordingSingleton.getInstance().stopRecording();
-      Logger.info(`Stopped recording, the filesize is ${stats.sizeReadable}`);
-    }
-  }
-
-  /**
    * Play the next voice over
    */
   public static async next() {
     if (this.sessionRunning && SoundBoard.VOPlaylist) {
-      SoundBoard.VOPlaylist.next();
+      await SoundBoard.VOPlaylist.next();
     } else {
       Logger.error("Can't play next, no session is running.");
     }
@@ -187,6 +185,7 @@ export default class SoundBoard {
    * Start a new session
    */
   public static async startSession(
+    onNextVO?: (voiceOver: VoiceOver) => void,
     onTriggerSoundscape?: (soundscape: SoundScape) => void
   ) {
     if (!SoundBoard.sessionRunning) {
@@ -194,13 +193,13 @@ export default class SoundBoard {
       const audioList = await SoundBoard.createNewSession();
 
       // init the playlist
-      SoundBoard.initPlaylist(audioList, onTriggerSoundscape);
-
-      // start the playlist
-      SoundBoard.VOPlaylist.next();
+      SoundBoard.initPlaylist(audioList, onNextVO, onTriggerSoundscape);
 
       // set inner state
       SoundBoard.sessionRunning = true;
+
+      // start the playlist
+      SoundBoard.next();
     }
   }
 }

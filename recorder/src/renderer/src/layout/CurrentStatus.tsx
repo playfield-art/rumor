@@ -1,29 +1,37 @@
 import React from "react";
-import store from "../store";
+import { Box } from "@mui/material";
+import { useRecorderStore } from "@hooks/useRecorderStore";
 
 export function CurrentStatus() {
+  const isPlaying = useRecorderStore((state) => state.isPlaying);
+  const currentVO = useRecorderStore((state) => state.currentVO);
+  const currentSC = useRecorderStore((state) => state.currentSC);
   return (
-    <>
-      {!store.currentVO && !store.currentSC && "No current status."}
-      {store.currentVO && (
+    <Box
+      sx={{
+        color: "white",
+        backgroundColor: "var(--grey-1200)",
+        textAlign: "right",
+        p: 2,
+        pl: 4,
+        pr: 4,
+        display: isPlaying ? "block" : "none",
+      }}
+    >
+      {!currentVO && !currentSC && "No current status."}
+      {currentVO && (
+        <div>{currentVO ? `Current Chapter: ${currentVO.chapter}` : ""}</div>
+      )}
+      {currentVO && (
         <div>
-          {store.currentVO ? `Current Chapter: ${store.currentVO.chapter}` : ""}
+          {currentVO ? `Current Voice Over: ${currentVO.fileName}` : ""}
         </div>
       )}
-      {store.currentVO && (
+      {currentSC && (
         <div>
-          {store.currentVO
-            ? `Current Voice Over: ${store.currentVO.fileName}`
-            : ""}
+          {currentSC ? `Current Soundscape: ${currentSC.startsAt.chapter}` : ""}
         </div>
       )}
-      {store.currentSC && (
-        <div>
-          {store.currentSC
-            ? `Current Soundscape: ${store.currentSC.startsAt.chapter}`
-            : ""}
-        </div>
-      )}
-    </>
+    </Box>
   );
 }

@@ -113,7 +113,7 @@ const initApp = async () => {
       closeQLC();
 
       // close the serial connection
-      await SerialButtonSingleton.getInstance().closeConnection();
+      await SerialButtonSingleton.getInstance()?.closeConnection();
 
       // close the mqtt client
       MqttSingleton.getInstance()._mqttClient?.end(true);

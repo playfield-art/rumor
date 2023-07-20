@@ -1,13 +1,29 @@
+import { SoundScape, VoiceOver } from "@shared/interfaces";
 import { create } from "zustand";
 
-interface RecorderState {
+type RecorderState = {
   isPlaying: boolean;
+  currentVO: VoiceOver | null;
+  currentSC: SoundScape | null;
+};
+
+type RecorderAction = {
   startPlaying: () => void;
   stopPlaying: () => void;
-}
+  updateCurrentVO: (voiceover: VoiceOver) => void;
+  updateCurrentSC: (soundscape: SoundScape) => void;
+};
 
-export const useRecorderStore = create<RecorderState>((set) => ({
-  isPlaying: false,
-  startPlaying: () => set(() => ({ isPlaying: true })),
-  stopPlaying: () => set(() => ({ isPlaying: false })),
-}));
+export const useRecorderStore = create<RecorderState & RecorderAction>(
+  (set) => ({
+    isPlaying: false,
+    currentVO: null,
+    currentSC: null,
+    startPlaying: () => set(() => ({ isPlaying: true })),
+    stopPlaying: () => set(() => ({ isPlaying: false })),
+    updateCurrentVO: (voiceover: VoiceOver) =>
+      set(() => ({ currentVO: voiceover })),
+    updateCurrentSC: (soundscape: SoundScape) =>
+      set(() => ({ currentSC: soundscape })),
+  })
+);

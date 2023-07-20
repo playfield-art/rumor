@@ -1,13 +1,9 @@
-import { VoiceOver, SoundScape } from "@shared/interfaces";
-import { useState, useCallback, useEffect } from "react";
-// import { CAN_CONTINUE_WHILE_PLAYING, CAN_RECORD, FADING_TIME } from "../consts";
-// import { OnPlayChange, OnVOEnd, SoundBoard } from "../lib/SoundBoard";
+import { useCallback } from "react";
 import { useRecorderStore } from "./useRecorderStore";
-import { AudioPlayer } from "../lib/Player";
+import { useError } from "./useError";
 
-const useSoundBoard = (onError?: (e: Error) => void) => {
-  const [currentVO] = useState<VoiceOver | null>(null);
-  const [currentSC] = useState<SoundScape | null>(null);
+const useSoundBoard = () => {
+  const { showError } = useError();
   const isPlaying = useRecorderStore((state) => state.isPlaying);
 
   /**
@@ -15,7 +11,7 @@ const useSoundBoard = (onError?: (e: Error) => void) => {
    */
 
   const playNextVO = useCallback(
-    () => window.rumor.methods.VOPlaylistDo("next"),
+    async () => window.rumor.methods.VOPlaylistDo("next"),
     []
   );
 
@@ -28,7 +24,7 @@ const useSoundBoard = (onError?: (e: Error) => void) => {
       try {
         await window.rumor.methods.startSession();
       } catch (e: any) {
-        if (onError) onError(e);
+        showError(e);
       }
     }
   }, [isPlaying]);
@@ -44,29 +40,10 @@ const useSoundBoard = (onError?: (e: Error) => void) => {
     }
   }, [isPlaying]);
 
-  /**
-   * Whenever
-   */
-
-  useEffect(() => {
-    const removeEventListenerOnPlaySoundscape =
-      window.rumor.events.onPlaySoundscape((event, soundscape) => {
-        if (isPlaying) {
-          AudioPlayer.play(soundscape.url);
-        }
-      });
-    return () => {
-      removeEventListenerOnPlaySoundscape();
-    };
-  }, [isPlaying]);
-
   return {
     playNextVO,
     start,
     stop,
-    isPlaying,
-    currentVO,
-    currentSC,
   };
 };
 

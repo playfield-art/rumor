@@ -13,8 +13,8 @@ export const initSerialButton = async () => {
     SerialButtonSingleton.setInstance(
       new SerialButton({
         path: usbSerialPort,
-        onButtonUp: () => {
-          SoundBoard.next();
+        onButtonUp: async () => {
+          await SoundBoard.next();
         },
       })
     );

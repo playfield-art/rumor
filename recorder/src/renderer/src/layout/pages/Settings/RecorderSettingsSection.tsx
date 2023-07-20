@@ -5,7 +5,7 @@ import * as Yup from "yup";
 import Button from "@mui/material/Button";
 import { useSettingsBucket } from "@hooks/useSettingsBucket";
 import { TextField } from "@mui/material";
-import store from "../../../store";
+import { toast } from "react-toastify";
 
 const validationSchema = Yup.object().shape({
   language: Yup.string().required("Language is required"),
@@ -36,7 +36,7 @@ export function RecorderSettingsSection() {
     validationSchema,
     onSubmit: async (v) => {
       await saveValues(v);
-      store.notify("Recorder settings were saved!");
+      toast("Recorder settings were saved!");
     },
   });
 

@@ -8,9 +8,8 @@ import { useApp } from "@hooks/useApp";
 import { ThemeProvider } from "@mui/material/styles";
 import { Box } from "@mui/material";
 import { MemoryRouter as Router, Routes, Route } from "react-router-dom";
-import useSoundBoard from "@hooks/useSoundBoard";
+import { useAppStore } from "@hooks/useAppStore";
 import theme from "./theme";
-import store from "./store";
 import { Sidebar } from "./layout/Sidebar";
 import { Cms } from "./layout/pages/Cms/Cms";
 import { Settings } from "./layout/pages/Settings/Settings";
@@ -21,7 +20,7 @@ import { Light } from "./layout/pages/Light/Light";
 
 function App() {
   useApp();
-  const { isPlaying } = useSoundBoard((e) => store.notify(e.message));
+  const procesStatus = useAppStore((state) => state.procesStatus);
   return (
     <Router>
       <ThemeProvider theme={theme}>
@@ -29,26 +28,13 @@ function App() {
         <Box sx={{ display: "flex" }}>
           <Sidebar />
           <Box component="main" sx={{ flexGrow: 1, pt: 8 }}>
-            {isPlaying && (
-              <Box
-                sx={{
-                  color: "white",
-                  backgroundColor: "var(--grey-1200)",
-                  textAlign: "right",
-                  p: 2,
-                  pl: 4,
-                  pr: 4,
-                }}
-              >
-                <CurrentStatus />
-              </Box>
-            )}
+            <CurrentStatus />
             <Box
               sx={{
                 p: 3,
               }}
             >
-              {store.procesStatus.procesIsRunning && <Loader />}
+              {procesStatus.procesIsRunning && <Loader />}
               <Routes>
                 <Route path="/" element={<LogItems />} />
                 <Route path="/cms" element={<Cms />} />

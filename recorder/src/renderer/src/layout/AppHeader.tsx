@@ -4,7 +4,7 @@ import useSoundBoard from "@hooks/useSoundBoard";
 import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord";
 import SkipNextIcon from "@mui/icons-material/SkipNext";
 import StopIcon from "@mui/icons-material/Stop";
-import store from "../store";
+import { useRecorderStore } from "@hooks/useRecorderStore";
 import { MqttConnection } from "./MqttConnection";
 import { DoorState } from "./DoorState";
 
@@ -13,9 +13,8 @@ export interface AppHeaderProps {
 }
 
 export function AppHeader() {
-  const { isPlaying, start, stop, playNextVO } = useSoundBoard((e) =>
-    store.notify(e.message)
-  );
+  const isPlaying = useRecorderStore((state) => state.isPlaying);
+  const { start, stop, playNextVO } = useSoundBoard();
   return (
     <AppBar
       sx={{ borderBottom: "1px solid var(--whiteExtraLight)" }}
@@ -68,7 +67,7 @@ export function AppHeader() {
             <Button
               variant="text"
               startIcon={<SkipNextIcon />}
-              onClick={() => playNextVO()}
+              onClick={async () => playNextVO()}
             />
           </Box>
         )}

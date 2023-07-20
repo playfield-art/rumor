@@ -57,7 +57,7 @@ contextBridge.exposeInMainWorld("rumor", {
       ipcRenderer.invoke("syncNarrative");
     },
     uploadToCms: () => ipcRenderer.invoke("uploadToCms"),
-    VOPlaylistDo: (action: "start" | "stop" | "next") =>
+    VOPlaylistDo: (action: "next") =>
       ipcRenderer.invoke("VOPlaylistDo", action),
   },
   events: {
