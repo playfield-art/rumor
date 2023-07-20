@@ -1,7 +1,6 @@
 import React from "react";
 import { ButtonContainer } from "@components";
 import { Section } from "@components/layout/Section";
-import { observer } from "mobx-react";
 import Button from "@mui/material/Button";
 
 function CmsActionsSection() {
@@ -31,4 +30,4 @@ function CmsActionsSection() {
   );
 }
 
-export default observer(CmsActionsSection);
+export default CmsActionsSection;

@@ -2,7 +2,6 @@ import React from "react";
 
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { observer } from "mobx-react";
 import Loader from "@components/Loader";
 import { useApp } from "@hooks/useApp";
 import { ThemeProvider } from "@mui/material/styles";
@@ -50,4 +49,4 @@ function App() {
   );
 }
 
-export default observer(App);
+export default App;
