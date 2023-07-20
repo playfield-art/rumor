@@ -71,14 +71,14 @@ export const VOPlaylistDo = (
 ) => {
   switch (VOPlaylistAction) {
     case "stop":
-      SoundBoard.VOPlaylist.stop();
+      // SoundBoard.VOPlaylist.stop();
       break;
     case "next":
-      if (!SoundBoard.VOPlaylist) break;
-      SoundBoard.VOPlaylist.next();
+      SoundBoard.next();
       break;
     default:
-      SoundBoard.VOPlaylist.stop();
+      // SoundBoard.VOPlaylist.stop();
+      break;
   }
 };
 

@@ -18,9 +18,9 @@ import SettingHelper from "../settings/SettingHelper";
 import { getRecordingsFolder } from "../filesystem";
 
 export default class SoundBoard {
-  public static VOPlaylist: VOPlaylist;
+  private static VOPlaylist: VOPlaylist;
 
-  public static SCPlaylist: SCPlaylist;
+  private static SCPlaylist: SCPlaylist;
 
   public static sessionRunning: boolean = false;
 
@@ -149,6 +149,17 @@ export default class SoundBoard {
     if (AudioRecordingSingleton.getInstance().isRecording) {
       const stats = await AudioRecordingSingleton.getInstance().stopRecording();
       Logger.info(`Stopped recording, the filesize is ${stats.sizeReadable}`);
+    }
+  }
+
+  /**
+   * Play the next voice over
+   */
+  public static async next() {
+    if (this.sessionRunning && SoundBoard.VOPlaylist) {
+      SoundBoard.VOPlaylist.next();
+    } else {
+      Logger.error("Can't play next, no session is running.");
     }
   }
 

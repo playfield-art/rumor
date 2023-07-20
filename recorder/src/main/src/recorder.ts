@@ -2,9 +2,6 @@ import { ProcesStatus, Notifciation } from "@shared/interfaces";
 import { BrowserWindow } from "electron";
 import { AudioRecording } from "./lib/audio/AudioRecording";
 import { AudioRecordingSingleton } from "./lib/audio/AudioRecordingSingleton";
-import { getSerialPorts } from "./lib/serial/Serial";
-import { SerialButton } from "./lib/serial/SerialButton";
-import { SerialButtonSingleton } from "./lib/serial/SerialButtonSingleton";
 import SettingHelper from "./lib/settings/SettingHelper";
 
 /**
@@ -43,23 +40,6 @@ export class Recorder {
           outDir: recordingsFolderSetting.value,
         })
       );
-
-    /**
-     * Serial Button
-     */
-
-    const serialPorts = await getSerialPorts();
-    const usbSerialPort = serialPorts.find((port) =>
-      port.includes("usbserial")
-    );
-    if (usbSerialPort) {
-      SerialButtonSingleton.setInstance(
-        new SerialButton({
-          path: usbSerialPort,
-          onButtonUp: () => Recorder._mainWindow.webContents.send("next-vo"),
-        })
-      );
-    }
   }
 
   public static changeProces(procesStatus: ProcesStatus) {

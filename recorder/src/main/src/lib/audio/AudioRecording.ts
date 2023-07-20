@@ -45,7 +45,7 @@ export class AudioRecording {
 
   constructor({ outDir }: AudioRecordingParams) {
     this._outDir = outDir;
-    this._audioRecorder = new AudioRecorder(AudioRecordingOptions, true);
+    this._audioRecorder = new AudioRecorder(AudioRecordingOptions, this._debug);
     this._audioRecorder.on("error", this.onError);
     this._audioRecorder.on("end", this.onEnd);
   }

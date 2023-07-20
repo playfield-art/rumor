@@ -67,7 +67,7 @@ export class Serial {
     return new Promise((resolve, reject) => {
       this._port.on("close", (err: any) => {
         if (err) reject(err);
-        this.delay(2000).then(() => resolve()); // a safe delay, after opening so everything is steady
+        this.delay(500).then(() => resolve());
       });
       this._port.close();
     });
@@ -76,16 +76,6 @@ export class Serial {
   delay(ms: number): Promise<void> {
     return new Promise((res) => {
       setTimeout(res, ms);
-    });
-  }
-
-  open(): Promise<void> {
-    return new Promise((resolve, reject) => {
-      this._port.on("open", (err) => {
-        if (err) reject(err);
-        this.delay(2000).then(() => resolve()); // a safe delay, after opening so everything is steady
-      });
-      this._port.open();
     });
   }
 

@@ -36,6 +36,10 @@ export class SerialButton {
     if (this._serial) await this._serial.changePath(path);
   }
 
+  async closeConnection() {
+    if (this._serial) await this._serial.close();
+  }
+
   onDataReceived(data: any) {
     const stringData: string = String(data);
     if (stringData.startsWith("BUTTON")) {

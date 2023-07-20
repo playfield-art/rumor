@@ -22,3 +22,7 @@ export const MQTT_TOPICS_SUBSCRIPTIONS = [
   "light",
   "shellies/rumordoor",
 ];
+
+// Where to send OSC to (QLC+)
+export const QLC_HOST = "127.0.0.1";
+export const QLC_PORT = 7700;

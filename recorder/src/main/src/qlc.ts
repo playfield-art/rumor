@@ -1,3 +1,4 @@
+import { QLC_HOST, QLC_PORT } from "./consts";
 import { QLC } from "./lib/qlc/QLC";
 import { openQLC } from "./lib/qlc/QLCHelpers";
 import { QLCSingleton } from "./lib/qlc/QLCSingleton";
@@ -8,7 +9,7 @@ import SettingHelper from "./lib/settings/SettingHelper";
  */
 export const initQLC = async () => {
   // set localhost as default place for the QLC+ instance
-  QLCSingleton.setInstance(new QLC("127.0.0.1", 7700));
+  QLCSingleton.setInstance(new QLC(QLC_HOST, QLC_PORT));
 
   // open QLC+ at startup if needed
   if (Number((await SettingHelper.getSetting("qlcOpenAtStartup"))?.value)) {

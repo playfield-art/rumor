@@ -30,6 +30,7 @@ export default class VOPlaylist {
   }
 
   next() {
+    console.log("next");
     // check if we have files to play
     if (this.voiceOvers.length === 0) throw new Error("No voiceovers found");
 

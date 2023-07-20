@@ -19,6 +19,8 @@ import { MqttSingleton } from "./lib/mqtt/MqttSingleton";
 import { initMQTT } from "./mqtt";
 import { initQLC } from "./qlc";
 import { closeQLC } from "./lib/qlc/QLCHelpers";
+import { initSerialButton } from "./button";
+import { SerialButtonSingleton } from "./lib/serial/SerialButtonSingleton";
 
 /**
  * Get the resources path
@@ -64,13 +66,16 @@ const initApp = async () => {
     const mainWindow = await electronApp.createWindow();
 
     // init the application
-    Recorder.initApplication();
+    await Recorder.initApplication();
+
+    // init the button
+    await initSerialButton();
 
     // init MQTT
-    initMQTT();
+    await initMQTT();
 
     // init QLC
-    initQLC();
+    await initQLC();
 
     // register actions to execute
     // (one way direction, from renderer to main)
@@ -107,11 +112,14 @@ const initApp = async () => {
       // close QLC
       closeQLC();
 
-      // save logs
-      await Logger.info("Application has been closed.");
+      // close the serial connection
+      await SerialButtonSingleton.getInstance().closeConnection();
 
       // close the mqtt client
       MqttSingleton.getInstance()._mqttClient?.end(true);
+
+      // save logs
+      await Logger.info("Application is closing...");
 
       // exit the application
       app.exit(0);
