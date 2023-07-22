@@ -107,17 +107,46 @@ const setupPreloadPackageWatcher = ({ ws }) =>
     },
   });
 
+/**
+ * Start or restart App when source files are changed
+ * @param {{ws: import('vite').WebSocketServer}} WebSocketServer
+ */
+const setupInterfacePackageWatcher = ({ ws }) =>
+  getWatcher({
+    name: "reload-page-on-interface-package-change",
+    configFile: "src/interface/vite.config.js",
+    writeBundle() {
+      ws.send({
+        type: "full-reload",
+      });
+    },
+  });
+
 (async () => {
   try {
-    const viteDevServer = await createServer({
+    /**
+     * The electron application with main, preload and renderer processes
+     */
+
+    const viteDevServerRenderer = await createServer({
       ...sharedConfig,
       configFile: "src/renderer/vite.config.js",
     });
+    await viteDevServerRenderer.listen();
+    await setupPreloadPackageWatcher(viteDevServerRenderer);
+    await setupMainPackageWatcher(viteDevServerRenderer);
 
-    await viteDevServer.listen();
+    /**
+     * The interface application for touch screen devices
+     */
 
-    await setupPreloadPackageWatcher(viteDevServer);
-    await setupMainPackageWatcher(viteDevServer);
+    const viteDevServerInterface = await createServer({
+      ...sharedConfig,
+      root: `${__dirname}/../src/main/public/webserver`,
+      configFile: "src/interface/vite.config.js",
+    });
+    await viteDevServerInterface.listen();
+    await setupInterfacePackageWatcher(viteDevServerInterface);
   } catch (e) {
     console.error(e);
     process.exit(1);

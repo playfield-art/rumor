@@ -4,8 +4,9 @@ import { ChildProcess } from "child_process";
 import { killProcess } from "../process/killProcess";
 
 export interface VOPlaylistOptions {
-  onNext?: (voiceOver: VoiceOver) => Promise<void>;
+  onNext?: (voiceOver: VoiceOver) => void;
   onVODone?: (voiceOver: VoiceOver) => void;
+  onPlaylistDone?: () => void;
 }
 
 export default class VOPlaylist {
@@ -18,8 +19,9 @@ export default class VOPlaylist {
   private currentAudio: ChildProcess;
 
   private options: VOPlaylistOptions = {
-    onNext: () => Promise.resolve(),
+    onNext: () => {},
     onVODone: () => {},
+    onPlaylistDone: () => {},
   };
 
   constructor(voiceOvers: VoiceOver[], options?: VOPlaylistOptions) {
@@ -29,7 +31,21 @@ export default class VOPlaylist {
     this.options = { ...this.options, ...options };
   }
 
-  async next() {
+  public get stopped(): boolean {
+    return this.currentIndex === -1;
+  }
+
+  private cannotGoToNextWhenChildProcessIsRunning = true;
+
+  next() {
+    if (
+      this.cannotGoToNextWhenChildProcessIsRunning &&
+      this.currentAudio &&
+      !this.currentAudio
+    ) {
+      return;
+    }
+
     // check if we have files to play
     if (this.voiceOvers.length === 0) throw new Error("No voiceovers found");
 
@@ -37,14 +53,17 @@ export default class VOPlaylist {
     this.currentIndex += 1;
 
     // if the index is bigger than the amount of voiceovers
-    if (this.currentIndex >= this.voiceOvers.length) this.stop();
+    if (this.currentIndex >= this.voiceOvers.length) {
+      this.stop();
+      if (this.options.onPlaylistDone) this.options.onPlaylistDone();
+    }
     // play next in line
     else {
       // get the voice over
       const voiceOver = this.voiceOvers[this.currentIndex];
 
       // trigger on next
-      if (this.options.onNext) await this.options.onNext(voiceOver);
+      if (this.options.onNext) this.options.onNext(voiceOver);
 
       // check if we have a running process, if yes.. kill it
       if (this.currentAudio && !this.currentAudio.killed) {

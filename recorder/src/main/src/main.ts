@@ -9,6 +9,7 @@
 
 import path from "path";
 import { app, systemPreferences } from "electron";
+
 import { ElectronApp } from "./lib";
 import { registerActions, registerMethods } from "./register";
 import { Recorder } from "./recorder";
@@ -21,6 +22,17 @@ import { initQLC } from "./qlc";
 import { closeQLC } from "./lib/qlc/QLCHelpers";
 import { initSerialButton } from "./button";
 import { SerialButtonSingleton } from "./lib/serial/SerialButtonSingleton";
+import { initExpress } from "./express";
+
+/**
+ * Express server for the internal webserver
+ */
+
+const expressProcess = initExpress();
+
+/**
+ * Electron Application
+ */
 
 /**
  * Get the resources path
@@ -103,6 +115,10 @@ const initApp = async () => {
       if (mainWindow && !mainWindow.isDestroyed()) {
         mainWindow.webContents.send("closing");
       }
+
+      // kill the express process
+      expressProcess?.kill("SIGINT");
+
       // destroy the soundboard
       await SoundBoard.destroy();
 

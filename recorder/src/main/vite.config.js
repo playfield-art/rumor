@@ -32,6 +32,8 @@ export default defineConfig({
         '@emotion/styled',
         '@mui/styled-engine',
         'node-osc',
+        'express',
+        'expree-handlebars',
         ...builtinModules
       ],
       output: {

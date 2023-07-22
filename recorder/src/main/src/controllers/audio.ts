@@ -3,7 +3,6 @@ import { Exception } from "../lib/exceptions/Exception";
 import SoundBoard from "../lib/audio/SoundBoard";
 import { getAudioList as getAudioListHelper } from "../lib/audio/AudioList";
 import Logger from "../lib/logging/Logger";
-import { Recorder } from "../recorder";
 import SettingHelper from "../lib/settings/SettingHelper";
 import { Door } from "../door";
 
@@ -50,17 +49,7 @@ export const startSession = async () => {
     }
 
     // start a new session, trigger frontend if a soundscape needs to be played
-    await SoundBoard.startSession(
-      (voiceOver) => {
-        Recorder.mainWindow.webContents.send("next-vo", voiceOver);
-      },
-      (soundscape) => {
-        Recorder.mainWindow.webContents.send("play-soundscape", soundscape);
-      }
-    );
-
-    // let the frontend know
-    Recorder.mainWindow.webContents.send("session-started");
+    await SoundBoard.startSession();
 
     // Log
     Logger.success("Session started.");
@@ -93,10 +82,7 @@ export const VOPlaylistDo = async (
 export const stopSession = async () => {
   try {
     // stop the playlist
-    await SoundBoard.destroy();
-
-    // let the frontend know and ask to cleanup the soundscape
-    Recorder.mainWindow.webContents.send("session-stopped");
+    await SoundBoard.stopSession();
 
     // log
     await Logger.warn("Session force stopped.");
