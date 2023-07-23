@@ -1,5 +1,6 @@
 import express from "express";
 import * as path from "path";
+import cors from "cors";
 
 /**
  * Init Express
@@ -14,6 +15,9 @@ let isServerRunning = false;
 
 // create express app
 const app = express();
+
+// enable cors
+app.use(cors());
 
 // set the public folder
 app.use(express.static(publicFolder));
@@ -36,7 +40,7 @@ router.get('/', (req, res) => {
 
 (async () => {
   app.listen(port, () => {
-    console.log(`Server running at http://localhost:${port}`)
+    // console.log(`Server running at http://localhost:${port}`)
     isServerRunning = true;
     process.send("isServerRunning");
   });

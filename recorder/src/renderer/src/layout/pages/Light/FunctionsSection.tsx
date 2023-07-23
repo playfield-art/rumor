@@ -9,7 +9,7 @@ export function FunctionsSection() {
   };
   return (
     <Section title="Functions">
-      <Stack direction="row" sx={{ mb: 2 }}>
+      <Stack direction="column" spacing={2}>
         <Button
           sx={{ width: "100%" }}
           variant="contained"
@@ -17,8 +17,6 @@ export function FunctionsSection() {
         >
           Fade to max light intensity
         </Button>
-      </Stack>
-      <Stack direction="row" sx={{ mb: 2 }}>
         <Button
           sx={{ width: "100%" }}
           variant="contained"
@@ -28,8 +26,6 @@ export function FunctionsSection() {
         >
           Fade to dimmed light intensity
         </Button>
-      </Stack>
-      <Stack direction="row" sx={{ mb: 2 }}>
         <Button
           sx={{ width: "100%" }}
           variant="contained"
@@ -37,8 +33,6 @@ export function FunctionsSection() {
         >
           Fade to blackout
         </Button>
-      </Stack>
-      <Stack direction="row" sx={{ mb: 2 }}>
         <Button
           sx={{ width: "100%" }}
           variant="contained"

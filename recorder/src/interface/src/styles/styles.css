@@ -1,0 +1,91 @@
+/**
+ * Variables
+ */
+
+:root {
+  /**
+   * Colors
+   */
+
+  --black: #000000;
+  --coal: #0f0d0e;
+  --white: #FFFFFF;
+
+  /* Gray Color */
+  --grey-1400: #111111;
+  --grey-1300: #222222;
+  --grey-1200: #333333;
+  --grey-1100: #444444;
+  --grey-1000: #555555;
+  --grey-900: #666666;
+  --grey-800: #777777;
+  --grey-700: #888888;
+  --grey-600: #999999;
+  --grey-500: #aaaaaa;
+  --grey-400: #bbbbbb;
+  --grey-300: #cccccc;
+  --grey-200: #dddddd;
+  --grey-100: #eeeeee;
+
+  /**
+   * Color Intentions
+   */
+
+  --backgroundColor: var(--coal);
+  --textColor: var(--grey-500);
+
+  /**
+   * Typography
+   */
+
+  font-family: Helvetica, Arial, sans-serif;
+
+  /**
+   * Measurments
+   */
+
+  --paddingPageContainer: 20px;
+}
+/**
+ * General
+ */
+
+body {
+  background-color: var(--backgroundColor);
+  color: var(--textColor);
+}
+
+/**
+ * Layout
+ */
+
+.page-container {
+  padding: var(--paddingPageContainer);
+  box-sizing: border-box;
+  width: 100vw;
+  height: 100vh;
+}
+
+/**
+ * Inputs
+ */
+
+input {
+  padding: 10px 7px;
+}
+
+button {
+  --buttonBackgroundColor: var(--grey-1000);
+  --buttonColor: var(--grey-500);
+
+  border: none;
+  background-color: var(--buttonBackgroundColor);
+  padding: 10px 15px;
+  color: var(--buttonColor);
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  --buttonBackgroundColor: var(--grey-1100);
+}

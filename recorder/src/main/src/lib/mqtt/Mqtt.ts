@@ -57,6 +57,9 @@ export class MQTT {
         reconnectPeriod: 2000,
         keepalive: 1,
         connectTimeout: 2000,
+        host: this._host,
+        port: Number(this._port),
+        clientId: `recorder-${Math.random().toString(16).substring(2, 8)}`,
       });
 
       // whenever we encounter an error, close the connection
@@ -141,7 +144,7 @@ export class MQTT {
    * @param json The JSON to publish
    * @returns
    */
-  public async publish(topic: string, json?: JSON): Promise<void> {
+  public async publish(topic: string, json?: any): Promise<void> {
     return new Promise((resolve, reject) => {
       if (!this._mqttClient || !this._mqttClient.connected) resolve();
       // publish

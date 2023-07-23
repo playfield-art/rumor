@@ -40,6 +40,6 @@ Setting.init(
 /**
  * Sync the settings table
  */
-Setting.sync({ alter: true });
+Setting.sync({ alter: true }).catch(() => {});
 
 export default Setting;

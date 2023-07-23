@@ -21,12 +21,18 @@ import {
   reInitMqtt,
 } from "./controllers/mqtt";
 import { setColor, triggerFunction } from "./controllers/qlc";
+import {
+  changeInterfacePage,
+  pressButtonInterface,
+} from "./controllers/interface";
 
 export const registerActions = () => {
   ipcMain.on("log", log);
   ipcMain.on("saveSetting", saveSetting);
   ipcMain.on("setColor", setColor);
   ipcMain.on("triggerFunction", triggerFunction);
+  ipcMain.on("changeInterfacePage", changeInterfacePage);
+  ipcMain.on("pressButtonInterface", pressButtonInterface);
 };
 
 export const registerMethods = () => {

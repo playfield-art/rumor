@@ -33,7 +33,7 @@ export default defineConfig({
         '@mui/styled-engine',
         'node-osc',
         'express',
-        'expree-handlebars',
+        'express-session',
         ...builtinModules
       ],
       output: {

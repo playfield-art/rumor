@@ -23,6 +23,7 @@ import { closeQLC } from "./lib/qlc/QLCHelpers";
 import { initSerialButton } from "./button";
 import { SerialButtonSingleton } from "./lib/serial/SerialButtonSingleton";
 import { initExpress } from "./express";
+import { initSocketIo } from "./socket";
 
 /**
  * Express server for the internal webserver
@@ -88,6 +89,9 @@ const initApp = async () => {
 
     // init QLC
     await initQLC();
+
+    // init Socket IO
+    initSocketIo();
 
     // register actions to execute
     // (one way direction, from renderer to main)

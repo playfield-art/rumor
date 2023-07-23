@@ -42,6 +42,6 @@ LogItem.init(
 /**
  * Sync the log items table
  */
-LogItem.sync({ alter: true });
+LogItem.sync({ alter: true }).catch(() => {});
 
 export default LogItem;

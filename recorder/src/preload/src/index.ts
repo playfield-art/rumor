@@ -27,6 +27,12 @@ contextBridge.exposeInMainWorld("rumor", {
       ipcRenderer.send("log", message, type),
     saveSetting: (setting: ISetting) =>
       ipcRenderer.send("saveSetting", setting),
+    interface: {
+      changeInterfacePage: (page: string) =>
+        ipcRenderer.send("changeInterfacePage", page),
+      pressButtonInterface: (button: number) =>
+        ipcRenderer.send("pressButtonInterface", button),
+    },
     light: {
       setColor: (color: "red" | "blue" | "green" | "white", value: number) =>
         ipcRenderer.send("setColor", color, value),

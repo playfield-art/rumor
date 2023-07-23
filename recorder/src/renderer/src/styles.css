@@ -31,6 +31,7 @@
   /* Accent Colors */
   --yellow: #515216;
   --green: #1f3d1a;
+  --blue: #1c2c5d;
 
   /* Log Colors */
   --error: var(--red-1000);

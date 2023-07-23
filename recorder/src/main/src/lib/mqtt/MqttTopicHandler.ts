@@ -9,6 +9,7 @@ import { Exception } from "../exceptions/Exception";
 import { QLCSingleton } from "../qlc/QLCSingleton";
 import SettingHelper from "../settings/SettingHelper";
 import { doorStateChanged } from "../../controllers/door";
+import { SocketSingleton } from "../socket/SocketSingleton";
 
 export class MqttTopicHandler {
   public static async handleTopic(topic: string, message: string = "") {
@@ -38,15 +39,40 @@ export class MqttTopicHandler {
   }
 
   /**
-   * Handle the topic recorder/nextVoiceOver
-   * @param json
+   * Handle the INTERFACE topics
    */
-  public static async handleTopicRecorderNextVoiceOver() {
+
+  public static async handleTopicInterfaceButton(json: any) {
     try {
-      if (SoundBoard.VOPlaylist) SoundBoard.VOPlaylist.next();
+      if (json.button) {
+        SocketSingleton.getInstance().sendToClients("button-pressed", {
+          button: json.button,
+        });
+      }
     } catch (e: any) {
       throw new Exception({
-        where: "handleTopicRecorderNextVoiceOver",
+        where: "handleTopicInterfaceButton",
+        message: e.message,
+      });
+    }
+  }
+
+  /**
+   * Handle the LIGHT topics
+   */
+
+  /**
+   * Sets the color of the light
+   * @param json
+   */
+  public static async handleTopicLightFunction(json: {
+    function: QLCFunction;
+  }) {
+    try {
+      QLCSingleton.getInstance().triggerFunction(json.function);
+    } catch (e: any) {
+      throw new Exception({
+        where: "handleTopicLightFunction",
         message: e.message,
       });
     }
@@ -88,30 +114,19 @@ export class MqttTopicHandler {
   }
 
   /**
-   * Handle the rumor door sate
-   * @param json
+   * Handle the RECORDER topics
    */
-  public static async handleTopicShelliesRumordoorInfo(json: any) {
-    if (json.sensor && json.sensor.state && json.bat) {
-      doorStateChanged({
-        open: json.sensor.state === "open",
-        battery: json.bat.value,
-      });
-    }
-  }
 
   /**
-   * Sets the color of the light
+   * Handle the topic recorder/nextVoiceOver
    * @param json
    */
-  public static async handleTopicLightFunction(json: {
-    function: QLCFunction;
-  }) {
+  public static async handleTopicRecorderNextVoiceOver() {
     try {
-      QLCSingleton.getInstance().triggerFunction(json.function);
+      SoundBoard.next();
     } catch (e: any) {
       throw new Exception({
-        where: "handleTopicLightFunction",
+        where: "handleTopicRecorderNextVoiceOver",
         message: e.message,
       });
     }
@@ -158,6 +173,19 @@ export class MqttTopicHandler {
       throw new Exception({
         where: "handleTopicRecorderStopSession",
         message: e.message,
+      });
+    }
+  }
+
+  /**
+   * Handle the rumor door sate
+   * @param json
+   */
+  public static async handleTopicShelliesRumordoorInfo(json: any) {
+    if (json.sensor && json.sensor.state && json.bat) {
+      doorStateChanged({
+        open: json.sensor.state === "open",
+        battery: json.bat.value,
       });
     }
   }

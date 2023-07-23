@@ -1,6 +1,5 @@
 import { io } from 'socket.io-client';
+import { SocketData } from './interfaces';
 
-// "undefined" means the URL will be computed from the `window.location` object
-// const u = process.env.NODE_ENV === 'production' ? undefined : 'http://localhost:4000';
-
-// export const socket = io(u);
+const socketData = JSON.parse(localStorage.getItem('socketData') || "{}") as SocketData;
+export const socket = io(socketData.socketUrl || 'http://localhost:4444');

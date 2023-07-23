@@ -4,6 +4,6 @@
     "jsx": "react-jsx",
   },
   "include": [
-    "../interface/**/*"
+    "src/**/*"
   ],
 }

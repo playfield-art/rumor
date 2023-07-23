@@ -16,6 +16,7 @@ import { AppHeader } from "./layout/AppHeader";
 import { CurrentStatus } from "./layout/CurrentStatus";
 import { LogItems } from "./layout/pages/LogItems/LogItems";
 import { Light } from "./layout/pages/Light/Light";
+import { Interface } from "./layout/pages/Interface/Interface";
 
 function App() {
   useApp();
@@ -38,6 +39,7 @@ function App() {
                 <Route path="/" element={<LogItems />} />
                 <Route path="/cms" element={<Cms />} />
                 <Route path="/light" element={<Light />} />
+                <Route path="/interface" element={<Interface />} />
                 <Route path="/settings" element={<Settings />} />
               </Routes>
               <ToastContainer />

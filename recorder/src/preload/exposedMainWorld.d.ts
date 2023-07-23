@@ -8,6 +8,7 @@ import {
   ILogRow,
   ILogType,
   VoiceOver,
+  QLCFunction,
 } from "@shared/interfaces";
 import { IDoorState } from "../shared/interfaces";
 
@@ -17,6 +18,10 @@ declare global {
       readonly actions: {
         log(message: string, log: ILogType): void;
         saveSetting(setting: ISetting): void;
+        interface: {
+          changeInterfacePage(page: string): void;
+          pressButtonInterface(button: number): void;
+        };
         light: {
           setColor(
             color: "red" | "blue" | "green" | "white",
