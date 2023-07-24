@@ -25,7 +25,7 @@ export const interfaceTranslations: InterfaceTranslations = {
     pleaseSelectYourLanguage: 'Please select your language.',
     countdownPart1: 'Sit down and put on the headphones.',
     countdownPart2: 'We will start in',
-    countdownPart3: 'You can stop the experience at any time by pressing the middle button.',
+    countdownPart3: 'You can stop the experience at any time by pressing one of the buttons below.',
   },
   "nl": {
     doorIsOpen: 'De deur staat open. Sluit de deur om verder te gaan.',
@@ -36,6 +36,6 @@ export const interfaceTranslations: InterfaceTranslations = {
     pleaseSelectYourLanguage: 'Selecteer uw taal.',
     countdownPart1: 'Ga zitten en zet de koptelefoon op.',
     countdownPart2: 'We beginnen over',
-    countdownPart3: 'U kunt de ervaring op elk moment stoppen door op de middelste knop te drukken.',
+    countdownPart3: 'U kunt de ervaring op elk moment stoppen door op één van onderstaande knoppen te drukken.',
   }
 }

@@ -11,7 +11,7 @@ export const StartCountdown = () => {
   const [intervalValue] = useState<number>(1000)
   const [count, { startCountdown, stopCountdown }] =
     useCountdown({
-      countStart: 3,
+      countStart: 15,
       intervalMs: intervalValue,
     })
   const navigate = useNavigate();
@@ -36,9 +36,6 @@ export const StartCountdown = () => {
   useEffect(() => {
     if(count <= 0) {
       sendToServer('startSession', {});
-      setTimeout(() => {
-        navigate('/during-performance');
-      }, 500);
     }
   }, [count]);
 

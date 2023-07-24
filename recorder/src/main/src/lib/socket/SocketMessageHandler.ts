@@ -4,7 +4,7 @@
 
 import { SocketMessage } from "@shared/interfaces";
 import SettingHelper from "../settings/SettingHelper";
-import { startSession } from "../../controllers/audio";
+import { startSession, stopSession } from "../../controllers/audio";
 import SoundBoard from "../audio/SoundBoard";
 import { SocketSingleton } from "./SocketSingleton";
 
@@ -64,5 +64,16 @@ export class SocketMessageHandler {
       "change-page",
       "during-performance"
     );
+  }
+
+  /**
+   * Handle stop session
+   * @param json
+   */
+  public static handleMessageStopSession() {
+    if (SoundBoard.sessionRunning) {
+      stopSession();
+    }
+    SocketSingleton.getInstance().sendToClients("change-page", "set-language");
   }
 }

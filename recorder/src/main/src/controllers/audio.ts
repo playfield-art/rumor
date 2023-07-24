@@ -7,6 +7,7 @@ import Logger from "../lib/logging/Logger";
 import SettingHelper from "../lib/settings/SettingHelper";
 import { Door } from "../door";
 import { QLCSingleton } from "../lib/qlc/QLCSingleton";
+import { SocketSingleton } from "../lib/socket/SocketSingleton";
 
 /**
  * Get the audiolist
@@ -38,11 +39,23 @@ export const initPlaylist = (
 export const startSession = async () => {
   try {
     /**
+     * Validate
+     */
+
+    if (SoundBoard.sessionRunning) {
+      // change the page on the interface
+      SocketSingleton.getInstance().sendToClients(
+        "change-page",
+        "during-performance"
+      );
+    }
+
+    /**
      * Check if we need to wait for the door to be closed
      */
 
     // log
-    Logger.info("Checking the door.");
+    await Logger.info("Checking the door.");
 
     // do we start a session only when door is closed?
     const startSessionAfterDoorIsClosed = Boolean(
@@ -53,7 +66,7 @@ export const startSession = async () => {
 
     // if we need to wait for the door to be closed, check if the door is closed
     if (startSessionAfterDoorIsClosed && Door.open) {
-      Logger.error("Can't start session, door is open.");
+      await Logger.error("Can't start session, door is open.");
       return;
     }
 
@@ -62,7 +75,7 @@ export const startSession = async () => {
      */
 
     // log
-    Logger.info("Starting the soundboard session.");
+    await Logger.info("Starting the soundboard session.");
 
     // start a new session, trigger frontend if a soundscape needs to be played
     await SoundBoard.startSession();
@@ -72,7 +85,7 @@ export const startSession = async () => {
      */
 
     // log
-    Logger.info("Set light to dimmed intensity");
+    await Logger.info("Set light to dimmed intensity.");
 
     // trigger the QLC function
     QLCSingleton.getInstance().triggerFunction(
@@ -80,9 +93,22 @@ export const startSession = async () => {
     );
 
     /**
+     * Set the interface to during performance
+     */
+
+    // log
+    await Logger.info("Set the interface to during performance state.");
+
+    // change the page on the interface
+    SocketSingleton.getInstance().sendToClients(
+      "change-page",
+      "during-performance"
+    );
+
+    /**
      * Log our success
      */
-    Logger.success("Session started.");
+    await Logger.success("Session started.");
   } catch (e: any) {
     throw new Exception({ where: "startSession", message: e.message });
   }
@@ -111,11 +137,54 @@ export const VOPlaylistDo = async (
  */
 export const stopSession = async () => {
   try {
+    /**
+     * Validate
+     */
+
+    if (!SoundBoard.sessionRunning) {
+      // change the page on the interface
+      SocketSingleton.getInstance().sendToClients(
+        "change-page",
+        "set-language"
+      );
+    }
+
+    /**
+     * Stop the session in the soundboard
+     */
+
+    // log
+    await Logger.info("Stopped the soundboard session.");
+
     // stop the playlist
     await SoundBoard.stopSession();
 
+    /**
+     * Set the light to max light intensity
+     */
+
     // log
-    await Logger.warn("Session force stopped.");
+    await Logger.info("Set light to max intensity.");
+
+    // trigger the QLC function
+    QLCSingleton.getInstance().triggerFunction(
+      QLCFunction.FADE_TO_MAX_LIGHT_INTENSITY
+    );
+
+    /**
+     * Set the interface to set language
+     */
+
+    // log
+    await Logger.info("Set the interface to set language state.");
+
+    // change the page on the interface
+    SocketSingleton.getInstance().sendToClients("change-page", "set-language");
+
+    /**
+     * Log our success
+     */
+    await Logger.success("Session force stopped.");
   } catch (e: any) {
     throw new Exception({ where: "stopSession", message: e.message });
   }

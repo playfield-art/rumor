@@ -6,6 +6,9 @@ import { Door } from "../door";
 import { stopSession } from "./audio";
 import SettingHelper from "../lib/settings/SettingHelper";
 import SoundBoard from "../lib/audio/SoundBoard";
+import { SocketSingleton } from "../lib/socket/SocketSingleton";
+
+let doorStopSessionAfterTimeout: NodeJS.Timeout | null = null;
 
 /**
  * Actions whenever the door state changes
@@ -19,8 +22,13 @@ export const doorStateChanged = async ({ open, battery }: IDoorState) => {
   Door.open = open;
   Door.battery = battery;
 
-  // Log
+  // log
   Logger.info(`Door is ${open ? "open" : "closed"}.`);
+
+  // when the door is open, show this on the interface
+  if (Door.open) {
+    SocketSingleton.getInstance().sendToClients("change-page", "door-is-open");
+  }
 
   // if the door is open and the session is running, check if we need to stop the session
   if (Door.open && SoundBoard.sessionRunning) {
@@ -42,11 +50,29 @@ export const doorStateChanged = async ({ open, battery }: IDoorState) => {
       );
 
       // stop the session after the given time
-      setTimeout(stopSession, doorStopSessionAfter * 1000);
+      doorStopSessionAfterTimeout = setTimeout(
+        stopSession,
+        doorStopSessionAfter * 1000
+      );
     }
   }
 
-  // @todo stop the session?
+  // when the door is not open, and we are not running a session, show the language page
+  if (!Door.open && !SoundBoard.sessionRunning) {
+    SocketSingleton.getInstance().sendToClients("change-page", "set-language");
+  }
+
+  // when the door is not open and we are running a session, show the during performance page
+  if (!Door.open && SoundBoard.sessionRunning) {
+    // if we were running an interval to stop the session, clear it
+    if (doorStopSessionAfterTimeout) clearTimeout(doorStopSessionAfterTimeout);
+
+    // change the page on the interface
+    SocketSingleton.getInstance().sendToClients(
+      "change-page",
+      "during-performance"
+    );
+  }
 };
 
 /**
