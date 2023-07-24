@@ -22,6 +22,20 @@ function ChangePageSection() {
         >
           Start Countdown
         </Button>
+        <Button
+          sx={{ width: "100%" }}
+          variant="contained"
+          onClick={() => changeInterfacePage("during-performance")}
+        >
+          During Performance
+        </Button>
+        <Button
+          sx={{ width: "100%" }}
+          variant="contained"
+          onClick={() => changeInterfacePage("door-is-open")}
+        >
+          Door Is Open
+        </Button>
       </Stack>
     </Section>
   );

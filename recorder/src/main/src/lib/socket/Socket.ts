@@ -17,15 +17,11 @@ export class Socket {
    * Init the server
    */
   private initServer() {
-    this.socketServer = new Server(
-      this.development
-        ? {
-            cors: {
-              origin: `http://localhost:3001`,
-            },
-          }
-        : {}
-    );
+    this.socketServer = new Server({
+      cors: {
+        origin: `*`,
+      },
+    });
     this.socketServer.attach(this.port);
   }
 
