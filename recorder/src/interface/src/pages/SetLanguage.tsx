@@ -10,6 +10,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslationsStore } from '../hooks/useTranslationsStore';
 import { interfaceTranslations } from '../translations';
 import { useSocket } from '../hooks/useSocket';
+import { useScreen } from '../hooks/useScreen';
 
 const SwiperSlideLanguage = styled(SwiperSlide)`
   background-color: none;
@@ -24,6 +25,7 @@ export const SetLanguage = () => {
   const [instructions, setInstructions] = React.useState<string>(interfaceTranslations.en.pleaseSelectYourLanguage);
   const changeTranslations = useTranslationsStore((state) => state.changeTranslations);
   const { sendToServer } = useSocket();
+  useScreen(true);
 
   /**
    * When the left button is pressed, we want to scroll to the previous item

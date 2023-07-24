@@ -7,6 +7,7 @@ import SettingHelper from "../settings/SettingHelper";
 import { startSession, stopSession } from "../../controllers/audio";
 import SoundBoard from "../audio/SoundBoard";
 import { SocketSingleton } from "./SocketSingleton";
+import { MqttSingleton } from "../mqtt/MqttSingleton";
 
 export class SocketMessageHandler {
   /**
@@ -75,5 +76,15 @@ export class SocketMessageHandler {
       stopSession();
     }
     SocketSingleton.getInstance().sendToClients("change-page", "set-language");
+  }
+
+  /**
+   * Handle screen
+   * @param json
+   */
+  public static handleMessageScreen(json: any) {
+    MqttSingleton.getInstance().publish("interface/screen", {
+      state: json.state ? 1 : 0,
+    });
   }
 }

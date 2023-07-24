@@ -6,6 +6,7 @@ import { useCountdown } from 'usehooks-ts';
 import { useNavigate } from 'react-router-dom';
 import { useTranslationsStore } from '../hooks/useTranslationsStore';
 import { useSocket } from '../hooks/useSocket';
+import { useScreen } from '../hooks/useScreen';
 
 export const StartCountdown = () => {
   const [intervalValue] = useState<number>(1000)
@@ -17,6 +18,7 @@ export const StartCountdown = () => {
   const navigate = useNavigate();
   const { sendToServer } = useSocket();
   const translations = useTranslationsStore((state) => state.translations);
+  useScreen(true);
 
   /**
    * When the middle button is pressed, activate the language

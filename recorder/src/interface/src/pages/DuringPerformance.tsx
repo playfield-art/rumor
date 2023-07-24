@@ -1,10 +1,12 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { useControl } from '../hooks/useControl';
 import { useSocket } from '../hooks/useSocket';
+import { useScreen } from '../hooks/useScreen';
 
 export const DuringPerformance = () => {
   const { sendToServer } = useSocket();
+  useScreen(false)
 
   /**
   * When the middle button is pressed, activate the language

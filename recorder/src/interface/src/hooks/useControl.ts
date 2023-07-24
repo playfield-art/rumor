@@ -36,5 +36,5 @@ export const useControl = ({
     return () => {
       socket.off('button-pressed');
     }
-  });
+  }, []);
 };

@@ -28,7 +28,7 @@ export const interfaceTranslations: InterfaceTranslations = {
     countdownPart3: 'You can stop the experience at any time by pressing one of the buttons below.',
   },
   "nl": {
-    doorIsOpen: 'De deur staat open. Sluit de deur om verder te gaan.',
+    doorIsOpen: 'De deur is open. Sluit de deur om verder te gaan.',
     seconds: 'seconden',
     second: 'seconde',
     language: 'Nederlands',
