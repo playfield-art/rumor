@@ -5,5 +5,10 @@ export const useInterface = () => {
   const pressButtonInterface = (button: number) =>
     window.rumor.actions.interface.pressButtonInterface(button);
 
-  return { changeInterfacePage, pressButtonInterface };
+  const screen = (on: boolean) =>
+    window.rumor.methods.publishTopic("interface/screen", {
+      state: on ? 1 : 0,
+    });
+
+  return { changeInterfacePage, pressButtonInterface, screen };
 };

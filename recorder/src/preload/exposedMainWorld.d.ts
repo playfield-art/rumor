@@ -36,7 +36,7 @@ declare global {
         getMqttConnection(): Promise<boolean>;
         getSetting(key: string): Promise<string | null>;
         initPlaylist(audioList: AudioList): void;
-        publishTopic(topic: string, json?: JSON): Promise<void>;
+        publishTopic(topic: string, json?: Object): Promise<void>;
         reInitMqtt(): Promise<void>;
         removeAllLogging(): Promise<void>;
         setFileSetting(

@@ -48,7 +48,7 @@ contextBridge.exposeInMainWorld("rumor", {
     getSetting: (key: string) => ipcRenderer.invoke("getSetting", key),
     initPlaylist: (audioList: AudioList) =>
       ipcRenderer.invoke("initPlaylist", audioList),
-    publishTopic: (topic: string, json?: JSON) =>
+    publishTopic: (topic: string, json?: Object) =>
       ipcRenderer.invoke("publishTopic", topic, json),
     reInitMqtt: () => ipcRenderer.invoke("reInitMqtt"),
     removeAllLogging: () => ipcRenderer.invoke("removeAllLogging"),
