@@ -1,4 +1,21 @@
-export default {
+export interface Translation {
+  doorIsOpen: string,
+  seconds: string,
+  second: string,
+  language: string,
+  languageCode: 'nl' | 'en',
+  pleaseSelectYourLanguage: string,
+  countdownPart1: string,
+  countdownPart2: string,
+  countdownPart3: string,
+}
+
+export interface InterfaceTranslations {
+  en: Translation,
+  nl: Translation,
+}
+
+export const interfaceTranslations: InterfaceTranslations = {
   "en": {
     doorIsOpen: 'The door is open. Please close the door to continue.',
     seconds: 'seconds',

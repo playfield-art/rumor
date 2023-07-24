@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import translationsInSetup from '../translations';
+import { interfaceTranslations } from '../translations';
 
 
 type TranslationsState = {
@@ -11,9 +11,9 @@ type TranslationsAction = {
 };
 
 export const useTranslationsStore = create<TranslationsState & TranslationsAction>((set) => ({
-  translations: translationsInSetup.en,
+  translations: interfaceTranslations.en,
   changeTranslations: (languageCode: string) => set(
     (state: any) => ({
-      translations: translationsInSetup[languageCode as keyof typeof translationsInSetup]
+      translations: interfaceTranslations[languageCode as keyof typeof interfaceTranslations]
     })),
 }))

@@ -3,6 +3,10 @@ import { MqttSingleton } from "../lib/mqtt/MqttSingleton";
 import { SocketSingleton } from "../lib/socket/SocketSingleton";
 
 /**
+ * Sending to the interface
+ */
+
+/**
  * Change the page of the interface
  * @param event The event
  * @param page The page to change to

@@ -177,3 +177,12 @@ export interface Notifciation {
 }
 
 export type StatusCallback = (message: string) => void;
+
+/**
+ * Socket
+ */
+
+export interface SocketMessage {
+  message: string;
+  payload: any;
+}

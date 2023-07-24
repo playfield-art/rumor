@@ -215,11 +215,11 @@ export default class SoundBoard {
       // init the playlist
       SoundBoard.initPlaylist(audioList);
 
-      // start the playlist
-      SoundBoard.next();
-
       // set inner state
       SoundBoard.sessionRunning = true;
+
+      // start the playlist
+      SoundBoard.next();
 
       // let the frontend know
       Recorder.mainWindow.webContents.send("session-started");

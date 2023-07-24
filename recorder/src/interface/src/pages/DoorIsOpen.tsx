@@ -16,7 +16,7 @@ export const DoorIsOpen = () => {
         boxSizing: "border-box"
       }}>
         <h1>
-          <p>{translations.pleaseSelectYourLanguage}</p>
+          <p>{translations.doorIsOpen}</p>
         </h1>
       </div>
     </Page>

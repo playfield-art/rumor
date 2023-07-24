@@ -1,3 +1,4 @@
+import { QLCFunction } from "@shared/enums";
 import { AudioList } from "../../../shared/interfaces";
 import { Exception } from "../lib/exceptions/Exception";
 import SoundBoard from "../lib/audio/SoundBoard";
@@ -5,6 +6,7 @@ import { getAudioList as getAudioListHelper } from "../lib/audio/AudioList";
 import Logger from "../lib/logging/Logger";
 import SettingHelper from "../lib/settings/SettingHelper";
 import { Door } from "../door";
+import { QLCSingleton } from "../lib/qlc/QLCSingleton";
 
 /**
  * Get the audiolist
@@ -35,6 +37,13 @@ export const initPlaylist = (
  */
 export const startSession = async () => {
   try {
+    /**
+     * Check if we need to wait for the door to be closed
+     */
+
+    // log
+    Logger.info("Checking the door.");
+
     // do we start a session only when door is closed?
     const startSessionAfterDoorIsClosed = Boolean(
       Number(
@@ -48,10 +57,31 @@ export const startSession = async () => {
       return;
     }
 
+    /**
+     * Start the session in the soundboard
+     */
+
+    // log
+    Logger.info("Starting the soundboard session.");
+
     // start a new session, trigger frontend if a soundscape needs to be played
     await SoundBoard.startSession();
 
-    // Log
+    /**
+     * Set the light to dimmed light intensity
+     */
+
+    // log
+    Logger.info("Set light to dimmed intensity");
+
+    // trigger the QLC function
+    QLCSingleton.getInstance().triggerFunction(
+      QLCFunction.FADE_TO_DIMMED_LIGHT_INTENSITY
+    );
+
+    /**
+     * Log our success
+     */
     Logger.success("Session started.");
   } catch (e: any) {
     throw new Exception({ where: "startSession", message: e.message });

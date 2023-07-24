@@ -12,6 +12,11 @@ import { doorStateChanged } from "../../controllers/door";
 import { SocketSingleton } from "../socket/SocketSingleton";
 
 export class MqttTopicHandler {
+  /**
+   * Handle incoming mqtt topics
+   * @param topic The topic
+   * @param message The message
+   */
   public static async handleTopic(topic: string, message: string = "") {
     // convert the message to a json object
     const json = JSON.parse(message.toString());

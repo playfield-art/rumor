@@ -5,16 +5,17 @@ import { ControlBoxFixed } from '../components/ControlBoxFixed';
 import { useCountdown } from 'usehooks-ts';
 import { useNavigate } from 'react-router-dom';
 import { useTranslationsStore } from '../hooks/useTranslationsStore';
-import translationsInSetup from '../translations';
+import { useSocket } from '../hooks/useSocket';
 
 export const StartCountdown = () => {
   const [intervalValue] = useState<number>(1000)
   const [count, { startCountdown, stopCountdown }] =
     useCountdown({
-      countStart: 15,
+      countStart: 3,
       intervalMs: intervalValue,
     })
   const navigate = useNavigate();
+  const { sendToServer } = useSocket();
   const translations = useTranslationsStore((state) => state.translations);
 
   /**
@@ -34,8 +35,10 @@ export const StartCountdown = () => {
   // Stop the countdown when the component is unmounted
   useEffect(() => {
     if(count <= 0) {
-      // go to screen during performance
-      navigate('/during-performance');
+      sendToServer('startSession', {});
+      setTimeout(() => {
+        navigate('/during-performance');
+      }, 500);
     }
   }, [count]);
 

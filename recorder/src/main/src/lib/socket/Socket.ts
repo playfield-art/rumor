@@ -1,15 +1,16 @@
+import { SocketMessage } from "@shared/interfaces";
 import { Server } from "socket.io";
 
 export class Socket {
   private port: number;
 
-  private development: boolean;
-
   public socketServer: Server;
 
-  constructor(port: number, development: boolean = true) {
+  private _onMessage: ((message: SocketMessage) => void) | undefined;
+
+  constructor(port: number, onMessage?: (message: SocketMessage) => void) {
     this.port = port;
-    this.development = development;
+    this._onMessage = onMessage;
     this.initServer();
   }
 
@@ -22,7 +23,13 @@ export class Socket {
         origin: `*`,
       },
     });
+
     this.socketServer.attach(this.port);
+    this.socketServer.on("connection", (socket) => {
+      socket.on("message", (data: any) => {
+        if (this._onMessage) this._onMessage(data as SocketMessage);
+      });
+    });
   }
 
   /**
