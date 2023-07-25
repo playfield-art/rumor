@@ -109,6 +109,7 @@ export interface ChapterBlock {
   title: string;
   description: string;
   cms_id: string;
+  soundscape: AudioCms | null;
   audio: AudioCmsBlock[];
 }
 
@@ -120,6 +121,11 @@ export interface AudioCms {
 export interface AudioCmsBlock extends AudioCms {
   language: string;
 }
+
+// export interface Language {
+//   short: string;
+//   long: string;
+// }
 
 /**
  * App

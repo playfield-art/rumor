@@ -3,6 +3,7 @@ import {
   ChapterMeta,
   VoiceOverType,
   VoiceOver,
+  SoundScape,
 } from "@shared/interfaces";
 import fs from "fs";
 import { UNWANTED_FILES, narrativeChapters } from "../../consts";
@@ -45,27 +46,32 @@ export const getAudioList = async (language: string) => {
     if (!(chapterOptions.length > 0)) return;
 
     // get a random option
-    const randomChapterOption =
+    // @todo chapter based on the chapter selected in backend
+    const selectedChapterOption =
       chapterOptions[Math.floor(Math.random() * chapterOptions.length)];
 
     // get the random option path
-    const randomChapterOptionPath = `${chapterOptionsPath}/${randomChapterOption}/`;
+    const selectedChapterOptionPath = `${chapterOptionsPath}/${selectedChapterOption}/`;
 
     // adding chapter meta
     output.chapters.push(
       JSON.parse(
-        fs.readFileSync(`${randomChapterOptionPath}/meta.json`, "utf-8")
+        fs.readFileSync(`${selectedChapterOptionPath}/meta.json`, "utf-8")
       ) as ChapterMeta
     );
 
+    /**
+     * Voice Overs and Questions
+     */
+
     // read all the files in the option
-    const randomChapterOptionAudioFiles = fs
-      .readdirSync(randomChapterOptionPath)
+    const selectedChapterOptionAudioFiles = fs
+      .readdirSync(selectedChapterOptionPath)
       .filter((file) => !UNWANTED_FILES.includes(file))
       .filter((f) => f.startsWith(language));
 
     // create the voice overs
-    const voiceOvers: VoiceOver[] = randomChapterOptionAudioFiles
+    const voiceOvers: VoiceOver[] = selectedChapterOptionAudioFiles
       .map((audioFile) => {
         const audioFileSplitted = audioFile
           .substring(0, audioFile.lastIndexOf("."))
@@ -80,7 +86,7 @@ export const getAudioList = async (language: string) => {
               : VoiceOverType.VoiceOver,
           id: parseInt(audioFileSplitted[3]),
           chapter: narrativeChapter,
-          url: `${randomChapterOptionPath}${audioFile}`,
+          url: `${selectedChapterOptionPath}${audioFile}`,
         };
       })
       .sort((a, b) => a.order - b.order);
@@ -88,18 +94,38 @@ export const getAudioList = async (language: string) => {
     // add the voice overs to our output
     output.VO = [...output.VO, ...voiceOvers];
 
-    // do we have a soundscape?
-    const randomChapterOptionSoundscapeFiles = fs
-      .readdirSync(randomChapterOptionPath)
+    /**
+     * Soundscapes
+     */
+
+    // read all the soundscapes in the chapter folder
+    const selectedChapterOptionSoundscapeFiles = fs
+      .readdirSync(selectedChapterOptionPath)
       .filter((file) => !UNWANTED_FILES.includes(file))
-      .filter((f) => f.startsWith("soundscape"));
-    if (randomChapterOptionSoundscapeFiles.length > 0) {
-      output.SC.push({
-        fileName: randomChapterOptionSoundscapeFiles[0],
-        startsAt: voiceOvers[0],
-        url: `file://${randomChapterOptionPath}${randomChapterOptionSoundscapeFiles[0]}`,
-      });
-    }
+      .filter((f) => f.startsWith("sc"));
+
+    // create the soundscapes
+    const soundscapes: SoundScape[] = selectedChapterOptionSoundscapeFiles.map(
+      (soundscapeFile) => {
+        const soundscapeFileSplitted = soundscapeFile
+          .substring(0, soundscapeFile.lastIndexOf("."))
+          .split("-");
+
+        return {
+          fileName: soundscapeFile,
+          startsAt:
+            voiceOvers.find(
+              (vo) =>
+                vo.order === parseInt(soundscapeFileSplitted[1]) &&
+                vo.id === parseInt(soundscapeFileSplitted[2])
+            ) ?? voiceOvers[0],
+          url: `file://${selectedChapterOptionPath}${soundscapeFile}`,
+        };
+      }
+    );
+
+    // add the soundscapes to our output
+    output.SC = [...output.SC, ...soundscapes];
   });
 
   // return the audio list

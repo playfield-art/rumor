@@ -3,9 +3,9 @@ import { Box } from "@mui/material";
 import { useRecorderStore } from "@hooks/useRecorderStore";
 
 export function CurrentStatus() {
-  const isPlaying = useRecorderStore((state) => state.isPlaying);
   const currentVO = useRecorderStore((state) => state.currentVO);
   const currentSC = useRecorderStore((state) => state.currentSC);
+
   return (
     <Box
       sx={{
@@ -15,7 +15,6 @@ export function CurrentStatus() {
         p: 2,
         pl: 4,
         pr: 4,
-        display: isPlaying ? "block" : "none",
       }}
     >
       {!currentVO && !currentSC && "No current status."}
@@ -29,7 +28,7 @@ export function CurrentStatus() {
       )}
       {currentSC && (
         <div>
-          {currentSC ? `Current Soundscape: ${currentSC.startsAt.chapter}` : ""}
+          {currentSC ? `Current Soundscape: ${currentSC.fileName}` : ""}
         </div>
       )}
     </Box>

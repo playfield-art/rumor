@@ -27,6 +27,14 @@ query getChapters($narrativePart: String, $slug: String) {
         blocks {
           __typename
           ... on ComponentBlocksChapterQuestionBlock {
+            soundscape {
+              data {
+                attributes {
+                  ext
+                  url
+                }
+              }
+            }
             question {
               data {
                 id
@@ -34,7 +42,14 @@ query getChapters($narrativePart: String, $slug: String) {
                   title
                   description
                   audio {
-                    language
+                    language {
+                      data {
+                        attributes {
+                          short
+                          long
+                        }
+                      }
+                    }
                     audio {
                       data {
                         attributes {
@@ -49,6 +64,14 @@ query getChapters($narrativePart: String, $slug: String) {
             }
           }
           ... on ComponentBlocksChapterVoiceOverBlock {
+            soundscape {
+              data {
+                attributes {
+                  ext
+                  url
+                }
+              }
+            }
             voice_over {
               data {
                 id
@@ -56,7 +79,14 @@ query getChapters($narrativePart: String, $slug: String) {
                   title
                   description
                   audio {
-                    language
+                    language {
+                      data {
+                        attributes {
+                          short
+                          long
+                        }
+                      }
+                    }
                     audio {
                       data {
                         attributes {

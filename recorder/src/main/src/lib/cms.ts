@@ -34,14 +34,12 @@ import { convertSessionIdToDateAndTime } from "./sessions/SessionUtils";
 import { Exception } from "./exceptions/Exception";
 import SettingHelper from "./settings/SettingHelper";
 
-let graphQLClient: GraphQLClient | null = null;
-
 /**
  * Get the API endpoint
  * @returns
  */
 const getApiEndpoint = async (): Promise<string> => {
-  const rumorCmsApiUrl = SettingHelper.getRumorCmsApiUrl();
+  const rumorCmsApiUrl = await SettingHelper.getRumorCmsApiUrl();
   if (!rumorCmsApiUrl) {
     throw new Exception({
       where: "getApiEndpoint",
@@ -56,7 +54,7 @@ const getApiEndpoint = async (): Promise<string> => {
  * @returns
  */
 const getApiToken = async (): Promise<string> => {
-  const rumorCmsApiToken = SettingHelper.getRumorCmsApiToken();
+  const rumorCmsApiToken = await SettingHelper.getRumorCmsApiToken();
   if (!rumorCmsApiToken) {
     throw new Exception({
       where: "getApiToken",
@@ -70,16 +68,12 @@ const getApiToken = async (): Promise<string> => {
  * Returns a GraphQL client to work with
  * @returns
  */
-const getGraphQLClient = async (): Promise<GraphQLClient> => {
-  if (!graphQLClient) {
-    graphQLClient = new GraphQLClient(await getApiEndpoint(), {
-      headers: {
-        authorization: `Bearer ${await getApiToken()}`,
-      },
-    });
-  }
-  return graphQLClient;
-};
+const getGraphQLClient = async (): Promise<GraphQLClient> =>
+  new GraphQLClient(await getApiEndpoint(), {
+    headers: {
+      authorization: `Bearer ${await getApiToken()}`,
+    },
+  });
 
 /**
  * Gets the booth id, coming from the booth slug
@@ -183,6 +177,7 @@ export const getNarrative = async (boothSlug: string) => {
                 title: "",
                 cms_id: "",
                 description: "",
+                soundscape: null,
                 audio: [],
               };
 
@@ -192,10 +187,16 @@ export const getNarrative = async (boothSlug: string) => {
                 chapterBlock.description =
                   b.question?.data?.attributes?.description || "";
                 chapterBlock.cms_id = b.question?.data?.id || "9999";
+                chapterBlock.soundscape = b.soundscape?.data?.attributes?.url
+                  ? {
+                      audioUrl: b?.soundscape?.data?.attributes?.url || "",
+                      ext: b?.soundscape?.data?.attributes?.ext || "",
+                    }
+                  : null;
                 chapterBlock.audio =
                   b.question?.data?.attributes?.audio?.map((a) => ({
                     audioUrl: a?.audio.data?.attributes?.url || "",
-                    language: a?.language || "unknown",
+                    language: a?.language?.data?.attributes?.short || "unknown",
                     ext: a?.audio.data?.attributes?.ext || "",
                   })) || [];
               } else if (
@@ -206,10 +207,16 @@ export const getNarrative = async (boothSlug: string) => {
                 chapterBlock.description =
                   b.voice_over?.data?.attributes?.description || "";
                 chapterBlock.cms_id = b.voice_over?.data?.id || "9999";
+                chapterBlock.soundscape = b.soundscape?.data?.attributes?.url
+                  ? {
+                      audioUrl: b?.soundscape?.data?.attributes?.url || "",
+                      ext: b?.soundscape?.data?.attributes?.ext || "",
+                    }
+                  : null;
                 chapterBlock.audio =
                   b.voice_over?.data?.attributes?.audio?.map((a) => ({
                     audioUrl: a?.audio.data?.attributes?.url || "",
-                    language: a?.language || "unknown",
+                    language: a?.language?.data?.attributes?.short || "unknown",
                     ext: a?.audio.data?.attributes?.ext || "",
                   })) || [];
               }

@@ -9,6 +9,9 @@ export const useApp = () => {
   const stopPlaying = useRecorderStore((state) => state.stopPlaying);
   const updateCurrentSC = useRecorderStore((state) => state.updateCurrentSC);
   const updateCurrentVO = useRecorderStore((state) => state.updateCurrentVO);
+  const clearCurrentVOandSC = useRecorderStore(
+    (state) => state.clearCurrentVOandSC
+  );
   const startProces = useAppStore((state) => state.startProces);
   const stopProces = useAppStore((state) => state.stopProces);
 
@@ -46,6 +49,7 @@ export const useApp = () => {
       window.rumor.events.onSessionStopped(() => {
         AudioPlayer.cleanUp();
         stopPlaying();
+        clearCurrentVOandSC();
       });
 
     /**

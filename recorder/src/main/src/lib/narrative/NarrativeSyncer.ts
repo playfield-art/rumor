@@ -107,15 +107,6 @@ export class NarrativeSyncer {
             join(chapterOptionFolder, "meta.json"),
             JSON.stringify(chapterMeta)
           );
-
-          // if we have a soundscape, create the promise for this scape
-          if (chapter.soundScape) {
-            await new Downloader({
-              url: `${chapter.soundScape.audioUrl}`,
-              directory: `${chapterOptionFolder}`,
-              fileName: `soundscape${chapter.soundScape.ext}`,
-            }).download();
-          }
         }),
       ];
     });
@@ -149,7 +140,38 @@ export class NarrativeSyncer {
             chapter.id
           );
 
-          // create download promises
+          // increment the block order
+          blockOrder += 1;
+
+          /**
+           * Soundscape
+           */
+
+          if (block.soundscape) {
+            downloadOptionsPromises = [
+              ...downloadOptionsPromises,
+              new Promise((resolve) => {
+                // create the filename
+                const soundscapeFileName = `sc-${blockOrder}-${block.cms_id}${block.soundscape?.ext}`;
+
+                // start downloading the audio
+                new Downloader({
+                  url: `${block.soundscape?.audioUrl}`,
+                  directory: `${chapterOptionFolder}`,
+                  fileName: soundscapeFileName,
+                })
+                  .download()
+                  .then(() => {
+                    resolve();
+                  });
+              }),
+            ];
+          }
+
+          /**
+           * Voice over and questions audio
+           */
+
           downloadOptionsPromises = [
             ...downloadOptionsPromises,
             ...block.audio.map(async (audio) => {
@@ -157,20 +179,18 @@ export class NarrativeSyncer {
               if (!audio.audioUrl) return Promise.resolve();
 
               // create the filename
-              const fileName = `${audio.language}-${(blockOrder += 1)}-${
-                block.type
-              }-${block.cms_id}${audio.ext}`;
+              const audioFileName = `${audio.language}-${blockOrder}-${block.type}-${block.cms_id}${audio.ext}`;
 
               // start downloading the audio
               await new Downloader({
                 url: `${audio.audioUrl}`,
                 directory: `${chapterOptionFolder}`,
-                fileName,
+                fileName: audioFileName,
               }).download();
 
               // let them know
               if (this.statusCallback)
-                this.statusCallback(`Downloaded ${fileName}`);
+                this.statusCallback(`Downloaded ${audioFileName}`);
 
               // resolve the promise
               return Promise.resolve();

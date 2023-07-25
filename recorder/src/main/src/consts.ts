@@ -15,6 +15,7 @@ export const SEQUELIZE_LOGGING = false;
 
 // The type of narrative parts/chapters
 export const narrativeChapters = ["intro", "first", "second", "third", "outro"];
+// export const narrativeChapters = ["intro"];
 
 // MQTT topics to listen to
 export const MQTT_TOPICS_SUBSCRIPTIONS = [

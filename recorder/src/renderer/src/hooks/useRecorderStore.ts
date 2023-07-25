@@ -10,6 +10,7 @@ type RecorderState = {
 type RecorderAction = {
   startPlaying: () => void;
   stopPlaying: () => void;
+  clearCurrentVOandSC: () => void;
   updateCurrentVO: (voiceover: VoiceOver) => void;
   updateCurrentSC: (soundscape: SoundScape) => void;
 };
@@ -19,6 +20,8 @@ export const useRecorderStore = create<RecorderState & RecorderAction>(
     isPlaying: false,
     currentVO: null,
     currentSC: null,
+    clearCurrentVOandSC: () =>
+      set(() => ({ currentVO: null, currentSC: null })),
     startPlaying: () => set(() => ({ isPlaying: true })),
     stopPlaying: () => set(() => ({ isPlaying: false })),
     updateCurrentVO: (voiceover: VoiceOver) =>
