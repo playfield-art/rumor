@@ -10,8 +10,6 @@ const columns: GridColDef[] = [
     editable: false,
     flex: 1,
     maxWidth: 75,
-    // valueFormatter: (params) =>
-    //   dayjs(params.value).format("DD/MM/YYYY - HH:mm"),
   },
   {
     field: "time",

@@ -121,6 +121,9 @@ export default createTheme({
           "&.log-warn": {
             backgroundColor: "var(--warn)",
           },
+          "&.log-detail": {
+            color: "var(--grey-1000)",
+          },
           "&.log-success": {
             backgroundColor: "var(--success)",
           },

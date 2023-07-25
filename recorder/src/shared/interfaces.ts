@@ -136,6 +136,7 @@ export interface IError {
 }
 
 export enum ILogType {
+  DETAIL = "detail",
   INFO = "info",
   ERROR = "error",
   WARN = "warn",

@@ -147,7 +147,6 @@ export class MQTT {
   public async publish(topic: string, json?: any): Promise<void> {
     return new Promise((resolve, reject) => {
       if (!this._mqttClient || !this._mqttClient.connected) resolve();
-      // publish
       this._mqttClient?.publish(topic, JSON.stringify(json || {}), () =>
         resolve()
       );

@@ -6,8 +6,8 @@ import { SocketMessage } from "@shared/interfaces";
 import SettingHelper from "../settings/SettingHelper";
 import { startSession, stopSession } from "../../controllers/audio";
 import SoundBoard from "../audio/SoundBoard";
-import { SocketSingleton } from "./SocketSingleton";
 import { MqttSingleton } from "../mqtt/MqttSingleton";
+import Logger from "../logging/Logger";
 
 export class SocketMessageHandler {
   /**
@@ -49,8 +49,18 @@ export class SocketMessageHandler {
    * Set the language via settings
    * @param json
    */
-  public static handleMessageSetLanguage(json: any) {
-    SettingHelper.saveSetting({ key: "language", value: json.language });
+  public static async handleMessageSetLanguage(json: any) {
+    // validate
+    if (json.language) {
+      // save the setting
+      await SettingHelper.saveSetting({
+        key: "language",
+        value: json.language,
+      });
+
+      // log
+      Logger.info(`Language has been changed to "${json.language}".`);
+    }
   }
 
   /**
@@ -61,10 +71,6 @@ export class SocketMessageHandler {
     if (!SoundBoard.sessionRunning) {
       startSession();
     }
-    SocketSingleton.getInstance().sendToClients(
-      "change-page",
-      "during-performance"
-    );
   }
 
   /**
@@ -75,16 +81,19 @@ export class SocketMessageHandler {
     if (SoundBoard.sessionRunning) {
       stopSession();
     }
-    SocketSingleton.getInstance().sendToClients("change-page", "set-language");
   }
 
   /**
    * Handle screen
    * @param json
    */
-  public static handleMessageScreen(json: any) {
-    MqttSingleton.getInstance().publish("interface/screen", {
+  public static async handleMessageScreen(json: any) {
+    // publish to mqtt
+    await MqttSingleton.getInstance().publish("interface/screen", {
       state: json.state ? 1 : 0,
     });
+
+    // log
+    Logger.detail(`Interface screen is turned ${json.state ? "on" : "off"}.`);
   }
 }

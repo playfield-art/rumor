@@ -14,6 +14,14 @@ export default class Logger {
     });
   }
 
+  public static async detail(message: string): Promise<void> {
+    await LogItem.create({
+      time: new Date(),
+      message,
+      type: ILogType.DETAIL,
+    });
+  }
+
   public static async info(message: string): Promise<void> {
     await LogItem.create({
       time: new Date(),

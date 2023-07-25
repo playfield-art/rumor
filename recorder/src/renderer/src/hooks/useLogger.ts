@@ -2,6 +2,10 @@ import { ILogType } from "@shared/interfaces";
 import { useCallback } from "react";
 
 export const useLogger = () => {
+  const detail = useCallback((message: string) => {
+    window.rumor.actions.log(message, ILogType.DETAIL);
+  }, []);
+
   const info = useCallback((message: string) => {
     window.rumor.actions.log(message, ILogType.INFO);
   }, []);
@@ -19,5 +23,5 @@ export const useLogger = () => {
   }, []);
 
   // return the current logging
-  return { info, error, warn, success };
+  return { detail, info, error, warn, success };
 };
