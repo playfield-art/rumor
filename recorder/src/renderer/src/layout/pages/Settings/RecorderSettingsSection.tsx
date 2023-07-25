@@ -4,7 +4,7 @@ import { Section, SectionFooter } from "@components/layout/Section";
 import * as Yup from "yup";
 import Button from "@mui/material/Button";
 import { useSettingsBucket } from "@hooks/useSettingsBucket";
-import { TextField } from "@mui/material";
+import { FormControlLabel, Switch, TextField } from "@mui/material";
 import { toast } from "react-toastify";
 
 const validationSchema = Yup.object().shape({
@@ -12,6 +12,7 @@ const validationSchema = Yup.object().shape({
   boothSlug: Yup.string().required("Booth Slug is required"),
   rumorCmsApiUrl: Yup.string(),
   rumorCmsApiToken: Yup.string(),
+  cannotGoToNextWhenVoiceOverIsPlaying: Yup.boolean(),
 });
 
 interface RecorderSettingsInitialValues extends Record<string, string> {
@@ -19,6 +20,7 @@ interface RecorderSettingsInitialValues extends Record<string, string> {
   boothSlug: string;
   rumorCmsApiUrl: string;
   rumorCmsApiToken: string;
+  cannotGoToNextWhenVoiceOverIsPlaying: string;
 }
 
 export function RecorderSettingsSection() {
@@ -28,6 +30,7 @@ export function RecorderSettingsSection() {
       boothSlug: "",
       rumorCmsApiUrl: "",
       rumorCmsApiToken: "",
+      cannotGoToNextWhenVoiceOverIsPlaying: "1",
     });
 
   // create the formik form
@@ -104,6 +107,24 @@ export function RecorderSettingsSection() {
           InputLabelProps={{
             shrink: true,
           }}
+        />
+        <FormControlLabel
+          control={
+            <Switch
+              id="cannotGoToNextWhenVoiceOverIsPlaying"
+              name="cannotGoToNextWhenVoiceOverIsPlaying"
+              checked={Boolean(
+                Number(formik.values.cannotGoToNextWhenVoiceOverIsPlaying)
+              )}
+              onChange={(e) => {
+                formik.setFieldValue(
+                  "cannotGoToNextWhenVoiceOverIsPlaying",
+                  e.target.checked ? "1" : "0"
+                );
+              }}
+            />
+          }
+          label="Do not go to next voice over when a voice over is playing and button is pressed"
         />
         <SectionFooter>
           <Button

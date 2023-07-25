@@ -121,9 +121,11 @@ export default class SoundBoard {
    * Init the playlist with the given audio list
    * @param audioList The audio list to init the playlist with
    */
-  public static initPlaylist(audioList: AudioList) {
+  public static async initPlaylist(audioList: AudioList) {
     // define the options needed for our playlist
     const voPlaylistOptions: VOPlaylistOptions = {
+      cannotGoToNextWhenVoiceOverIsPlaying:
+        await SettingHelper.cannotGoToNextWhenVoiceOverIsPlaying(),
       onNext: async (voiceOver: VoiceOver) => {
         /**
          * RECORDING - Stop recording if it is recording
@@ -213,7 +215,7 @@ export default class SoundBoard {
       const audioList = await SoundBoard.createNewSession();
 
       // init the playlist
-      SoundBoard.initPlaylist(audioList);
+      await SoundBoard.initPlaylist(audioList);
 
       // set inner state
       SoundBoard.sessionRunning = true;

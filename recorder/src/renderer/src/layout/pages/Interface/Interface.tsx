@@ -8,7 +8,7 @@ import ScreenControlSection from "./ScreenControlSection";
 export function Interface() {
   return (
     <Grid container spacing={2}>
-      <Grid spacing={2} item xs={12} md={6} lg={4}>
+      <Grid item xs={12} md={6} lg={4}>
         <Stack spacing={2} display="block">
           <ChangePageSection />
           <ScreenControlSection />

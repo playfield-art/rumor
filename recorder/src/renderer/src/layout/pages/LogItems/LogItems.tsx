@@ -43,6 +43,7 @@ export function LogItems() {
             pagination: { paginationModel: { pageSize: 30 } },
           }}
           rowHeight={30}
+          pageSizeOptions={[30, 60, 90, 120]}
           rowSelection={false}
           rows={logging}
           columns={columns}

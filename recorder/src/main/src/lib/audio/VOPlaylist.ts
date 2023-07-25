@@ -7,6 +7,7 @@ export interface VOPlaylistOptions {
   onNext?: (voiceOver: VoiceOver) => void;
   onVODone?: (voiceOver: VoiceOver) => void;
   onPlaylistDone?: () => void;
+  cannotGoToNextWhenVoiceOverIsPlaying?: boolean;
 }
 
 export default class VOPlaylist {
@@ -18,10 +19,13 @@ export default class VOPlaylist {
 
   private currentAudio: ChildProcess;
 
+  private isPlaying = false;
+
   private options: VOPlaylistOptions = {
     onNext: () => {},
     onVODone: () => {},
     onPlaylistDone: () => {},
+    cannotGoToNextWhenVoiceOverIsPlaying: true,
   };
 
   constructor(voiceOvers: VoiceOver[], options?: VOPlaylistOptions) {
@@ -29,20 +33,16 @@ export default class VOPlaylist {
     this.currentIndex = -1;
     this.internalPlayer = player({ player: "afplay" });
     this.options = { ...this.options, ...options };
+    this.isPlaying = false;
   }
 
   public get stopped(): boolean {
     return this.currentIndex === -1;
   }
 
-  private cannotGoToNextWhenChildProcessIsRunning = true;
-
   next() {
-    if (
-      this.cannotGoToNextWhenChildProcessIsRunning &&
-      this.currentAudio &&
-      !this.currentAudio
-    ) {
+    // check if we can go to next
+    if (this.options.cannotGoToNextWhenVoiceOverIsPlaying && this.isPlaying) {
       return;
     }
 
@@ -82,12 +82,24 @@ export default class VOPlaylist {
       if (err && !err.killed) {
         console.error("Error occurrent in playing current audio.");
       }
+
+      // set the internal state to not playing
+      this.isPlaying = false;
     });
 
     // when closing the process, the process is done
     // exit code 0 is success, null is error
     childProcess.on("close", (code) => {
+      // let them know we are done
       if (code === 0 && this.options.onVODone) this.options.onVODone(voiceOver);
+
+      // set the internal state to not playing
+      this.isPlaying = false;
+    });
+
+    // whenever we are succesfully spawned, set playing to true
+    childProcess.on("spawn", () => {
+      this.isPlaying = true;
     });
 
     // return the audio child process
