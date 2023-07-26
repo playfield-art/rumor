@@ -109,12 +109,12 @@ export default class SoundBoard {
    * 2. Stop the playlist
    * 3. Ask the frontend to cleanup the soundscape
    */
-  public static async stopSession() {
+  public static async stopSession(sessionFinished: boolean = false) {
     // destroy the soundboard
     await SoundBoard.destroy();
 
     // let the frontend know and ask to cleanup the soundscape
-    Recorder.mainWindow.webContents.send("session-stopped");
+    Recorder.mainWindow.webContents.send("session-stopped", sessionFinished);
   }
 
   /**
@@ -200,7 +200,7 @@ export default class SoundBoard {
    */
   private static async onPlaylistDone() {
     // stop the session
-    await SoundBoard.stopSession();
+    await SoundBoard.stopSession(true);
 
     // log
     Logger.success("Session done!");

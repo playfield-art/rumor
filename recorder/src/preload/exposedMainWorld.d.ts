@@ -74,7 +74,7 @@ declare global {
           callback: (event: IpcMessageEvent) => void
         ): () => void;
         onSessionStopped(
-          callback: (event: IpcMessageEvent) => void
+          callback: (event: IpcMessageEvent, sessionFinished: boolean) => void
         ): () => void;
       };
     };

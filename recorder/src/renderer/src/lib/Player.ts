@@ -16,17 +16,9 @@ export class AudioPlayer {
    * @param url The url of the sound to play.
    */
   public static play(url: string) {
-    // find the playing player in _players
-    const playingPlayer = this._players.find((p) => p.isPlaying);
-
-    // if we have an existing player, fade it out
-    if (playingPlayer && playingPlayer.player) {
-      playingPlayer.player.fade(1, 0, FADING_TIME);
-      playingPlayer.isPlaying = false;
-      playingPlayer.player.once("fade", (id) => {
-        this.cleanUpSound(id);
-      });
-    }
+    // fade out the playing sound
+    // do not wait until it is done, we need to play the new sound
+    this.fadeOutPlayingSound();
 
     // create the Howl player
     const player = new Howl({
@@ -82,5 +74,30 @@ export class AudioPlayer {
       });
       this._players = [];
     }
+  }
+
+  /**
+   * Fade out the playing sound.
+   * @returns
+   */
+  public static async fadeOutPlayingSound() {
+    return new Promise<void>((resolve, reject) => {
+      try {
+        // find the playing player in _players
+        const playingPlayer = this._players.find((p) => p.isPlaying);
+
+        // if we have an existing player, fade it out
+        if (playingPlayer && playingPlayer.player) {
+          playingPlayer.player.fade(1, 0, FADING_TIME);
+          playingPlayer.isPlaying = false;
+          playingPlayer.player.once("fade", (id) => {
+            this.cleanUpSound(id);
+            resolve();
+          });
+        }
+      } catch (e) {
+        reject(e);
+      }
+    });
   }
 }

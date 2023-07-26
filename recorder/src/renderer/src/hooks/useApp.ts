@@ -46,7 +46,10 @@ export const useApp = () => {
      * When the session stops
      */
     const removeEventListenerOnSessionStopped =
-      window.rumor.events.onSessionStopped(() => {
+      window.rumor.events.onSessionStopped(async (event, sessionFinished) => {
+        if (sessionFinished) {
+          await AudioPlayer.fadeOutPlayingSound();
+        }
         AudioPlayer.cleanUp();
         stopPlaying();
         clearCurrentVOandSC();
