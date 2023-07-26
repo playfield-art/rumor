@@ -10,6 +10,7 @@ import { QLCSingleton } from "../qlc/QLCSingleton";
 import SettingHelper from "../settings/SettingHelper";
 import { doorStateChanged } from "../../controllers/door";
 import { SocketSingleton } from "../socket/SocketSingleton";
+import { Recorder } from "../../recorder";
 
 export class MqttTopicHandler {
   /**
@@ -145,6 +146,7 @@ export class MqttTopicHandler {
     try {
       if (json.language) {
         await SettingHelper.setSetting("language", json.language);
+        Recorder.mainWindow.webContents.send("language-changed", json.language);
       }
     } catch (e: any) {
       throw new Exception({

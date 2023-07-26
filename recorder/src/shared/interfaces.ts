@@ -178,7 +178,7 @@ export enum NotifciationType {
   ERROR,
 }
 
-export interface Notifciation {
+export interface Notification {
   message?: string;
   type: NotifciationType;
 }

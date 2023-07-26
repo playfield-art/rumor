@@ -8,6 +8,7 @@ import { startSession, stopSession } from "../../controllers/audio";
 import SoundBoard from "../audio/SoundBoard";
 import { MqttSingleton } from "../mqtt/MqttSingleton";
 import Logger from "../logging/Logger";
+import { Recorder } from "../../recorder";
 
 export class SocketMessageHandler {
   /**
@@ -57,6 +58,9 @@ export class SocketMessageHandler {
         key: "language",
         value: json.language,
       });
+
+      // let the frontend know
+      Recorder.mainWindow.webContents.send("language-changed", json.language);
 
       // log
       Logger.info(`Language has been changed to "${json.language}".`);

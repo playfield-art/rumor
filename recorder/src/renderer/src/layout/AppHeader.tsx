@@ -7,6 +7,7 @@ import StopIcon from "@mui/icons-material/Stop";
 import { useRecorderStore } from "@hooks/useRecorderStore";
 import { MqttConnection } from "./MqttConnection";
 import { DoorState } from "./DoorState";
+import { CurrentLanguage } from "./CurrentLanguage";
 
 export interface AppHeaderProps {
   title: string;
@@ -35,6 +36,7 @@ export function AppHeader() {
         >
           <MqttConnection />
           <DoorState />
+          <CurrentLanguage />
         </Stack>
 
         {!isPlaying && (

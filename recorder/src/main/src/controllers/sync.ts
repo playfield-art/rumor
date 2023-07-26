@@ -63,13 +63,13 @@ export const syncNarrative = async (): Promise<void> => {
 
     // let them know that the proces is over
     Recorder.changeProces({ procesIsRunning: false });
-    Recorder.notifcation({
+    Recorder.notification({
       message: "Narrative successfully synced!",
       type: NotifciationType.INFO,
     });
   } catch (e: any) {
     Recorder.changeProces({ procesIsRunning: false });
-    Recorder.notifcation({ message: e.message, type: NotifciationType.ERROR });
+    Recorder.notification({ message: e.message, type: NotifciationType.ERROR });
     throw new Exception({ where: "syncNarrative", message: e.message });
   }
 };
@@ -111,13 +111,13 @@ export const uploadToCms = async (): Promise<void> => {
 
     // let them know that the proces is over
     Recorder.changeProces({ procesIsRunning: false });
-    Recorder.notifcation({
+    Recorder.notification({
       message: "Sessions were successfully uploaded to the CMS!",
       type: NotifciationType.INFO,
     });
   } catch (e: any) {
     Recorder.changeProces({ procesIsRunning: false });
-    Recorder.notifcation({ message: e.message, type: NotifciationType.ERROR });
+    Recorder.notification({ message: e.message, type: NotifciationType.ERROR });
     throw new Exception({ where: "uploadToCms", message: e.message });
   }
 };

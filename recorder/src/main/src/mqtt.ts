@@ -45,6 +45,6 @@ export const initMQTT = async () => {
       mqtt.subscribe(`${topic}/+`);
     });
   } catch (error) {
-    Recorder.mainWindow.webContents.send("mqtt-connection", false);
+    ("mqtt-connection", false);
   }
 };

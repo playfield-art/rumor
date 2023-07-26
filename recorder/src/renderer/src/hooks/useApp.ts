@@ -14,6 +14,17 @@ export const useApp = () => {
   );
   const startProces = useAppStore((state) => state.startProces);
   const stopProces = useAppStore((state) => state.stopProces);
+  const updateCurrentLanguage = useRecorderStore(
+    (state) => state.updateCurrentLanguage
+  );
+
+  useEffect(() => {
+    window.rumor.methods
+      .getSetting("language")
+      .then((languageSetting) =>
+        updateCurrentLanguage(languageSetting ?? "unknown")
+      );
+  }, []);
 
   useEffect(() => {
     /**
@@ -26,6 +37,14 @@ export const useApp = () => {
         else stopProces();
       }
     );
+
+    /**
+     * When the language changes
+     */
+    const removeEventListenerOnLanguageChanged =
+      window.rumor.events.onLanguageChanged((cb, language) => {
+        updateCurrentLanguage(language);
+      });
 
     /**
      * When we need to show a notification coming from the main process
@@ -78,6 +97,7 @@ export const useApp = () => {
      */
     return () => {
       removeEventListenerOnProces();
+      removeEventListenerOnLanguageChanged();
       removeEventListenerOnNotifcation();
       removeEventListenerOnSessionStart();
       removeEventListenerOnSessionStopped();

@@ -55,6 +55,9 @@ declare global {
         onDoorState(
           callback: (event: IpcMessageEvent, doorState: IDoorState) => void
         ): () => void;
+        onLanguageChanged(
+          callback: (event: IpcMessageEvent, language: string) => void
+        ): () => void;
         onMqttConnection(
           callback: (event: IpcMessageEvent, connection: boolean) => void
         ): () => void;

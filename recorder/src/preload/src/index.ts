@@ -71,6 +71,10 @@ contextBridge.exposeInMainWorld("rumor", {
       ipcRenderer.on("door-state", callback);
       return () => ipcRenderer.removeAllListeners("door-state");
     },
+    onLanguageChanged: (callback: any) => {
+      ipcRenderer.on("language-changed", callback);
+      return () => ipcRenderer.removeAllListeners("language-changed");
+    },
     onMqttConnection: (callback: any) => {
       ipcRenderer.on("mqtt-connection", callback);
       return () => ipcRenderer.removeAllListeners("mqtt-connection");

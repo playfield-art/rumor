@@ -6,9 +6,10 @@ import Button from "@mui/material/Button";
 import { useSettingsBucket } from "@hooks/useSettingsBucket";
 import { FormControlLabel, Switch, TextField } from "@mui/material";
 import { toast } from "react-toastify";
+import { useRecorderStore } from "@hooks/useRecorderStore";
 
 const validationSchema = Yup.object().shape({
-  language: Yup.string().required("Language is required"),
+  language: Yup.string().required("Language is required").oneOf(["en", "nl"]),
   boothSlug: Yup.string().required("Booth Slug is required"),
   rumorCmsApiUrl: Yup.string(),
   rumorCmsApiToken: Yup.string(),
@@ -32,6 +33,9 @@ export function RecorderSettingsSection() {
       rumorCmsApiToken: "",
       cannotGoToNextWhenVoiceOverIsPlaying: "1",
     });
+  const updateCurrentLanguage = useRecorderStore(
+    (state) => state.updateCurrentLanguage
+  );
 
   // create the formik form
   const formik = useFormik({
@@ -39,6 +43,7 @@ export function RecorderSettingsSection() {
     validationSchema,
     onSubmit: async (v) => {
       await saveValues(v);
+      updateCurrentLanguage(v.language);
       toast("Recorder settings were saved!");
     },
   });
