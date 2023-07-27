@@ -4,6 +4,18 @@ import { QLCSingleton } from "../lib/qlc/QLCSingleton";
 import { openQLC as openQLCFunction } from "../lib/qlc/QLCHelpers";
 
 /**
+ * Opens the QLC+ application
+ * @param event
+ */
+export const openQLC = () => {
+  try {
+    openQLCFunction();
+  } catch (e: any) {
+    throw new Exception({ where: "openQLC", message: e.message });
+  }
+};
+
+/**
  * Set the color of a channel
  */
 export const setColor = (
@@ -35,17 +47,5 @@ export const triggerFunction = (
     QLCSingleton.getInstance().triggerFunction(qlcFunction);
   } catch (e: any) {
     throw new Exception({ where: "triggerFunction", message: e.message });
-  }
-};
-
-/**
- * Opens the QLC+ application
- * @param event
- */
-export const openQLC = () => {
-  try {
-    openQLCFunction();
-  } catch (e: any) {
-    throw new Exception({ where: "openQLC", message: e.message });
   }
 };

@@ -11,22 +11,6 @@ import SettingHelper from "../lib/settings/SettingHelper";
 import { Recorder } from "../recorder";
 
 /**
- * Save a setting
- * @param event The event
- * @param setting The setting formed as ISetting
- */
-export const saveSetting = async (
-  event: Electron.IpcMainInvokeEvent,
-  setting: ISetting
-) => {
-  try {
-    SettingHelper.saveSetting(setting);
-  } catch (e: any) {
-    throw new Exception({ where: "createSetting", message: e.message });
-  }
-};
-
-/**
  * Get a setting
  * @param event The event
  * @param setting The setting formed as ISetting
@@ -40,6 +24,22 @@ export const getSetting = async (
     return setting ? setting.value : "";
   } catch (e: any) {
     throw new Exception({ where: "getSetting", message: e.message });
+  }
+};
+
+/**
+ * Save a setting
+ * @param event The event
+ * @param setting The setting formed as ISetting
+ */
+export const saveSetting = async (
+  event: Electron.IpcMainInvokeEvent,
+  setting: ISetting
+) => {
+  try {
+    SettingHelper.saveSetting(setting);
+  } catch (e: any) {
+    throw new Exception({ where: "createSetting", message: e.message });
   }
 };
 

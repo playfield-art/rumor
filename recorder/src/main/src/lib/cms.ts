@@ -101,6 +101,22 @@ export const getBoothId = async (boothSlug: string): Promise<string> => {
 };
 
 /**
+ * Get the last path id of an uploadfolder
+ * @returns
+ */
+export const getLastPathId = async () => {
+  // get the graphql client
+  const gqlClient = await getGraphQLClient();
+
+  const { uploadFolders } = await gqlClient.request(GetLastPathIdDocument);
+  let lastPathId = 0;
+  if (uploadFolders?.data && uploadFolders.data.length > 0) {
+    lastPathId = uploadFolders.data.pop()?.attributes?.pathId || 0;
+  }
+  return lastPathId;
+};
+
+/**
  * Gets the narrative from the CMS
  * @returns
  */
@@ -243,22 +259,6 @@ export const getNarrative = async (boothSlug: string) => {
 
   // return the narrative
   return output;
-};
-
-/**
- * Get the last path id of an uploadfolder
- * @returns
- */
-export const getLastPathId = async () => {
-  // get the graphql client
-  const gqlClient = await getGraphQLClient();
-
-  const { uploadFolders } = await gqlClient.request(GetLastPathIdDocument);
-  let lastPathId = 0;
-  if (uploadFolders?.data && uploadFolders.data.length > 0) {
-    lastPathId = uploadFolders.data.pop()?.attributes?.pathId || 0;
-  }
-  return lastPathId;
 };
 
 /**

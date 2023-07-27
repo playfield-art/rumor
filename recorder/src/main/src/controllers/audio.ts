@@ -115,24 +115,6 @@ export const startSession = async () => {
 };
 
 /**
- * Voice Over playlist do something...
- * @param event
- * @param VOPlaylistAction
- */
-export const VOPlaylistDo = async (
-  event: Electron.IpcMainInvokeEvent,
-  VOPlaylistAction: "next"
-) => {
-  switch (VOPlaylistAction) {
-    case "next":
-      await SoundBoard.next();
-      break;
-    default:
-      break;
-  }
-};
-
-/**
  * Stop a session
  */
 export const stopSession = async () => {
@@ -187,5 +169,23 @@ export const stopSession = async () => {
     await Logger.success("Session force stopped.");
   } catch (e: any) {
     throw new Exception({ where: "stopSession", message: e.message });
+  }
+};
+
+/**
+ * Voice Over playlist do something...
+ * @param event
+ * @param VOPlaylistAction
+ */
+export const VOPlaylistDo = async (
+  event: Electron.IpcMainInvokeEvent,
+  VOPlaylistAction: "next"
+) => {
+  switch (VOPlaylistAction) {
+    case "next":
+      await SoundBoard.next();
+      break;
+    default:
+      break;
   }
 };
