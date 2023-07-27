@@ -26,6 +26,11 @@
       "type": "component",
       "repeatable": true,
       "component": "translations.text-translation"
+    },
+    "audio": {
+      "type": "component",
+      "repeatable": true,
+      "component": "audio.audio"
     }
   }
 }
