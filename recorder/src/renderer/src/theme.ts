@@ -183,6 +183,17 @@ export default createTheme({
     /**
      * Components
      */
+
+    MuiToggleButton: {
+      styleOverrides: {
+        root: {
+          border: "1px solid var(--background-color-button)",
+          "&.Mui-selected": {
+            backgroundColor: "var(--background-color-button)",
+          },
+        },
+      },
+    },
     MuiButton: {
       variants: [
         {

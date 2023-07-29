@@ -85,6 +85,14 @@ export interface NarrativeChapterData {
   thirdChapters: GetChaptersQuery;
 }
 
+export interface LocalNarrative {
+  introChapters: LocalChapter[];
+  firstChapters: LocalChapter[];
+  secondChapters: LocalChapter[];
+  thirdChapters: LocalChapter[];
+  outroChapters: LocalChapter[];
+}
+
 /**
  * Chapters
  */
@@ -122,10 +130,21 @@ export interface AudioCmsBlock extends AudioCms {
   language: string;
 }
 
-// export interface Language {
-//   short: string;
-//   long: string;
-// }
+export interface LocalChapter {
+  id: string;
+  title: string;
+  narrativePart: string;
+}
+
+export interface StoryLineChapterOption {
+  id: string;
+  title: string;
+}
+
+export interface ChapterOption {
+  chapter: string;
+  optionId: string;
+}
 
 /**
  * App

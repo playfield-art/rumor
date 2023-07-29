@@ -18,6 +18,7 @@ import { CurrentStatus } from "./layout/CurrentStatus";
 import { LogItems } from "./layout/pages/LogItems/LogItems";
 import { Light } from "./layout/pages/Light/Light";
 import { Interface } from "./layout/pages/Interface/Interface";
+import { StoryLine } from "./layout/pages/StoryLine/StoryLine";
 
 function App() {
   useApp();
@@ -42,6 +43,7 @@ function App() {
                 <Route path="/cms" element={<Cms />} />
                 <Route path="/light" element={<Light />} />
                 <Route path="/interface" element={<Interface />} />
+                <Route path="/storyline" element={<StoryLine />} />
                 <Route path="/settings" element={<Settings />} />
               </Routes>
               <ToastContainer />

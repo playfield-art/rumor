@@ -29,6 +29,10 @@ export const getAudioList = async (language: string) => {
   // get the narratives folder
   const narrativesFolder = narrativesFolderSetting.value;
 
+  // get the selected chapter options
+  const savedSelectedChapterOptions =
+    await SettingHelper.getSelectedChapterOptions();
+
   // loop over every chapter and create the voice over list
   narrativeChapters.forEach((narrativeChapter) => {
     // define the absolute path of the chapter
@@ -47,8 +51,28 @@ export const getAudioList = async (language: string) => {
 
     // get a random option
     // @todo chapter based on the chapter selected in backend
-    const selectedChapterOption =
-      chapterOptions[Math.floor(Math.random() * chapterOptions.length)];
+    const savedSelectedChapterOption = savedSelectedChapterOptions.find(
+      (x) => x.chapter === narrativeChapter
+    );
+
+    // define the selected chapter option
+    let selectedChapterOption: string;
+
+    // if there is no saved selected chapter option, or the option is random, get a random option
+    if (
+      !savedSelectedChapterOption ||
+      savedSelectedChapterOption.optionId === "random"
+    ) {
+      console.log("selected", "random");
+      selectedChapterOption =
+        chapterOptions[Math.floor(Math.random() * chapterOptions.length)];
+    }
+
+    // else get the saved selected chapter option
+    else {
+      console.log("selected", savedSelectedChapterOption.optionId);
+      selectedChapterOption = savedSelectedChapterOption.optionId;
+    }
 
     // get the random option path
     const selectedChapterOptionPath = `${chapterOptionsPath}/${selectedChapterOption}/`;

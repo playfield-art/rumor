@@ -13,6 +13,7 @@ import ArticleIcon from "@mui/icons-material/Article";
 import LightbulbIcon from "@mui/icons-material/Lightbulb";
 import WebAssetIcon from "@mui/icons-material/WebAsset";
 import { useNavigate } from "react-router-dom";
+import RouteIcon from "@mui/icons-material/Route";
 
 export function Sidebar() {
   const navigate = useNavigate();
@@ -39,6 +40,11 @@ export function Sidebar() {
             label: "Interface",
             path: "/interface",
             icon: <WebAssetIcon />,
+          },
+          {
+            label: "Storyline",
+            path: "/storyline",
+            icon: <RouteIcon />,
           },
           {
             label: "Settings",

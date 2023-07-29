@@ -1,5 +1,10 @@
 import { contextBridge, ipcRenderer } from "electron";
-import { AudioList, ILogType, ISetting } from "@shared/interfaces";
+import {
+  AudioList,
+  ChapterOption,
+  ILogType,
+  ISetting,
+} from "@shared/interfaces";
 import { QLCFunction } from "@shared/enums";
 
 /**
@@ -44,8 +49,11 @@ contextBridge.exposeInMainWorld("rumor", {
     getAllLogRows: () => ipcRenderer.invoke("getAllLogRows"),
     getAudioList: (language: string) =>
       ipcRenderer.invoke("getAudioList", language),
+    getLocalNarrative: () => ipcRenderer.invoke("getLocalNarrative"),
     getMqttConnection: () => ipcRenderer.invoke("getMqttConnection"),
     getSetting: (key: string) => ipcRenderer.invoke("getSetting", key),
+    getSelectedChapterOptionId: (chapter: string) =>
+      ipcRenderer.invoke("getSelectedChapterOptionId", chapter),
     initPlaylist: (audioList: AudioList) =>
       ipcRenderer.invoke("initPlaylist", audioList),
     publishTopic: (topic: string, json?: Object) =>
@@ -57,6 +65,8 @@ contextBridge.exposeInMainWorld("rumor", {
     setFolderSetting: (key: string) =>
       ipcRenderer.invoke("setFolderSetting", key),
     setRecordingsFolder: () => ipcRenderer.invoke("setRecordingsFolder"),
+    setSelectedChapterOption: (chapterOption: ChapterOption) =>
+      ipcRenderer.invoke("setSelectedChapterOptionId", chapterOption),
     startSession: () => ipcRenderer.invoke("startSession"),
     stopSession: () => ipcRenderer.invoke("stopSession"),
     syncNarrative: () => {

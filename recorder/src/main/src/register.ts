@@ -25,6 +25,11 @@ import {
   changeInterfacePage,
   pressButtonInterface,
 } from "./controllers/interface";
+import {
+  getLocalNarrative,
+  getSelectedChapterOptionId,
+  setSelectedChapterOptionId,
+} from "./controllers/narrative";
 
 export const registerActions = () => {
   ipcMain.on("log", log);
@@ -38,8 +43,10 @@ export const registerActions = () => {
 export const registerMethods = () => {
   ipcMain.handle("getAllLogRows", getAllLogRows);
   ipcMain.handle("getAudioList", getAudioList);
+  ipcMain.handle("getLocalNarrative", getLocalNarrative);
   ipcMain.handle("getMqttConnection", getMqttConnection);
   ipcMain.handle("getSetting", getSetting);
+  ipcMain.handle("getSelectedChapterOptionId", getSelectedChapterOptionId);
   ipcMain.handle("initPlaylist", initPlaylist);
   ipcMain.handle("publishTopic", publishTopic);
   ipcMain.handle("reInitMqtt", reInitMqtt);
@@ -47,6 +54,7 @@ export const registerMethods = () => {
   ipcMain.handle("setFileSetting", setFileSetting);
   ipcMain.handle("setFolderSetting", setFolderSetting);
   ipcMain.handle("setRecordingsFolder", setRecordingsFolder);
+  ipcMain.handle("setSelectedChapterOptionId", setSelectedChapterOptionId);
   ipcMain.handle("startSession", startSession);
   ipcMain.handle("stopSession", stopSession);
   ipcMain.handle("syncNarrative", syncNarrative);

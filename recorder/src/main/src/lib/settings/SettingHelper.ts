@@ -1,5 +1,6 @@
-import { ISetting } from "@shared/interfaces";
+import { ChapterOption, ISetting } from "@shared/interfaces";
 import Setting from "../../models/Setting";
+import { narrativeChapters } from "../../consts";
 
 export default class SettingHelper {
   /**
@@ -49,6 +50,63 @@ export default class SettingHelper {
       "rumorCmsApiUrl",
       defaultValue
     )) as string;
+  }
+
+  /**
+   * Get the selected chapter options from settings by part/chapter
+   * @param part The part/chapter
+   * @returns An id representing the selected chapter option
+   */
+  public static async getSelectedChapterOptionId(
+    chapter: string
+  ): Promise<string> {
+    // get the selected chapter option
+    const selectedChapterOptions =
+      await SettingHelper.getSelectedChapterOptions();
+
+    // if there are no selected chapter options, return null
+    if (
+      !selectedChapterOptions ||
+      !selectedChapterOptions.find((x) => x.chapter === chapter.toLowerCase())
+    )
+      return "random";
+
+    // find the chapter corresponding to the incoming part
+    const findChapter = selectedChapterOptions.find(
+      (x: any) => x.chapter === chapter.toLowerCase()
+    );
+
+    // if there is no part, return random
+    if (!findChapter) return "random";
+
+    // return the option
+    return findChapter.optionId;
+  }
+
+  /**
+   * Get the slected chapter options from settings
+   * @returns The selected chapter options
+   */
+  public static async getSelectedChapterOptions(): Promise<ChapterOption[]> {
+    // get the selected chapter options
+    const selectedChapterOptions = await SettingHelper.getSetting(
+      "selectedChapterOptions"
+    );
+
+    // if there are no selected chapter options, return null
+    if (!selectedChapterOptions || !selectedChapterOptions.value)
+      return narrativeChapters.map((chapter) => ({
+        chapter,
+        optionId: "random",
+      }));
+
+    // parse the selected chapter options
+    const parsedSelectedChapterOptions = JSON.parse(
+      selectedChapterOptions.value
+    );
+
+    // return the selected chapter options
+    return parsedSelectedChapterOptions;
   }
 
   /**
@@ -111,5 +169,56 @@ export default class SettingHelper {
    */
   public static async setSetting(key: string, value: any) {
     await SettingHelper.saveSetting({ key, value });
+  }
+
+  /**
+   * Sets the selected chapter option
+   */
+  public static async setSelectedChapterOption(
+    chapterOption: ChapterOption
+  ): Promise<void> {
+    // first get the current chapter options
+    const selectedChapterOptions = await SettingHelper.getSetting(
+      "selectedChapterOptions"
+    );
+
+    // if there are no selected chapter options, create a new one
+    if (!selectedChapterOptions || !selectedChapterOptions.value) {
+      // create an array of objects based upon the narrative parts
+      const newSelectedChapterOptions = narrativeChapters.map((c) => ({
+        chapter: c,
+        option: "random",
+      }));
+
+      await SettingHelper.saveSetting({
+        key: "selectedChapterOptions",
+        value: JSON.stringify(newSelectedChapterOptions),
+      });
+
+      // retry this function
+      return this.setSelectedChapterOption(chapterOption);
+    }
+
+    // parse the selected chapter options
+    const parsedSelectedChapterOptions: ChapterOption[] = JSON.parse(
+      selectedChapterOptions.value
+    ) as ChapterOption[];
+
+    // find the chapter corresponding to the incoming part
+    const findChapterOption = parsedSelectedChapterOptions.find(
+      (co: ChapterOption) => co.chapter === chapterOption.chapter.toLowerCase()
+    );
+
+    // if there is no part, return
+    if (!findChapterOption) throw new Error("Chapter not found");
+
+    // change the option
+    findChapterOption.optionId = chapterOption.optionId;
+
+    // save the setting
+    return SettingHelper.saveSetting({
+      key: "selectedChapterOptions",
+      value: JSON.stringify(parsedSelectedChapterOptions),
+    });
   }
 }

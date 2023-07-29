@@ -9,6 +9,8 @@ import {
   ILogType,
   VoiceOver,
   QLCFunction,
+  LocalNarrative,
+  ChapterOption,
 } from "@shared/interfaces";
 import { IDoorState } from "../shared/interfaces";
 
@@ -33,8 +35,10 @@ declare global {
       readonly methods: {
         getAllLogRows(): Promise<ILogRow[]>;
         getAudioList(language: string): Promise<AudioList>;
+        getLocalNarrative(): Promise<LocalNarrative>;
         getMqttConnection(): Promise<boolean>;
         getSetting(key: string): Promise<string | null>;
+        getSelectedChapterOptionId(chapter: string): Promise<string>;
         initPlaylist(audioList: AudioList): void;
         publishTopic(topic: string, json?: Object): Promise<void>;
         reInitMqtt(): Promise<void>;
@@ -45,6 +49,7 @@ declare global {
         ): Promise<string>;
         setFolderSetting(key: string): Promise<string>;
         setRecordingsFolder(): string;
+        setSelectedChapterOption(chapterOption: ChapterOption): Promise<void>;
         startSession(): Promise<void>;
         stopSession(): Promise<void>;
         syncNarrative(): Promise<void>;
