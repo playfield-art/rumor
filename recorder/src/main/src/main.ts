@@ -24,6 +24,8 @@ import { initSerialButton } from "./button";
 import { SerialButtonSingleton } from "./lib/serial/SerialButtonSingleton";
 import { initExpress } from "./express";
 import { initSocketIo } from "./socket";
+import { initCronSync } from "./cron";
+import { CronSyncSingleton } from "./lib/cron/CronSyncSingleton";
 
 /**
  * Express server for the internal webserver
@@ -93,6 +95,9 @@ const initApp = async () => {
     // init Socket IO
     initSocketIo();
 
+    // init the cron job for syncing data
+    initCronSync();
+
     // register actions to execute
     // (one way direction, from renderer to main)
     registerActions();
@@ -137,6 +142,9 @@ const initApp = async () => {
 
       // close the mqtt client
       MqttSingleton.getInstance()._mqttClient?.end(true);
+
+      // stop the cron job
+      await CronSyncSingleton.getInstance()?.stop();
 
       // save logs
       await Logger.info("Application is closing...");

@@ -20,6 +20,7 @@ declare global {
       readonly actions: {
         log(message: string, log: ILogType): void;
         saveSetting(setting: ISetting): void;
+        setCronSync(cron: string): void;
         interface: {
           changeInterfacePage(page: string): void;
           pressButtonInterface(button: number): void;

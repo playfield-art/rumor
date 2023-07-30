@@ -63,14 +63,12 @@ export const getAudioList = async (language: string) => {
       !savedSelectedChapterOption ||
       savedSelectedChapterOption.optionId === "random"
     ) {
-      console.log("selected", "random");
       selectedChapterOption =
         chapterOptions[Math.floor(Math.random() * chapterOptions.length)];
     }
 
     // else get the saved selected chapter option
     else {
-      console.log("selected", savedSelectedChapterOption.optionId);
       selectedChapterOption = savedSelectedChapterOption.optionId;
     }
 

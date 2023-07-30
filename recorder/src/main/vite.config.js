@@ -33,7 +33,7 @@ export default defineConfig({
         '@mui/styled-engine',
         'node-osc',
         'express',
-        'express-session',
+        'node-cron',
         ...builtinModules
       ],
       output: {

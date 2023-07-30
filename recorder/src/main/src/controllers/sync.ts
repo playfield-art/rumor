@@ -11,6 +11,7 @@ import { NarrativeSyncer } from "../lib/narrative/NarrativeSyncer";
 import { SessionFactory } from "../lib/sessions/SessionFactory";
 import SettingsHelper from "../lib/settings/SettingHelper";
 import { Recorder } from "../recorder";
+import { CronSyncSingleton } from "../lib/cron/CronSyncSingleton";
 
 /**
  * Syncs the narrative that we got from the cloud
@@ -119,5 +120,21 @@ export const uploadToCms = async (): Promise<void> => {
     Recorder.changeProces({ procesIsRunning: false });
     Recorder.notification({ message: e.message, type: NotifciationType.ERROR });
     throw new Exception({ where: "uploadToCms", message: e.message });
+  }
+};
+
+/**
+ * Set the cron sync to a new expression
+ * @param expression The new cron expression
+ */
+export const setCronSync = (
+  event: Electron.IpcMainInvokeEvent,
+  expression: string
+): void => {
+  try {
+    CronSyncSingleton.getInstance().scheduleAndStart(expression);
+    SettingsHelper.setSetting("syncCronjob", expression);
+  } catch (e: any) {
+    throw new Exception({ where: "setCronSync", message: e.message });
   }
 };

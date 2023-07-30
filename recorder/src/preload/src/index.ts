@@ -32,6 +32,7 @@ contextBridge.exposeInMainWorld("rumor", {
       ipcRenderer.send("log", message, type),
     saveSetting: (setting: ISetting) =>
       ipcRenderer.send("saveSetting", setting),
+    setCronSync: (cron: string) => ipcRenderer.send("setCronSync", cron),
     interface: {
       changeInterfacePage: (page: string) =>
         ipcRenderer.send("changeInterfacePage", page),

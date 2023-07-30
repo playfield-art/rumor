@@ -6,7 +6,7 @@ import {
   initPlaylist,
   startSession,
 } from "./controllers/audio";
-import { syncNarrative, uploadToCms } from "./controllers/sync";
+import { setCronSync, syncNarrative, uploadToCms } from "./controllers/sync";
 import {
   getSetting,
   saveSetting,
@@ -35,6 +35,7 @@ export const registerActions = () => {
   ipcMain.on("log", log);
   ipcMain.on("saveSetting", saveSetting);
   ipcMain.on("setColor", setColor);
+  ipcMain.on("setCronSync", setCronSync);
   ipcMain.on("triggerFunction", triggerFunction);
   ipcMain.on("changeInterfacePage", changeInterfacePage);
   ipcMain.on("pressButtonInterface", pressButtonInterface);

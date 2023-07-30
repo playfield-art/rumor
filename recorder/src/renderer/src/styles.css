@@ -96,6 +96,43 @@ h1 {
   line-height: 1.1;
 }
 
+/**
+ * React JS Cron
+ */
+
+.react-js-cron {
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.react-js-cron > div, .react-js-cron-field {
+  display: flex;
+  align-items: center;
+}
+
+.react-js-cron-field {
+  margin-bottom: 10px;
+}
+
+.react-js-cron-field > span {
+  margin-left: 5px;
+}
+
+div.react-js-cron-select {
+  margin-left: 5px;
+}
+
+.ant-select-selector {
+  background-color: transparent !important;
+  color: var(--white) !important;
+  outline: none !important;
+  /* padding: 1.5rem 1.2rem !important; */
+}
+.react-js-cron-select .ant-select-arrow > span > svg {
+  color: var(--white) !important;
+}
+
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
