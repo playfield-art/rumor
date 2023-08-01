@@ -1,6 +1,6 @@
 import cron, { ScheduledTask } from "node-cron";
 
-export class CronSync {
+export class CronJob {
   private task: ScheduledTask | null = null;
 
   private todo: () => void;

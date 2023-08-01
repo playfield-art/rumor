@@ -2,6 +2,7 @@
  * A Library to sync the narrative in the recorder
  */
 
+import { join } from "path";
 import {
   Chapter,
   ChapterMeta,
@@ -10,7 +11,6 @@ import {
 } from "@shared/interfaces";
 import fsExtra from "fs-extra";
 import Downloader from "nodejs-file-downloader";
-import { join } from "path";
 import { createEmptyFolders } from "../filesystem";
 
 interface NarrativeChapter {

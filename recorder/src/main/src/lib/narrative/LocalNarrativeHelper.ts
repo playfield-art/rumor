@@ -1,6 +1,7 @@
-import { LocalNarrative } from "@shared/interfaces";
 import fs from "fs";
+import { LocalNarrative } from "@shared/interfaces";
 import { getNarrativesFolder } from "../filesystem";
+import { UNWANTED_FILES } from "../../consts";
 
 /**
  * Get the local narrative
@@ -23,7 +24,9 @@ export const getLocalNarrative = async (): Promise<LocalNarrative> => {
   if (!narrativesFolder) return output;
 
   // get list of folders
-  const folders = await fs.readdirSync(narrativesFolder);
+  const folders = fs
+    .readdirSync(narrativesFolder)
+    .filter((file) => !UNWANTED_FILES.includes(file));
 
   // loop through the folders and validate
   let valid = true;
@@ -39,8 +42,9 @@ export const getLocalNarrative = async (): Promise<LocalNarrative> => {
   // loop over every folder
   folders.forEach((folder) => {
     // find the chapeter ids in the folder
-    const chapterOptionIds = fs.readdirSync(`${narrativesFolder}/${folder}`);
-
+    const chapterOptionIds = fs
+      .readdirSync(`${narrativesFolder}/${folder}`)
+      .filter((file) => !UNWANTED_FILES.includes(file));
     // validate
     if (!chapterOptionIds) return;
 

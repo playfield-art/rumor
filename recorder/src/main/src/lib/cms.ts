@@ -436,7 +436,7 @@ export const uploadSessions = async (
   for await (const session of sessions) {
     // let them now
     if (statusCallback)
-      statusCallback(`Uploading session ${session.meta.sessionId}...`);
+      await statusCallback(`Uploading session ${session.meta.sessionId}...`);
 
     // check if the upload folder for the session exists
     const doesFolderForSessionExist = await uploadFolderForSessionExists(
@@ -448,7 +448,7 @@ export const uploadSessions = async (
     if (doesFolderForSessionExist) {
       // let them now
       if (statusCallback)
-        statusCallback(
+        await statusCallback(
           `Upload folder for session "${session.meta.sessionId}" on booth "${session.meta.boothSlug}" already exists`
         );
 
@@ -478,7 +478,7 @@ export const uploadSessions = async (
 
       // change the filenames, then we can filter better in our CMS
       if (statusCallback)
-        statusCallback(
+        await statusCallback(
           `Uploading files for session "${session.meta.sessionId}" on booth "${session.meta.boothSlug}`
         );
 
@@ -570,11 +570,11 @@ export const uploadToCms = async (
   onFinished?: () => void | null
 ) => {
   // we are starting the upload
-  if (statusCallback) statusCallback("Starting upload to CMS...");
+  if (statusCallback) await statusCallback("Starting upload to CMS...");
 
   // let them know, the process is continuing
   if (statusCallback)
-    statusCallback("Inventorising the sessions on our device...");
+    await statusCallback("Inventorising the sessions on our device...");
 
   // get the recordings folder from settings
   const sessionFolder = await getRecordingsFolder();
@@ -582,7 +582,7 @@ export const uploadToCms = async (
   // validate
   if (!sessionFolder || !fs.existsSync(sessionFolder)) {
     if (statusCallback)
-      statusCallback("Session folder is not there or does not exist");
+      await statusCallback("Session folder is not there or does not exist");
   }
 
   /**
@@ -598,9 +598,9 @@ export const uploadToCms = async (
 
   // validate
   if (!sessions || sessions.length === 0) {
-    if (statusCallback) statusCallback("No uploadable sessions found.");
+    if (statusCallback) await statusCallback("No uploadable sessions found.");
   } else if (statusCallback)
-    statusCallback(
+    await statusCallback(
       `Found ${sessions.length} uploadable sessions on this device.`
     );
 
@@ -624,11 +624,12 @@ export const uploadToCms = async (
   if (filePaths) {
     try {
       await Mp3Converter.convert(filePaths);
-      if (statusCallback)
-        statusCallback(`Converted ${filePaths.length} file(s) to mp3.`);
+      if (statusCallback && filePaths.length > 0) {
+        await statusCallback(`Converted ${filePaths.length} file(s) to mp3.`);
+      }
     } catch (e: any) {
       if (statusCallback)
-        statusCallback(`Could not convert ${filePaths} to mp3.`);
+        await statusCallback(`Could not convert ${filePaths} to mp3.`);
     }
   }
 
@@ -637,10 +638,7 @@ export const uploadToCms = async (
    */
 
   // upload the sessions
-  await uploadSessions(
-    sessions,
-    async (message) => statusCallback && statusCallback(message)
-  );
+  await uploadSessions(sessions, statusCallback);
 
   /**
    * IV. Finish the process

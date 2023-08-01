@@ -205,7 +205,7 @@ export interface Notification {
   type: NotifciationType;
 }
 
-export type StatusCallback = (message: string) => void;
+export type StatusCallback = (message: string) => Promise<void>;
 
 /**
  * Socket

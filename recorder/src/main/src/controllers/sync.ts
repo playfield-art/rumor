@@ -52,7 +52,7 @@ export const syncNarrative = async (): Promise<void> => {
       await new NarrativeSyncer(
         narrativesFolder,
         narrative,
-        (message: string) => {
+        async (message: string) => {
           // let them know, the process is continuing
           Recorder.changeProces({
             procesIsRunning: true,

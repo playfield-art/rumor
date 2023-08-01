@@ -8,7 +8,7 @@ export const Utils = {
    * and return a string
    */
   addLeadingZero: (number: number | string | undefined): string => {
-    let incoming = number;
+    let incoming = Number(number);
     if (incoming === undefined || !incoming) incoming = 0;
     if (typeof number === "string") {
       incoming = Number(number);

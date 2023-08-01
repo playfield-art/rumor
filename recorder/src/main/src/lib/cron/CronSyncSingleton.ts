@@ -1,11 +1,11 @@
-import { CronSync } from "./CronSync";
+import { CronJob } from "./CronJob";
 
 /**
  * The Singleton class defines the `getInstance` method that lets clients access
  * the unique singleton instance.
  */
 export class CronSyncSingleton {
-  private static instance: CronSync;
+  private static instance: CronJob;
 
   /**
    * The Singleton's constructor should always be private to prevent direct
@@ -16,7 +16,7 @@ export class CronSyncSingleton {
   /**
    * Sets the single instance
    */
-  public static setInstance(cronSyncInstance: CronSync) {
+  public static setInstance(cronSyncInstance: CronJob) {
     CronSyncSingleton.instance = cronSyncInstance;
   }
 
@@ -26,7 +26,7 @@ export class CronSyncSingleton {
    * This implementation let you subclass the Singleton class while keeping
    * just one instance of each subclass around.
    */
-  public static getInstance(): CronSync {
+  public static getInstance(): CronJob {
     return CronSyncSingleton.instance;
   }
 }
