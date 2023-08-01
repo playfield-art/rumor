@@ -7,6 +7,7 @@ import { ConnectionManager } from './components/ConnectionManager';
 import { Setup } from './pages/Setup';
 import { DuringPerformance } from './pages/DuringPerformance';
 import { DoorIsOpen } from './pages/DoorIsOpen';
+import { SessionFinished } from './pages/SessionFinished';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
           <Route path="/start-countdown" element={<StartCountdown />} />
           <Route path="/during-performance" element={<DuringPerformance />} />
           <Route path="/door-is-open" element={<DoorIsOpen />} />
+          <Route path="/session-finished" element={<SessionFinished />} />
           <Route path="/setup" element={<Setup />} />
         </Routes>
       </Router>

@@ -96,8 +96,5 @@ export class SocketMessageHandler {
     await MqttSingleton.getInstance().publish("interface/screen", {
       state: json.state ? 1 : 0,
     });
-
-    // log
-    Logger.detail(`Interface screen is turned ${json.state ? "on" : "off"}.`);
   }
 }

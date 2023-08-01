@@ -36,6 +36,13 @@ function ChangePageSection() {
         >
           Door Is Open
         </Button>
+        <Button
+          sx={{ width: "100%" }}
+          variant="contained"
+          onClick={() => changeInterfacePage("session-finished")}
+        >
+          Session Finished
+        </Button>
       </Stack>
     </Section>
   );

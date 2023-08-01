@@ -16,6 +16,7 @@ import Logger from "../logging/Logger";
 import SettingHelper from "../settings/SettingHelper";
 import { getRecordingsFolder } from "../filesystem";
 import { Recorder } from "../../recorder";
+import { SocketSingleton } from "../socket/SocketSingleton";
 
 export default class SoundBoard {
   private static VOPlaylist: VOPlaylist;
@@ -201,6 +202,12 @@ export default class SoundBoard {
   private static async onPlaylistDone() {
     // stop the session
     await SoundBoard.stopSession(true);
+
+    // let the interface know
+    SocketSingleton.getInstance().sendToClients(
+      "change-page",
+      "session-finished"
+    );
 
     // log
     Logger.success("Session done!");

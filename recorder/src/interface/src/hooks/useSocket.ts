@@ -7,7 +7,11 @@ export const useSocket = () => {
    * Connect to the socket server
    */
   const connect = () => {
+    // connect to socket
     socket.connect();
+
+    // for debug purposes
+    socket.onAny((m, payload) => { console.log(m, payload) });
   }
 
   /**
