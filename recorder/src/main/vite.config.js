@@ -34,6 +34,8 @@ export default defineConfig({
         'node-osc',
         'express',
         'node-cron',
+        'form-data',
+        'node-fetch',
         ...builtinModules
       ],
       output: {

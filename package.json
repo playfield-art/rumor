@@ -3,8 +3,16 @@
   "version": "1.0.1",
   "private": "true",
   "workspaces": {
-    "packages": ["recorder", "cms", "cms-types", "automations", "module-service"],
-    "nohoist": ["@graphql-codegen/**"]
+    "packages": [
+      "recorder",
+      "cms",
+      "cms-types",
+      "automations",
+      "module-service"
+    ],
+    "nohoist": [
+      "@graphql-codegen/**"
+    ]
   },
   "scripts": {
     "start:api": "yarn workspace api start:dev",

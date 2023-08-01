@@ -1,0 +1,8 @@
+#
+# Update FilFolder path
+#
+mutation UpdateFileFolderPath($ids: [ID]!, $folderPath: String!) {
+  updateFileFolderPath(
+    fileFolder: { ids: $ids, folderPath: $folderPath}
+  )
+}

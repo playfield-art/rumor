@@ -40,7 +40,10 @@ export interface Recording {
   order: number;
   questionId: string;
   fileName: string;
+  ext: string;
+  directory: string;
   fullPath: string;
+  isEmpty: boolean;
 }
 
 export interface UploadedRecording extends Recording {

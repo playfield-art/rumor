@@ -64,7 +64,7 @@ const initApp = async () => {
     await app.whenReady();
 
     // log out
-    Logger.info("Application started.");
+    Logger.detail("Application started.");
 
     // ask for microphone access
     systemPreferences.askForMediaAccess("microphone");
@@ -147,7 +147,7 @@ const initApp = async () => {
       await CronSyncSingleton.getInstance()?.stop();
 
       // save logs
-      await Logger.info("Application is closing...");
+      await Logger.detail("Application is closing...");
 
       // exit the application
       app.exit(0);

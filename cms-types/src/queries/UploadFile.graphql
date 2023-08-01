@@ -1,0 +1,11 @@
+#
+# This mutation will upload one file
+#
+
+mutation uploadFile($file: Upload!) {
+  upload(file: $file){
+    data {
+      id
+    }
+  }
+}

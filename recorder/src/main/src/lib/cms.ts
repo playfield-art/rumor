@@ -1,3 +1,4 @@
+import path from "path";
 import {
   CreateUploadFolderInParentDocument,
   CreateUploadFolderInRootDocument,
@@ -6,10 +7,10 @@ import {
   GetLastPathIdDocument,
   FindUploadFolderInParentDocument,
   UpdateFileNameDocument,
-  UploadFilesDocument,
   CreateSessionDocument,
   GetBoothIdDocument,
   Enum_Session_Language,
+  UpdateFileFolderPathDocument,
 } from "cms-types/gql/graphql";
 import { GraphQLClient } from "graphql-request";
 import {
@@ -24,6 +25,8 @@ import {
 } from "@shared/interfaces";
 import fsExtra from "fs-extra";
 import { Utils } from "@shared/utils";
+import FormData from "form-data";
+import nodeFetch from "node-fetch";
 import { narrativeChapters } from "../consts";
 import {
   getArchiveFolder,
@@ -69,8 +72,9 @@ const getApiToken = async (): Promise<string> => {
  * @returns
  */
 const getGraphQLClient = async (): Promise<GraphQLClient> =>
-  new GraphQLClient(await getApiEndpoint(), {
+  new GraphQLClient(`${await getApiEndpoint()}/graphql`, {
     headers: {
+      contentType: "application/json",
       authorization: `Bearer ${await getApiToken()}`,
     },
   });
@@ -345,14 +349,30 @@ export const createUploadFolderForSession = async (
   const lastPathId = await getLastPathId();
   const newPathId = lastPathId + 1;
 
+  // promises
+  const promises = [];
+
   // create a new upload folder in a session
-  return gqlClient.request(CreateUploadFolderInParentDocument, {
-    pathId: newPathId,
-    path: `/${sessionId}`,
-    name: sessionId,
-    files,
-    parent: uploadFolderIdForBooth,
-  });
+  promises.push(
+    gqlClient.request(CreateUploadFolderInParentDocument, {
+      pathId: newPathId,
+      path: `/${sessionId}`,
+      name: sessionId,
+      files,
+      parent: uploadFolderIdForBooth,
+    })
+  );
+
+  // move all the files to the new folder in database
+  promises.push(
+    gqlClient.request(UpdateFileFolderPathDocument, {
+      ids: files,
+      folderPath: `/${sessionId}`,
+    })
+  );
+
+  // return the big promise
+  return Promise.all(promises);
 };
 
 /**
@@ -374,6 +394,26 @@ const archiveSession = async (sessionId: string) => {
       ? `${archivedSessionRecordingFolder}-${Utils.makeRandomId(5)}`
       : archivedSessionRecordingFolder
   );
+};
+
+/**
+ * Uploads a file to the CMS
+ * @param filePath
+ * @returns
+ */
+export const uploadFileToCms = async (filePath: string) => {
+  const form = new FormData();
+  form.append("files", fsExtra.createReadStream(filePath));
+  const res = await nodeFetch(`${await getApiEndpoint()}/api/upload`, {
+    method: "POST",
+    body: form,
+    headers: {
+      Authorization: `Bearer ${await getApiToken()}`,
+    },
+  });
+  const json = await res.json();
+  if (json && json.length > 0) return json.pop();
+  return null;
 };
 
 /**
@@ -411,88 +451,108 @@ export const uploadSessions = async (
 
       // archive the folder
       await archiveSession(session.meta.sessionId);
+    } else {
+      /**
+       * I. Get the readstreams for every file we need to upload
+       * and upload them to the CMS
+       */
 
-      // exit here
-      return;
-    }
+      // only keep the recordings that are not empty
+      const notEmptyRecordings = session.recordings.filter((r) => !r.isEmpty);
 
-    // get the readstreams for every file we need to upload
-    const files = {
-      files: session.recordings.map((r) =>
-        fsExtra.createReadStream(r.fullPath)
-      ),
-    };
+      // create file uploads
+      const fileUploads = notEmptyRecordings.map((r) => {
+        // get the path
+        let { fullPath } = r;
 
-    // upload the files
-    const { multipleUpload } = await gqlClient.request(
-      UploadFilesDocument,
-      files
-    );
+        // check if we have an mp3 version of the file
+        const mp3FilePath = `${r.directory}/${r.fileName}.mp3`;
+        if (fsExtra.existsSync(mp3FilePath)) fullPath = mp3FilePath;
 
-    // change the filenames, then we can filter better in our CMS
-    await Promise.all(
-      multipleUpload.map(async (upload) => {
-        if (upload?.data && upload?.data.id && upload.data.attributes) {
-          // update file name with the correct name
+        // if not, take the original wav
+        return uploadFileToCms(fullPath);
+      });
+
+      // change the filenames, then we can filter better in our CMS
+      if (statusCallback)
+        statusCallback(
+          `Uploading files for session "${session.meta.sessionId}" on booth "${session.meta.boothSlug}`
+        );
+
+      // filter out the undefineds (if there are any)
+      const fileUploadResponses = (await Promise.all(fileUploads)).filter(
+        (f) => f !== (undefined && null && "" && {} && [])
+      );
+
+      /**
+       * II. Rename the uploaded file to the correct name in the CMS
+       */
+
+      fileUploadResponses.map(async (response) => {
+        if (response && response?.id && response?.name) {
           await gqlClient.request(UpdateFileNameDocument, {
-            id: upload?.data.id,
-            fileName: `${session.meta.boothSlug}-${session.meta.sessionId}-${upload.data.attributes.name}`,
+            id: response.id,
+            fileName: `${session.meta.boothSlug}-${session.meta.sessionId}-${response.name}`,
           });
         }
-      })
-    );
+      });
 
-    // get the file ids form the data
-    const uploadedRecordings: UploadedRecording[] = session.recordings.map(
-      (recording) => ({
-        ...recording,
-        uploadedFileId:
-          multipleUpload.find(
-            (upload) => upload?.data?.attributes?.name === recording.fileName
-          )?.data?.id || "",
-      })
-    );
+      /**
+       * III. Move all the files to a new session folder in the media library
+       */
 
-    // add the new added files to a session folder
-    await createUploadFolderForSession(
-      session.meta.boothSlug,
-      session.meta.sessionId,
-      uploadedRecordings.map(
-        (uploadedRecording) => uploadedRecording.uploadedFileId
-      )
-    );
+      // 1. prepare the uploaded (not empty) recordings
+      const uploadedRecordings: UploadedRecording[] = notEmptyRecordings.map(
+        (recording) => ({
+          ...recording,
+          uploadedFileId:
+            fileUploadResponses.find(
+              (upload) => path.parse(upload?.name).name === recording.fileName
+            )?.id || "",
+        })
+      );
 
-    // convert session id to date and time
-    const recordingDateAndTime = convertSessionIdToDateAndTime(
-      session.meta.sessionId
-    );
+      // 2. create a new media folder and move the recordings to it
+      await createUploadFolderForSession(
+        session.meta.boothSlug,
+        session.meta.sessionId,
+        uploadedRecordings.map(
+          (uploadedRecording) => uploadedRecording.uploadedFileId
+        )
+      );
 
-    // create a new session
-    await gqlClient.request(CreateSessionDocument, {
-      boothId: await getBoothId(session.meta.boothSlug),
-      sessionId: session.meta.sessionId,
-      language: session.meta.language as Enum_Session_Language,
-      moderated: false,
-      narrative: session.audioList,
-      date: recordingDateAndTime.date,
-      time: recordingDateAndTime.time,
-      answers: uploadedRecordings.map((uploadedRecording) => ({
-        question: uploadedRecording.questionId,
-        transcribed: false,
-        original_transcript: "",
-        moderated_transcript: "",
-        audio: uploadedRecording.uploadedFileId,
-      })),
-    });
+      /**
+       * IV. Create a session in the CMS
+       */
 
-    // archive the session
-    await archiveSession(session.meta.sessionId);
-    // });
+      // convert session id to date and time
+      const recordingDateAndTime = convertSessionIdToDateAndTime(
+        session.meta.sessionId
+      );
+
+      // create a new session
+      await gqlClient.request(CreateSessionDocument, {
+        boothId: await getBoothId(session.meta.boothSlug),
+        sessionId: session.meta.sessionId,
+        language: session.meta.language as Enum_Session_Language,
+        moderated: false,
+        narrative: session.audioList,
+        date: recordingDateAndTime.date,
+        time: recordingDateAndTime.time,
+        answers: uploadedRecordings.map((uploadedRecording) => ({
+          question: uploadedRecording.questionId,
+          transcribed: false,
+          original_transcript: "",
+          moderated_transcript: "",
+          audio: uploadedRecording.uploadedFileId,
+        })),
+      });
+
+      /**
+       * V. Archive the local session folder
+       */
+
+      await archiveSession(session.meta.sessionId);
+    }
   }
-
-  // Upload everyting
-  // await Promise.all(uploadPromises);
-
-  // let them know
-  if (statusCallback) statusCallback("All sessions were uploaded.");
 };
