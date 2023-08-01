@@ -1,4 +1,5 @@
 import path from "path";
+import fs from "fs";
 import {
   CreateUploadFolderInParentDocument,
   CreateUploadFolderInRootDocument,
@@ -36,6 +37,8 @@ import {
 import { convertSessionIdToDateAndTime } from "./sessions/SessionUtils";
 import { Exception } from "./exceptions/Exception";
 import SettingHelper from "./settings/SettingHelper";
+import { SessionFactory } from "./sessions/SessionFactory";
+import { Mp3Converter } from "./audio/Mp3Converter";
 
 /**
  * Get the API endpoint
@@ -555,4 +558,93 @@ export const uploadSessions = async (
       await archiveSession(session.meta.sessionId);
     }
   }
+};
+
+/**
+ * Upload our recordings to the CMS
+ * @param statusCallback
+ * @param onFinished
+ */
+export const uploadToCms = async (
+  statusCallback: StatusCallback | null,
+  onFinished?: () => void | null
+) => {
+  // we are starting the upload
+  if (statusCallback) statusCallback("Starting upload to CMS...");
+
+  // let them know, the process is continuing
+  if (statusCallback)
+    statusCallback("Inventorising the sessions on our device...");
+
+  // get the recordings folder from settings
+  const sessionFolder = await getRecordingsFolder();
+
+  // validate
+  if (!sessionFolder || !fs.existsSync(sessionFolder)) {
+    if (statusCallback)
+      statusCallback("Session folder is not there or does not exist");
+  }
+
+  /**
+   * I. Get all the sessions from local hard drive
+   */
+
+  // get the sessions on this machine
+  let sessions = await new SessionFactory(sessionFolder).getSessions();
+
+  // remove the last session from array, this prevents that the sessions
+  // gets uploaded before it is finished
+  sessions = sessions.slice(0, sessions.length - 1);
+
+  // validate
+  if (!sessions || sessions.length === 0) {
+    if (statusCallback) statusCallback("No uploadable sessions found.");
+  } else if (statusCallback)
+    statusCallback(
+      `Found ${sessions.length} uploadable sessions on this device.`
+    );
+
+  /**
+   * II. Convert the files to mp3
+   */
+
+  // Before we start uploading:
+  // 1. Create the filepahts of the current WAV recording
+  // 2. Clear the recordings that are empty
+  // 3. Join the objects together in an array of strings
+  const filePaths = sessions
+    .map((session) =>
+      session.recordings
+        .filter((r) => !r.isEmpty)
+        .map((recording) => recording.fullPath)
+    )
+    .reduce((acc, curr) => acc.concat(curr), []);
+
+  // convert the files
+  if (filePaths) {
+    try {
+      await Mp3Converter.convert(filePaths);
+      if (statusCallback)
+        statusCallback(`Converted ${filePaths.length} file(s) to mp3.`);
+    } catch (e: any) {
+      if (statusCallback)
+        statusCallback(`Could not convert ${filePaths} to mp3.`);
+    }
+  }
+
+  /**
+   * III. Upload the sessions to the CMS
+   */
+
+  // upload the sessions
+  await uploadSessions(
+    sessions,
+    async (message) => statusCallback && statusCallback(message)
+  );
+
+  /**
+   * IV. Finish the process
+   */
+
+  if (onFinished) onFinished();
 };

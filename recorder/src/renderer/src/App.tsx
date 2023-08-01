@@ -26,6 +26,7 @@ function App() {
   const isPlaying = useRecorderStore((state) => state.isPlaying);
   return (
     <Router>
+      {procesStatus.procesIsRunning && <Loader />}
       <ThemeProvider theme={theme}>
         <AppHeader />
         <Box sx={{ display: "flex" }}>
@@ -37,7 +38,6 @@ function App() {
                 p: 3,
               }}
             >
-              {procesStatus.procesIsRunning && <Loader />}
               <Routes>
                 <Route path="/" element={<LogItems />} />
                 <Route path="/cms" element={<Cms />} />

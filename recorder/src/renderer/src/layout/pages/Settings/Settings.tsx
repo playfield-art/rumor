@@ -6,7 +6,7 @@ import { LoggingSettingsSection } from "./LoggingSettingsSection";
 import { MqttSettingsSection } from "./MqttSettingsSection";
 import { QLCSection } from "./QLCSection";
 import { DoorSettingsSection } from "./DoorSettingsSection";
-import { SyncSection } from "./SyncSection";
+import { CronSection } from "./CronSection";
 
 export function Settings() {
   return (
@@ -26,7 +26,7 @@ export function Settings() {
       </Grid>
       <Grid item xs={12} md={12}>
         <Stack spacing={2} display="block">
-          <SyncSection />
+          <CronSection />
           <FolderSettingsSection />
         </Stack>
       </Grid>

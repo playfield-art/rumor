@@ -12,6 +12,7 @@ const LoaderWrapper = styled.div`
   background-color: var(--background-color-popup);
   height: 100vh;
   width: 100vw;
+  z-index: 9999;
   font-size: 1.5rem;
 `;
 
