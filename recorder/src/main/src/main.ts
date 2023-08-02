@@ -64,6 +64,14 @@ const initApp = async () => {
       installExtensions: false, // shall we install react dev tools?
     });
 
+    // register actions to execute
+    // (one way direction, from renderer to main)
+    await registerActions();
+
+    // register the methods to handle
+    // (two way direction, from renderer to main and back)
+    await registerMethods();
+
     // create the window
     const mainWindow = await electronApp.createWindow();
 
@@ -90,14 +98,6 @@ const initApp = async () => {
 
     // init the cron job for syncing data
     initCron();
-
-    // register actions to execute
-    // (one way direction, from renderer to main)
-    registerActions();
-
-    // register the methods to handle
-    // (two way direction, from renderer to main and back)
-    await registerMethods();
 
     // show the main window
     Recorder.mainWindow.show();

@@ -32,15 +32,21 @@ import {
 } from "./controllers/narrative";
 import { getAppVersion } from "./controllers/app";
 
-export const registerActions = () => {
-  ipcMain.on("log", log);
-  ipcMain.on("saveSetting", saveSetting);
-  ipcMain.on("setColor", setColor);
-  ipcMain.on("setCronSync", setCronSync);
-  ipcMain.on("triggerFunction", triggerFunction);
-  ipcMain.on("changeInterfacePage", changeInterfacePage);
-  ipcMain.on("pressButtonInterface", pressButtonInterface);
-};
+export const registerActions = (): Promise<void> =>
+  new Promise((resolve) => {
+    ipcMain.on("log", log);
+    ipcMain.on("saveSetting", saveSetting);
+    ipcMain.on("setColor", setColor);
+    ipcMain.on("setCronSync", setCronSync);
+    ipcMain.on("triggerFunction", triggerFunction);
+    ipcMain.on("changeInterfacePage", changeInterfacePage);
+    ipcMain.on("pressButtonInterface", pressButtonInterface);
+
+    // sets a delay to make sure the main window is ready
+    setTimeout(() => {
+      resolve();
+    }, 1000);
+  });
 
 export const registerMethods = (): Promise<void> =>
   new Promise((resolve) => {
