@@ -97,7 +97,7 @@ const initApp = async () => {
 
     // register the methods to handle
     // (two way direction, from renderer to main and back)
-    registerMethods();
+    await registerMethods();
 
     // show the main window
     Recorder.mainWindow.show();

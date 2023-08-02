@@ -42,25 +42,31 @@ export const registerActions = () => {
   ipcMain.on("pressButtonInterface", pressButtonInterface);
 };
 
-export const registerMethods = () => {
-  ipcMain.handle("getAllLogRows", getAllLogRows);
-  ipcMain.handle("getAppVersion", getAppVersion);
-  ipcMain.handle("getAudioList", getAudioList);
-  ipcMain.handle("getLocalNarrative", getLocalNarrative);
-  ipcMain.handle("getMqttConnection", getMqttConnection);
-  ipcMain.handle("getSetting", getSetting);
-  ipcMain.handle("getSelectedChapterOptionId", getSelectedChapterOptionId);
-  ipcMain.handle("initPlaylist", initPlaylist);
-  ipcMain.handle("publishTopic", publishTopic);
-  ipcMain.handle("reInitMqtt", reInitMqtt);
-  ipcMain.handle("removeAllLogging", removeAllLogging);
-  ipcMain.handle("setFileSetting", setFileSetting);
-  ipcMain.handle("setFolderSetting", setFolderSetting);
-  ipcMain.handle("setRecordingsFolder", setRecordingsFolder);
-  ipcMain.handle("setSelectedChapterOptionId", setSelectedChapterOptionId);
-  ipcMain.handle("startSession", startSession);
-  ipcMain.handle("stopSession", stopSession);
-  ipcMain.handle("syncNarrative", syncNarrative);
-  ipcMain.handle("uploadToCms", uploadToCms);
-  ipcMain.handle("VOPlaylistDo", VOPlaylistDo);
-};
+export const registerMethods = (): Promise<void> =>
+  new Promise((resolve) => {
+    ipcMain.handle("getAllLogRows", getAllLogRows);
+    ipcMain.handle("getAppVersion", getAppVersion);
+    ipcMain.handle("getAudioList", getAudioList);
+    ipcMain.handle("getLocalNarrative", getLocalNarrative);
+    ipcMain.handle("getMqttConnection", getMqttConnection);
+    ipcMain.handle("getSetting", getSetting);
+    ipcMain.handle("getSelectedChapterOptionId", getSelectedChapterOptionId);
+    ipcMain.handle("initPlaylist", initPlaylist);
+    ipcMain.handle("publishTopic", publishTopic);
+    ipcMain.handle("reInitMqtt", reInitMqtt);
+    ipcMain.handle("removeAllLogging", removeAllLogging);
+    ipcMain.handle("setFileSetting", setFileSetting);
+    ipcMain.handle("setFolderSetting", setFolderSetting);
+    ipcMain.handle("setRecordingsFolder", setRecordingsFolder);
+    ipcMain.handle("setSelectedChapterOptionId", setSelectedChapterOptionId);
+    ipcMain.handle("startSession", startSession);
+    ipcMain.handle("stopSession", stopSession);
+    ipcMain.handle("syncNarrative", syncNarrative);
+    ipcMain.handle("uploadToCms", uploadToCms);
+    ipcMain.handle("VOPlaylistDo", VOPlaylistDo);
+
+    // sets a delay to make sure the main window is ready
+    setTimeout(() => {
+      resolve();
+    }, 1000);
+  });

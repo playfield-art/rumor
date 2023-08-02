@@ -101,8 +101,8 @@ export const initCron = async () => {
 export const stopAllCronJobs = async () => {
   try {
     // stop the cron job
-    CronSyncSingleton.getInstance().stop();
+    CronSyncSingleton.getInstance()?.stop();
   } catch (e: any) {
-    Logger.error("Stopping cron job failed!");
+    // Logger.error("Stopping cron job failed!");
   }
 };

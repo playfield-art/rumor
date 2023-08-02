@@ -62,7 +62,7 @@ export default class ElectronApp {
    * @returns a BrowserWindow
    */
   async createWindow(): Promise<BrowserWindow | null> {
-    return new Promise<BrowserWindow | null>((resolve, reject) => {
+    return new Promise<BrowserWindow | null>((resolve) => {
       // create an internal variable to work with
       let browserWindow: BrowserWindow | null = null;
 

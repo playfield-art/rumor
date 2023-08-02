@@ -31,7 +31,6 @@ export function CronSection() {
       if (c) setSyncCronjobActive(Boolean(Number(c)));
     });
     getSetting("autoRemoveArchiveCronjobActive").then((c) => {
-      console.log(c);
       if (c) setAutoRemoveArchiveCronjobActive(Boolean(Number(c)));
     });
   }, []);
