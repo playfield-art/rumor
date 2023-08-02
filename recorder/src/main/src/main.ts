@@ -97,7 +97,7 @@ const initApp = async () => {
     initSocketIo();
 
     // init the cron job for syncing data
-    initCron();
+    await initCron();
 
     // show the main window
     Recorder.mainWindow.show();

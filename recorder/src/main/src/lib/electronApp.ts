@@ -77,6 +77,7 @@ export default class ElectronApp {
           webviewTag: false,
           preload: path.join(__dirname, "../../preload/dist/index.cjs"),
         },
+        alwaysOnTop: this.isProduction,
       });
 
       // load the index html page
