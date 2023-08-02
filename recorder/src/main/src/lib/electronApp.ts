@@ -7,7 +7,6 @@ import { URL } from "url";
 import { BrowserWindow } from "electron";
 
 import MenuBuilder from "./menu";
-import { Recorder } from "../recorder";
 
 interface ElectronAppOptions {
   browserWidth?: number;
@@ -63,48 +62,43 @@ export default class ElectronApp {
    * @returns a BrowserWindow
    */
   async createWindow(): Promise<BrowserWindow | null> {
-    // create an internal variable to work with
-    let browserWindow: BrowserWindow | null = null;
+    return new Promise<BrowserWindow | null>((resolve, reject) => {
+      // create an internal variable to work with
+      let browserWindow: BrowserWindow | null = null;
 
-    // create a new main window
-    browserWindow = new BrowserWindow({
-      show: false,
-      width: this.options.browserWidth,
-      height: this.options.browserHeight,
-      icon: this.options?.iconPath ? this.options.iconPath : "",
-      webPreferences: {
-        webSecurity: false,
-        webviewTag: false,
-        preload: path.join(__dirname, "../../preload/dist/index.cjs"),
-      },
-      // alwaysOnTop: true,
-      // resizable: false
+      // create a new main window
+      browserWindow = new BrowserWindow({
+        show: false,
+        width: this.options.browserWidth,
+        height: this.options.browserHeight,
+        icon: this.options?.iconPath ? this.options.iconPath : "",
+        webPreferences: {
+          webSecurity: false,
+          webviewTag: false,
+          preload: path.join(__dirname, "../../preload/dist/index.cjs"),
+        },
+      });
+
+      // load the index html page
+      browserWindow.loadURL(this.resolveHtmlPath("index.html"));
+
+      // when we are ready to go
+      browserWindow.on("ready-to-show", () => {
+        if (!browserWindow) {
+          throw new Error('"mainWindow" is not defined');
+        }
+        // browserWindow.show();
+        resolve(browserWindow);
+      });
+
+      // when we are closing, destroy the main window
+      browserWindow.on("closed", () => {
+        browserWindow = null;
+      });
+
+      // creates the menu
+      const menuBuilder = new MenuBuilder(browserWindow, this.isDevelopment);
+      menuBuilder.buildMenu();
     });
-
-    // make the main window global
-    Recorder.mainWindow = browserWindow;
-
-    // when we are ready to go
-    browserWindow.on("ready-to-show", () => {
-      if (!browserWindow) {
-        throw new Error('"mainWindow" is not defined');
-      }
-      browserWindow.show();
-    });
-
-    // when we are closing, destroy the main window
-    browserWindow.on("closed", () => {
-      browserWindow = null;
-    });
-
-    // load the index html page
-    browserWindow.loadURL(this.resolveHtmlPath("index.html"));
-
-    // creates the menu
-    const menuBuilder = new MenuBuilder(browserWindow, this.isDevelopment);
-    menuBuilder.buildMenu();
-
-    // return the window
-    return browserWindow;
   }
 }

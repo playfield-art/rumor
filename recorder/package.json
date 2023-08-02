@@ -16,7 +16,7 @@
     "build:interface": "cd ./src/interface && vite build",
     "compile": "cross-env MODE=production yarn run build && electron-builder build --config .electron-builder.config.js",
     "prepare-publish": "node scripts/prepare_publish.js",
-    "publish": "yarn run prepare-publish && yarn run compile && yarn run publish-to-github",
+    "publish-recorder": "yarn run prepare-publish && yarn run compile && yarn run publish-to-github",
     "publish-to-github": "node scripts/publish.js",
     "typecheck": "yarn run typecheck:main && yarn run typecheck:preload && yarn run typecheck:renderer",
     "typecheck:main": "tsc --noEmit -p src/main/tsconfig.json",

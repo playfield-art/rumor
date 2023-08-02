@@ -11,7 +11,6 @@ export const useMqtt = () => {
 
     const removeEventListenerOnMqttConnection =
       window.rumor.events.onMqttConnection((event, mqttConnection) => {
-        console.log("mqttConnection", mqttConnection);
         setCurrentMqttConnection(mqttConnection);
       });
     return () => {

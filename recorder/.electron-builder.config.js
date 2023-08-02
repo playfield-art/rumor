@@ -10,7 +10,7 @@ const config = {
   productName: "recorder",
   asarUnpack: ["node_modules/sqlite3"],
   copyright: "playField.",
-  // afterSign: "./build/mac/afterSignHook.js",
+  afterSign: "./build/mac/afterSignHook.js",
   artifactName: "${name}-${version}-${os}-${arch}.${ext}",
   directories: {
     output: "bin",

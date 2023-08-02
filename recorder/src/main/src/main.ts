@@ -64,8 +64,11 @@ const initApp = async () => {
       installExtensions: false, // shall we install react dev tools?
     });
 
-    // create hte window
+    // create the window
     const mainWindow = await electronApp.createWindow();
+
+    // make the main window global
+    if (mainWindow) Recorder.mainWindow = mainWindow;
 
     // init the express server
     initExpress();
@@ -96,12 +99,8 @@ const initApp = async () => {
     // (two way direction, from renderer to main and back)
     registerMethods();
 
-    // on activation
-    app.on("activate", () => {
-      // On macOS it's common to re-create a window in the app when the
-      // dock icon is clicked and there are no other windows open.
-      if (mainWindow === null) electronApp.createWindow();
-    });
+    // show the main window
+    Recorder.mainWindow.show();
 
     /**
      * Before quiting, close the kweenb application by killing all other processes
