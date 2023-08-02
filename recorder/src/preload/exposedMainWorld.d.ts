@@ -35,6 +35,7 @@ declare global {
       };
       readonly methods: {
         getAllLogRows(): Promise<ILogRow[]>;
+        getAppVersion(): Promise<string>;
         getAudioList(language: string): Promise<AudioList>;
         getLocalNarrative(): Promise<LocalNarrative>;
         getMqttConnection(): Promise<boolean>;

@@ -30,6 +30,7 @@ import {
   getSelectedChapterOptionId,
   setSelectedChapterOptionId,
 } from "./controllers/narrative";
+import { getAppVersion } from "./controllers/app";
 
 export const registerActions = () => {
   ipcMain.on("log", log);
@@ -43,6 +44,7 @@ export const registerActions = () => {
 
 export const registerMethods = () => {
   ipcMain.handle("getAllLogRows", getAllLogRows);
+  ipcMain.handle("getAppVersion", getAppVersion);
   ipcMain.handle("getAudioList", getAudioList);
   ipcMain.handle("getLocalNarrative", getLocalNarrative);
   ipcMain.handle("getMqttConnection", getMqttConnection);

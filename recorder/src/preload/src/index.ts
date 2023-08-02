@@ -48,6 +48,7 @@ contextBridge.exposeInMainWorld("rumor", {
   },
   methods: {
     getAllLogRows: () => ipcRenderer.invoke("getAllLogRows"),
+    getAppVersion: () => ipcRenderer.invoke("getAppVersion"),
     getAudioList: (language: string) =>
       ipcRenderer.invoke("getAudioList", language),
     getLocalNarrative: () => ipcRenderer.invoke("getLocalNarrative"),

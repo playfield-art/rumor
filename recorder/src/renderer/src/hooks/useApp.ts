@@ -17,8 +17,10 @@ export const useApp = () => {
   const updateCurrentLanguage = useRecorderStore(
     (state) => state.updateCurrentLanguage
   );
+  const setVersion = useAppStore((state) => state.setVersion);
 
   useEffect(() => {
+    window.rumor.methods.getAppVersion().then((version) => setVersion(version));
     window.rumor.methods
       .getSetting("language")
       .then((languageSetting) =>

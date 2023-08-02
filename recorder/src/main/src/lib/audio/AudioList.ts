@@ -1,3 +1,4 @@
+import fs from "fs";
 import {
   AudioList,
   ChapterMeta,
@@ -5,7 +6,6 @@ import {
   VoiceOver,
   SoundScape,
 } from "@shared/interfaces";
-import fs from "fs";
 import { UNWANTED_FILES, narrativeChapters } from "../../consts";
 import SettingHelper from "../settings/SettingHelper";
 
@@ -78,7 +78,7 @@ export const getAudioList = async (language: string) => {
     // adding chapter meta
     output.chapters.push(
       JSON.parse(
-        fs.readFileSync(`${selectedChapterOptionPath}/meta.json`, "utf-8")
+        fs.readFileSync(`${selectedChapterOptionPath}meta.json`, "utf-8")
       ) as ChapterMeta
     );
 
