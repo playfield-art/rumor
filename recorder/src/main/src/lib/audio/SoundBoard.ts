@@ -7,6 +7,7 @@ import {
   VoiceOverType,
 } from "@shared/interfaces";
 import { Utils } from "@shared/utils";
+import { QLCFunction } from "@shared/enums";
 import { Exception } from "../exceptions/Exception";
 import VOPlaylist, { VOPlaylistOptions } from "./VOPlaylist";
 import { AudioRecordingSingleton } from "./AudioRecordingSingleton";
@@ -17,6 +18,7 @@ import SettingHelper from "../settings/SettingHelper";
 import { getRecordingsFolder } from "../filesystem";
 import { Recorder } from "../../recorder";
 import { SocketSingleton } from "../socket/SocketSingleton";
+import { QLCSingleton } from "../qlc/QLCSingleton";
 
 export default class SoundBoard {
   private static VOPlaylist: VOPlaylist;
@@ -207,6 +209,11 @@ export default class SoundBoard {
     SocketSingleton.getInstance().sendToClients(
       "change-page",
       "session-finished"
+    );
+
+    // set back max lights
+    QLCSingleton.getInstance().triggerFunction(
+      QLCFunction.FADE_TO_MAX_LIGHT_INTENSITY
     );
 
     // log
