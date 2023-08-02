@@ -1,6 +1,6 @@
 {
   "name": "recorder",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "license": "MIT",
   "description": "Recorder is an audio recorder used in the installation Rumor, created by playField.",
   "author": "playField.",
@@ -9,7 +9,7 @@
     "url": "https://github.com/playfield-art/rumor"
   },
   "scripts": {
-    "build": "yarn run build:main && yarn run build:preload && yarn run build:renderer && yarn run build:interface",
+    "build": "yarn run build:interface &&yarn run build:main && yarn run build:preload && yarn run build:renderer",
     "build:main": "cd ./src/main && vite build",
     "build:renderer": "cd ./src/renderer && vite build",
     "build:preload": "cd ./src/preload && vite build",

@@ -19,6 +19,8 @@ const SwiperSlideLanguage = styled(SwiperSlide)`
   font-size: 4.5rem;
 `
 
+SwiperSlideLanguage.displayName = 'SwiperSlide';
+
 export const SetLanguage = () => {
   const navigate = useNavigate();
   const swiperRef = useRef<SwiperClass>();
