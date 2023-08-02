@@ -10,7 +10,7 @@ const config = {
   productName: "recorder",
   asarUnpack: ["node_modules/sqlite3"],
   copyright: "playField.",
-  afterSign: "./build/mac/afterSignHook.js",
+  // afterSign: "./build/mac/afterSignHook.js",
   artifactName: "${name}-${version}-${os}-${arch}.${ext}",
   directories: {
     output: "bin",
@@ -27,7 +27,7 @@ const config = {
     entitlementsInherit: "./build/mac/entitlements.mac.plist",
     target: {
       target: "dmg",
-      arch: ["x64", "arm64"],
+      arch: ["arm64"],
     },
     extendInfo: {
       NSMicrophoneUsageDescription: "A subprocess requests access to the device's microphone.",

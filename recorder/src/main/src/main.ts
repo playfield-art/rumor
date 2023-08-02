@@ -10,6 +10,7 @@
 import path from "path";
 import { app, systemPreferences } from "electron";
 
+import { resourcesPath } from "@shared/resources";
 import { ElectronApp } from "./lib";
 import { registerActions, registerMethods } from "./register";
 import { Recorder } from "./recorder";
@@ -22,26 +23,13 @@ import { initQLC } from "./qlc";
 import { closeQLC } from "./lib/qlc/QLCHelpers";
 import { initSerialButton } from "./button";
 import { SerialButtonSingleton } from "./lib/serial/SerialButtonSingleton";
-import { initExpress } from "./express";
+import { initExpress, killExpress } from "./express";
 import { initSocketIo } from "./socket";
 import { initCron, stopAllCronJobs } from "./cron";
 
 /**
- * Express server for the internal webserver
- */
-
-const expressProcess = initExpress();
-
-/**
  * Electron Application
  */
-
-/**
- * Get the resources path
- */
-const resourcePath = app.isPackaged
-  ? path.join(__dirname, "..", "..", "..")
-  : path.join(__dirname, "..", "..", "..", "buildResources");
 
 /**
  * Last thing to do when the window is closed
@@ -72,12 +60,15 @@ const initApp = async () => {
     const electronApp = new ElectronApp({
       browserWidth: 900, // sets the browser width
       browserHeight: 795, // sets the browser height
-      iconPath: path.join(resourcePath, "icon.icns"), // sets the app icon
+      iconPath: path.join(resourcesPath, "icon.icns"), // sets the app icon
       installExtensions: false, // shall we install react dev tools?
     });
 
     // create hte window
     const mainWindow = await electronApp.createWindow();
+
+    // init the express server
+    initExpress();
 
     // init the application
     await Recorder.initApplication();
@@ -125,7 +116,7 @@ const initApp = async () => {
       }
 
       // kill the express process
-      expressProcess?.kill("SIGINT");
+      killExpress();
 
       // destroy the soundboard
       await SoundBoard.destroy();

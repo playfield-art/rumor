@@ -23,7 +23,7 @@
     "typecheck:preload": "tsc --noEmit -p src/preload/tsconfig.json",
     "typecheck:renderer": "tsc --noEmit -p src/renderer/tsconfig.json",
     "typecheck:interface": "tsc --noEmit -p src/interface/tsconfig.json",
-    "watch": "NODE_ENV=development node scripts/watch.js"
+    "watch": "MODE=development node scripts/watch.js"
   },
   "private": false,
   "main": "src/main/dist/main.cjs",
@@ -40,7 +40,7 @@
   },
   "dependencies": {
     "@apollo/client": "^3.7.17",
-    "@electron/notarize": "^1.2.3",
+    "@electron/notarize": "^2.1.0",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "@mui/icons-material": "^5.13.7",
@@ -60,7 +60,6 @@
     "apollo-upload-client": "^17.0.0",
     "cors": "^2.8.5",
     "dayjs": "^1.11.9",
-    "esm": "^3.2.25",
     "express": "^4.18.2",
     "find-process": "^1.4.7",
     "form-data": "^4.0.0",

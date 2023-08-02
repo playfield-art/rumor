@@ -95,7 +95,7 @@ export default class SoundBoard {
     // stop the recording if it is recording
     if (AudioRecordingSingleton.getInstance().isRecording) {
       const stats = await AudioRecordingSingleton.getInstance().stopRecording();
-      Logger.info(`Stopped recording, the filesize is ${stats.sizeReadable}`);
+      Logger.detail(`Stopped recording, the filesize is ${stats.sizeReadable}`);
     }
 
     // stop the playlist
@@ -148,7 +148,7 @@ export default class SoundBoard {
         // if we have a soundscape, send it to the renderer
         if (soundscape) {
           Recorder.mainWindow.webContents.send("play-soundscape", soundscape);
-          Logger.info(`Trigger soundscape ${soundscape.fileName}`);
+          Logger.detail(`Trigger soundscape ${soundscape.fileName}`);
         }
 
         /**

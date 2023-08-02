@@ -17,9 +17,9 @@ interface ElectronAppOptions {
 }
 
 export default class ElectronApp {
-  private isDevelopment: boolean;
+  public isDevelopment: boolean;
 
-  private isProduction: boolean;
+  public isProduction: boolean;
 
   private port: string | number | undefined;
 
@@ -34,8 +34,8 @@ export default class ElectronApp {
     }
   ) {
     this.options = options;
-    this.isDevelopment = process.env.NODE_ENV === "development";
-    this.isProduction = process.env.NODE_ENV === "production";
+    this.isDevelopment = import.meta.env.MODE === "development";
+    this.isProduction = import.meta.env.MODE === "production";
     this.port = process.env.VITE_DEV_SERVER_PORT || 3000;
   }
 

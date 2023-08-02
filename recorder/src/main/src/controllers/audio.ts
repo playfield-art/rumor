@@ -55,7 +55,7 @@ export const startSession = async () => {
      */
 
     // log
-    await Logger.info("Checking the door.");
+    await Logger.detail("Checking the door.");
 
     // do we start a session only when door is closed?
     const startSessionAfterDoorIsClosed = Boolean(
@@ -75,7 +75,7 @@ export const startSession = async () => {
      */
 
     // log
-    await Logger.info("Starting the soundboard session.");
+    await Logger.detail("Starting the soundboard session.");
 
     // start a new session, trigger frontend if a soundscape needs to be played
     await SoundBoard.startSession();
@@ -85,7 +85,7 @@ export const startSession = async () => {
      */
 
     // log
-    await Logger.info("Set light to dimmed intensity.");
+    await Logger.detail("Set light to dimmed intensity.");
 
     // trigger the QLC function
     QLCSingleton.getInstance().triggerFunction(
@@ -97,7 +97,7 @@ export const startSession = async () => {
      */
 
     // log
-    await Logger.info("Set the interface to during performance state.");
+    await Logger.detail("Set the interface to during performance state.");
 
     // change the page on the interface
     SocketSingleton.getInstance().sendToClients(
@@ -146,7 +146,7 @@ export const stopSession = async () => {
      */
 
     // log
-    await Logger.info("Set light to max intensity.");
+    await Logger.detail("Set light to max intensity.");
 
     // trigger the QLC function
     QLCSingleton.getInstance().triggerFunction(
@@ -158,7 +158,7 @@ export const stopSession = async () => {
      */
 
     // log
-    await Logger.info("Set the interface to set language state.");
+    await Logger.detail("Set the interface to set language state.");
 
     // change the page on the interface
     SocketSingleton.getInstance().sendToClients("change-page", "set-language");

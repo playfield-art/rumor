@@ -40,6 +40,12 @@ const config = {
     assetsDir: ".",
     rollupOptions: {
       input: join(__dirname, "index.html"),
+      onwarn(warning, warn) {
+        if (warning.code === 'MODULE_LEVEL_DIRECTIVE') {
+          return
+        }
+        warn(warning)
+      },
       external: [
         ...builtinModules
       ],
