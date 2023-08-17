@@ -190,13 +190,14 @@ export const getNarrative = async (boothSlug: string) => {
         narrativeChapterDataItem.chapters.data.map(({ id, attributes }) => {
           // transform all the blocks in this chapter
           const chapterBlocks: ChapterBlock[] | undefined =
-            attributes?.blocks?.map((b) => {
+            attributes?.blocks?.map((b, i) => {
               // define the chapter block output
               const chapterBlock: ChapterBlock = {
                 type:
                   b?.__typename === "ComponentBlocksChapterQuestionBlock"
                     ? ChapterBlockType.Question
                     : ChapterBlockType.VoiceOver,
+                order: i + 1,
                 title: "",
                 cms_id: "",
                 description: "",

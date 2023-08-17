@@ -117,6 +117,7 @@ export enum ChapterBlockType {
 
 export interface ChapterBlock {
   type: ChapterBlockType;
+  order: number;
   title: string;
   description: string;
   cms_id: string;

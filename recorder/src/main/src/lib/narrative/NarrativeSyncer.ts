@@ -39,6 +39,18 @@ export class NarrativeSyncer {
     await fsExtra.emptyDir(this.folderPath);
   }
 
+  async resolvePromisesSeq(tasks: Promise<any>[]) {
+    const results = [];
+
+    // eslint-disable-next-line no-restricted-syntax
+    for (const task of tasks) {
+      // eslint-disable-next-line no-await-in-loop
+      results.push(await task);
+    }
+
+    return results;
+  }
+
   async createEmptyFoldersForNarrative() {
     // validate
     if (!this.narrative || this.folderPath === "") return;
@@ -73,7 +85,7 @@ export class NarrativeSyncer {
 
     // create the work arrays
     let createOptionFoldersPromises: Promise<void>[] = [];
-    let downloadOptionsPromises: Promise<void>[] = [];
+    let downloadOptionsPromises: (() => Promise<void>)[] = [];
 
     // loop over every narrative chapter
     narrativeChapters.forEach((narrativeChapter) => {
@@ -122,14 +134,9 @@ export class NarrativeSyncer {
       // ----
       // Create Promises for downloading the sound files
       // ----
-      let blockOrder = 1;
-
       narrativeChapter.chapters?.forEach((chapter) => {
         // validate
         if (!chapter || !chapter.blocks) return;
-
-        // if we have blocks, create the promises for the audio
-        blockOrder = 0;
 
         // map every block, because we got work to do
         chapter.blocks.forEach(async (block) => {
@@ -140,9 +147,6 @@ export class NarrativeSyncer {
             chapter.id
           );
 
-          // increment the block order
-          blockOrder += 1;
-
           /**
            * Soundscape
            */
@@ -150,21 +154,26 @@ export class NarrativeSyncer {
           if (block.soundscape) {
             downloadOptionsPromises = [
               ...downloadOptionsPromises,
-              new Promise((resolve) => {
-                // create the filename
-                const soundscapeFileName = `sc-${blockOrder}-${block.cms_id}${block.soundscape?.ext}`;
+              () =>
+                new Promise((resolve) => {
+                  // create the filename
+                  const soundscapeFileName = `sc-${block.order}-${block.cms_id}${block.soundscape?.ext}`;
 
-                // start downloading the audio
-                new Downloader({
-                  url: `${block.soundscape?.audioUrl}`,
-                  directory: `${chapterOptionFolder}`,
-                  fileName: soundscapeFileName,
-                })
-                  .download()
-                  .then(() => {
-                    resolve();
-                  });
-              }),
+                  // let them know
+                  if (this.statusCallback)
+                    this.statusCallback(`Downloading ${soundscapeFileName}...`);
+
+                  // start downloading the audio
+                  new Downloader({
+                    url: `${block.soundscape?.audioUrl}`,
+                    directory: `${chapterOptionFolder}`,
+                    fileName: soundscapeFileName,
+                  })
+                    .download()
+                    .then(() => {
+                      resolve();
+                    });
+                }),
             ];
           }
 
@@ -174,38 +183,44 @@ export class NarrativeSyncer {
 
           downloadOptionsPromises = [
             ...downloadOptionsPromises,
-            ...block.audio.map(async (audio) => {
-              // if no audio, resolve immediatly
-              if (!audio.audioUrl) return Promise.resolve();
+            ...block.audio.map(
+              (audio): (() => Promise<void>) =>
+                () =>
+                  new Promise((resolve) => {
+                    // if no audio, resolve immediatly
+                    if (!audio.audioUrl) resolve();
 
-              // create the filename
-              const audioFileName = `${audio.language}-${blockOrder}-${block.type}-${block.cms_id}${audio.ext}`;
+                    // create the filename
+                    const audioFileName = `${audio.language}-${block.order}-${block.type}-${block.cms_id}${audio.ext}`;
 
-              // start downloading the audio
-              await new Downloader({
-                url: `${audio.audioUrl}`,
-                directory: `${chapterOptionFolder}`,
-                fileName: audioFileName,
-              }).download();
+                    // let them know
+                    if (this.statusCallback)
+                      this.statusCallback(`Downloading ${audioFileName}...`);
 
-              // let them know
-              if (this.statusCallback)
-                this.statusCallback(`Downloaded ${audioFileName}`);
-
-              // resolve the promise
-              return Promise.resolve();
-            }),
+                    // start downloading the audio
+                    new Downloader({
+                      url: `${audio.audioUrl}`,
+                      directory: `${chapterOptionFolder}`,
+                      fileName: audioFileName,
+                    })
+                      .download()
+                      .then(() => {
+                        resolve();
+                      });
+                  })
+            ),
           ];
         });
       });
     });
 
-    // let them know
-    if (this.statusCallback)
-      this.statusCallback("Downloading all the narrative audio...");
-
     // start executing the logic
-    await Promise.all(downloadOptionsPromises);
+    // await this.resolvePromisesSeq(downloadOptionsPromises);
+    // eslint-disable-next-line no-restricted-syntax
+    for (const downloadOption of downloadOptionsPromises) {
+      // eslint-disable-next-line no-await-in-loop
+      await downloadOption();
+    }
 
     // let them know
     if (this.statusCallback)
