@@ -480,7 +480,7 @@ export const uploadSessions = async (
       // change the filenames, then we can filter better in our CMS
       if (statusCallback)
         await statusCallback(
-          `Uploading files for session "${session.meta.sessionId}" on booth "${session.meta.boothSlug}`
+          `Uploading files for session "${session.meta.sessionId}" on booth "${session.meta.boothSlug}"`
         );
 
       // filter out the undefineds (if there are any)
