@@ -8,4 +8,7 @@ export interface Settings {
   googleTranslateApiToken: string
   targetLanguage: string
   googleCloudProjectId: string
+  brainjarApiKey: string
+  iterationIntro: string
+  iterationOutro: string
 }

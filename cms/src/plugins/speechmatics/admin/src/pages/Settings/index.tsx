@@ -10,7 +10,7 @@ import {
   HeaderLayout,
   ContentLayout,
   Typography,
-  Field, FieldLabel, FieldHint, FieldError, FieldInput, FieldAction
+  Field, FieldLabel, FieldInput, Textarea
 } from '@strapi/design-system';
 import { Check } from '@strapi/icons';
 import { Settings } from '../../../../types';
@@ -21,7 +21,10 @@ const defaultSettings = {
   googleTranslateApiToken: "",
   targetLanguage: "",
   googleCloudProjectId: "",
-  notifyCallbackUrl: ""
+  notifyCallbackUrl: "",
+  brainjarApiKey: "",
+  iterationIntro: "",
+  iterationOutro: ""
 }
 
 const Settings = () => {
@@ -197,6 +200,79 @@ const Settings = () => {
                               setSettings({
                                 ...settings,
                                 targetLanguage: e.target.value,
+                              })
+                            }}
+                          />
+                        </Stack>
+                      </Field>
+                    </GridItem>
+                  </Grid>
+                </Stack>
+              </Stack>
+            </Box>
+             <Box
+              background="neutral0"
+              hasRadius
+              shadow="filterShadow"
+              paddingTop={6}
+              paddingBottom={6}
+              paddingLeft={7}
+              paddingRight={7}
+            >
+              <Stack spacing={4}>
+                <Stack spacing={1}>
+                  <Typography variant="delta" as="h2">
+                    Brainjar configuration
+                  </Typography>
+                </Stack>
+                <Stack>
+                  <Grid gap={6}>
+                    <GridItem col={12} s={12}>
+                      <Field name="brainjarApiKey">
+                        <Stack>
+                          <FieldLabel>Brianjar API Key</FieldLabel>
+                          <FieldInput
+                            type="text"
+                            placeholder=""
+                            value={settings?.brainjarApiKey}
+                            onChange={(e) => {
+                              setSettings({
+                                ...settings,
+                                brainjarApiKey: e.target.value,
+                              })
+                            }}
+                          />
+                        </Stack>
+                      </Field>
+                    </GridItem>
+                    <GridItem col={12} s={12}>
+                      <Field name="iterationIntro">
+                        <Stack>
+                          <FieldLabel>Iteration Intro</FieldLabel>
+                          <Textarea
+                            placeholder=""
+                            value={settings?.iterationIntro}
+                            onChange={(e) => {
+                              setSettings({
+                                ...settings,
+                                iterationIntro: e.target.value,
+                              })
+                            }}
+                          />
+                        </Stack>
+                      </Field>
+                    </GridItem>
+                    <GridItem col={12} s={12}>
+                      <Field name="iterationOutro">
+                        <Stack>
+                          <FieldLabel>Iteration Outro</FieldLabel>
+                          <Textarea
+                            placeholder=""
+                            value={settings?.iterationOutro}
+                            onChange={(e) => {
+                              setSettings({
+                                ...settings,
+                                iterationOutro: e.target.value,
                               })
                             }}
                           />

@@ -5,6 +5,7 @@ import pluginId from './pluginId';
 import Initializer from './components/Initializer';
 import TranscribeButton from './components/TranscribeButton';
 import TranslateButton from './components/TranslateButton';
+import StartTrainingButton from './components/StartTrainingButton';
 
 const name = pluginPkg.strapi.name;
 
@@ -51,6 +52,11 @@ export default {
     app.injectContentManagerComponent('editView', 'right-links', {
       name: 'translateButton',
       Component: TranslateButton,
+    });
+
+    app.injectContentManagerComponent('listView', 'actions', {
+      name: 'startTrainingButton',
+      Component: StartTrainingButton,
     });
   },
 

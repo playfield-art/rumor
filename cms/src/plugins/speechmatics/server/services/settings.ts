@@ -10,7 +10,10 @@ const defaultConfig: Settings = {
   notifyCallbackUrl: "",
   googleTranslateApiToken: "",
   targetLanguage: "",
-  googleCloudProjectId: ""
+  googleCloudProjectId: "",
+  brainjarApiKey: "",
+  iterationIntro: "",
+  iterationOutro: "",
 }
 
 /**

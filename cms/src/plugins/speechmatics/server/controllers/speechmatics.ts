@@ -20,6 +20,18 @@ export default {
   },
 
   /**
+   * Start the training
+   * @param ctx The context
+   */
+  startTraining: async(ctx) => {
+    try {
+      await getService('speechmatics').startTraining();
+    } catch(err) {
+      ctx.throw(500, err);
+    }
+  },
+
+  /**
    * Start transcribing a session
    * @param ctx
    */
@@ -45,6 +57,19 @@ export default {
       await getService('speechmatics').translateSession(sessionId);
       ctx.send({ message: `Translations for ${sessionId} are done!` });
     } catch (err) {
+      ctx.throw(500, err);
+    }
+  },
+
+  /**
+   * Get the current training state
+   * @param ctx
+   */
+  trainingState: async (ctx) => {
+    try {
+      const state = await getService('speechmatics').getTrainingState();
+      ctx.send(state);
+    } catch(err) {
       ctx.throw(500, err);
     }
   },

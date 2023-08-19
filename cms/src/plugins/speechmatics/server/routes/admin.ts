@@ -19,6 +19,28 @@ const routes: StrapiRoute[] = [
   },
   {
     method: "POST",
+    path: "/startTraining",
+    handler: "speechmatics.startTraining",
+    config: {
+      policies: [],
+      description: "Starts training the AI",
+      tag: {
+        plugin: "speechmatics",
+        name: "Speechmatics",
+        actionType: "update",
+      },
+    },
+  },
+  {
+    method: 'GET',
+    path: '/trainingState',
+    handler: 'speechmatics.trainingState',
+    config: {
+      policies: []
+    },
+  },
+  {
+    method: "POST",
     path: "/transcribeSession",
     handler: "speechmatics.transcribeSession",
     config: {

@@ -2,7 +2,7 @@ import { Strapi } from '@strapi/strapi';
 import FormData from 'form-data';
 import axios from "axios";
 import { getCoreStore, getService } from '../utils';
-import { Settings } from '../../types';
+import fs from 'fs';
 const { Translate } = require('@google-cloud/translate').v2;
 
 const getSpeechmaticsConfig = (language: string, url: string, notifyCallbackUrl: string = "") => {
@@ -33,6 +33,58 @@ const getSpeechmaticsConfig = (language: string, url: string, notifyCallbackUrl:
 
 const getSpeechmaticsUrl = () => {
   return 'https://asr.api.speechmatics.com/v2/jobs/';
+}
+
+const getBrainjarUrl = () => {
+  return 'https://brj-intern-playfield-rumour.ew.r.appspot.com/';
+}
+
+/**
+ * A hardcoded list of sessions
+ * This will be rewritten with data coming form our database
+ * @returns
+ */
+const getHardcodedSessionsRequestData = () => {
+  const sessionsRequestData = [{
+    title: "Family, the elderly & community life",
+    tags: ["familie", "ouderen", "buurtleven"]
+  }, {
+    title: "Living & housing",
+    tags: ["wonen", "huisvesting"]
+  }, {
+    title: "Child care, education & work",
+    tags: ["kinderzorg", "educatie", "werken"]
+  }, {
+    title: "Transport & urban design",
+    tags: ["transport", "ruimtelijke_ordening"]
+  }, {
+    title: "Climate, nature & environment",
+    tags: ["klimaat", "natuur", "milieu"]
+  }, {
+    title: "City government & citizens' initiatives",
+    tags: ["stadsbestuur", "burgerinitiatieven"]
+  }, {
+    title: "Arts & culture",
+    tags: ["kunst", "cultuur"]
+  }, {
+    title: "Social security & integration",
+    tags: ["sociaal_vangnet", "integratie", "huisvesting"]
+  }, {
+    title: "Shopping, eating & relaxing",
+    tags: ["winkelen", "eten", "ontspanning"]
+  }, {
+    title: "Technology",
+    tags: ["technologie"]
+  }]
+
+  return sessionsRequestData.map((sessionRequestData) => ({
+    ...sessionRequestData,
+    tags: sessionRequestData.tags.map((tag) => ({
+      tag,
+      "length": 700
+    })),
+    summary: {}
+  }));
 }
 
 export default ({ strapi }: { strapi: Strapi }) => ({
@@ -108,7 +160,7 @@ export default ({ strapi }: { strapi: Strapi }) => ({
    * @param jobId
    */
   getTextFromJob: async (jobId: string) => {
-     // start jobs at speechmatics
+    // start jobs at speechmatics
     let config = await getCoreStore().get({ key: 'settings' });
 
     // validate
@@ -134,6 +186,44 @@ export default ({ strapi }: { strapi: Strapi }) => ({
 
     // return the text
     return data;
+  },
+
+  /**
+   * Get the training state
+   */
+  getTrainingState: async() => {
+     // get the plugin settings
+    let config = await getCoreStore().get({ key: 'settings' });
+
+    // validate
+    if(!config || !config.brainjarApiKey) return;
+
+    // get the token
+    const brainjarApiKey = config.brainjarApiKey;
+
+    // do the post
+    try {
+      // create a function that will sync our data with data in brainjar database
+      const getStatus = () => new Promise<string>((resolve, reject) => {
+        axios.get(
+          `${getBrainjarUrl()}rumor`,
+          {
+            headers: {
+              'Authorization': `Bearer ${brainjarApiKey}`,
+              'Accept': "application/json"
+            }
+          }
+        ).then((response) => {
+          resolve(response.data.status)
+        });
+      });
+      return await getStatus();
+    } catch(err) {
+      console.log(err.response.data);
+      console.log(err.response.status);
+      console.log(err.response.headers);
+      console.log(err.message);
+    }
   },
 
   /**
@@ -189,6 +279,73 @@ export default ({ strapi }: { strapi: Strapi }) => ({
   },
 
   /**
+   * Start training the AI
+   * @returns
+   */
+  startTraining: async() => {
+    // get the plugin settings
+    let config = await getCoreStore().get({ key: 'settings' });
+
+    // validate
+    if(!config || !config.brainjarApiKey || !config.iterationIntro || !config.iterationOutro) return;
+
+    // get the token
+    const brainjarApiKey = config.brainjarApiKey;
+
+    // create the json data
+    const jsondata = {
+      intro: config.iterationIntro,
+      sections: getHardcodedSessionsRequestData(),
+      outro: config.iterationOutro,
+    }
+
+    // do the post
+    try {
+      // create a function that will sync our data with data in brainjar database
+      const refreshData = () => new Promise<void>((resolve, reject) => {
+        axios.get(
+          `${getBrainjarUrl()}input/refresh`,
+          {
+            headers: {
+              'Authorization': `Bearer ${brainjarApiKey}`,
+              'Accept': "application/json"
+            }
+          }
+        ).then(() => {
+          console.log('Data was refreshed in the Brainjar database!');
+          resolve()
+        });
+      });
+
+      // create a function that will start the training
+      const startGeneration = () => new Promise<void>((resolve, reject) => {
+        axios.post(
+          `${getBrainjarUrl()}rumor/generate`,
+          jsondata,
+          {
+            params: {
+              callback_url: "https://rumor-cms.playfield.be"
+            },
+            headers: {
+              'Authorization': `Bearer ${brainjarApiKey}`,
+              'Accept': "application/json"
+            }
+          }
+        ).then(() => resolve());
+        console.log('Learning iteration started!');
+      });
+
+      // do the work chain
+      refreshData().then(() => { startGeneration() });
+    } catch(err) {
+      console.log(err.response.data);
+      console.log(err.response.status);
+      console.log(err.response.headers);
+      console.log(err.message);
+    }
+  },
+
+  /**
    * Transcibes a session (starts job at speechmatics)
    * @param sessionId The ID of the session
    * @returns
@@ -212,7 +369,6 @@ export default ({ strapi }: { strapi: Strapi }) => ({
 
     // answers to transcribe
     const answersToTranscribePromises = answersToTranscribe.map(async(answer) => {
-      console.log('test');
       // start a speecmatics job
       const jobId = await getService('speechmatics').startSpeechmaticsJob(
         session.language,
