@@ -1,7 +1,7 @@
 import React, { useCallback, useState, useEffect } from 'react';
 import { Flex, Button, Stack, Typography, Dialog, DialogBody, DialogFooter } from '@strapi/design-system'
 import { useNotification } from '@strapi/helper-plugin';
-import { ExclamationMarkCircle, Trash } from '@strapi/icons';
+import { ExclamationMarkCircle } from '@strapi/icons';
 import { speechmaticsApi } from '../api/speechmaticsApi';
 
 const StartTrainingButton = () => {
@@ -16,8 +16,8 @@ const StartTrainingButton = () => {
 
   // handle the transcription of the answers
   const handleStartTraining = useCallback(async () => {
-  console.log('test')
     try {
+      setDialogIsVisible(false);
       await speechmaticsApi.startTraining();
       toggleNotification({
         type: 'success',
