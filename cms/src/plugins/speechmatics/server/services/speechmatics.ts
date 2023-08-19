@@ -323,9 +323,6 @@ export default ({ strapi }: { strapi: Strapi }) => ({
           `${getBrainjarUrl()}rumor/generate`,
           jsondata,
           {
-            params: {
-              callback_url: "https://rumor-cms.playfield.be"
-            },
             headers: {
               'Authorization': `Bearer ${brainjarApiKey}`,
               'Accept': "application/json"
