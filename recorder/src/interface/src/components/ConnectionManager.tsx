@@ -9,29 +9,6 @@ export function ConnectionManager() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // connect with mqtt
-    // const client = mqtt.connect('mqtt://localhost:1883');
-
-    // // listen for mqtt events
-    // client.on('connect', () => {
-    //   console.log('connected to mqtt');
-    //   client.subscribe('interface');
-    // });
-
-    // client.on('message', (topic, payload) => {
-    //   console.log('received mqtt message', topic, payload.toString());
-    //   navigate(`/${payload.toString()}`);
-    // });
-
-    // // cleanup
-    // return () => {
-    //   client.unsubscribe('interface');
-    //   client.end();
-    // }
-    // console.log(mqtt);
-  }, []);
-
-  useEffect(() => {
     // connect with socket.io
     connect();
 

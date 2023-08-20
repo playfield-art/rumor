@@ -10,6 +10,7 @@
   --black: #000000;
   --coal: #0f0d0e;
   --white: #FFFFFF;
+  --rumorBlue: #253772;
 
   /* Gray Color */
   --grey-1400: #111111;
@@ -28,17 +29,16 @@
   --grey-100: #eeeeee;
 
   /**
+   * Font
+   */
+  --rumorFont: 'Sawton Industrial', Helvetica, Arial, sans-serif;
+
+  /**
    * Color Intentions
    */
 
-  --backgroundColor: var(--coal);
-  --textColor: var(--grey-500);
-
-  /**
-   * Typography
-   */
-
-  font-family: Helvetica, Arial, sans-serif;
+  --backgroundColor: var(--rumorBlue);
+  --textColor: var(--white);
 }
 /**
  * General
@@ -48,6 +48,16 @@ body {
   background-color: var(--backgroundColor);
   color: var(--textColor);
   cursor: none;
+  font-family: var(--rumorFont);
+  font-weight: normal;
+}
+
+/**
+ * Headings
+ */
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: normal;
 }
 
 /**

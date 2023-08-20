@@ -17,7 +17,6 @@ export default defineConfig({
     rollupOptions: {
       input: join(__dirname, "index.html"),
       external: [
-        "swiper",
         ...builtinModules
       ],
     },

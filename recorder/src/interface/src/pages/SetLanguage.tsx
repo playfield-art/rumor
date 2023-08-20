@@ -1,8 +1,5 @@
-import React, { useRef } from 'react'
-import { useControl } from '../hooks/useControl'
-import { SwiperClass, SwiperSlide, Swiper } from 'swiper/react'
-import 'swiper/css';
-import { styled } from 'styled-components';
+import React, { useState, useMemo, useEffect, useCallback } from 'react'
+import { socket } from "../socket";
 import { InformationBox } from '../components/InformationBox';
 import { Page } from './Layouts/Page';
 import { ControlBoxFixed } from '../components/ControlBoxFixed';
@@ -11,65 +8,74 @@ import { useTranslationsStore } from '../hooks/useTranslationsStore';
 import { interfaceTranslations } from '../translations';
 import { useSocket } from '../hooks/useSocket';
 import { useScreen } from '../hooks/useScreen';
-
-const SwiperSlideLanguage = styled(SwiperSlide)`
-  background-color: none;
-  color: var(--white);
-  text-align: center;
-  font-size: 4.5rem;
-`
-
-SwiperSlideLanguage.displayName = 'SwiperSlide';
+import { ControlButton } from '../enums';
 
 export const SetLanguage = () => {
   const navigate = useNavigate();
-  const swiperRef = useRef<SwiperClass>();
   const [instructions, setInstructions] = React.useState<string>(interfaceTranslations.en.pleaseSelectYourLanguage);
   const changeTranslations = useTranslationsStore((state) => state.changeTranslations);
   const { sendToServer } = useSocket();
+  const [ selectedLanguageKeyIndex, setSelectedLanguageKeyIndex ] = useState(0);
   useScreen(true);
+
+  // Get the keys of the translations
+  const selectedLanguageKeys = useMemo(() => Object.keys(interfaceTranslations), []);
 
   /**
    * When the left button is pressed, we want to scroll to the previous item
    */
   const onLeftButtonPressed = () => {
-    swiperRef.current?.slidePrev();
-    const selectedLanguageKey = getSelectedLanguageKey();
-    setInstructions(interfaceTranslations[selectedLanguageKey as keyof typeof interfaceTranslations].pleaseSelectYourLanguage);
+    setSelectedLanguageKeyIndex((prev) => prev === 0 ? selectedLanguageKeys.length - 1 : prev - 1);
   }
-
-  /**
-   * Get the selected language key of translations array
-   * @returns
-   */
-  const getSelectedLanguageKey = () =>
-    Object.keys(interfaceTranslations)[swiperRef.current?.realIndex ?? 0];
 
   /**
    * When the middle button is pressed, activate the language
    */
-  const onMiddleButtonPressed = () => {
+  const onMiddleButtonPressed = useCallback(() => {
+    // selected language
+    const language = selectedLanguageKeys[selectedLanguageKeyIndex];
+
     // set the language in backend
-    sendToServer('setLanguage', { language: getSelectedLanguageKey() });
+    sendToServer('setLanguage', { language });
 
     // set the language in the frontend
-    changeTranslations(getSelectedLanguageKey());
+    changeTranslations(language);
 
     // navigate to count down
     navigate('/start-countdown');
-  }
+  }, [selectedLanguageKeyIndex]);
 
   /**
    * When the right button is pressed, we want to scroll to the next item
    */
   const onRightButtonPressed = () => {
-    swiperRef.current?.slideNext();
-    const selectedLanguageKey = getSelectedLanguageKey();
-    setInstructions(interfaceTranslations[selectedLanguageKey as keyof typeof interfaceTranslations].pleaseSelectYourLanguage);
+    setSelectedLanguageKeyIndex((prev) => prev === selectedLanguageKeys.length - 1 ? 0 : prev + 1);
   }
 
+  // Update the instructions when the language changes
+  useEffect(() => {
+    setInstructions(selectedLanguageKeys[selectedLanguageKeyIndex] ? interfaceTranslations[selectedLanguageKeys[selectedLanguageKeyIndex] as keyof typeof interfaceTranslations].pleaseSelectYourLanguage : '');
+  }, [selectedLanguageKeyIndex]);
+
   // Use the control hook
-  useControl({ onLeftButtonPressed, onMiddleButtonPressed, onRightButtonPressed });
+  useEffect(() => {
+    socket.once('button-pressed', (payload) => {
+      const button = Number(payload.button) as ControlButton;
+      switch(button) {
+        case ControlButton.LEFT:
+          if(onLeftButtonPressed) onLeftButtonPressed();
+          break;
+        case ControlButton.MIDDLE:
+          if(onMiddleButtonPressed) onMiddleButtonPressed();
+          break;
+        case ControlButton.RIGHT:
+          if(onRightButtonPressed) onRightButtonPressed();
+          break;
+        default:
+          break;
+      }
+    })
+  }, [selectedLanguageKeyIndex]);
 
   return (
     <Page>
@@ -79,19 +85,14 @@ export const SetLanguage = () => {
         height: "100%",
         display: "flex",
         alignItems: "center",
-        justifyContent: "center"
+        justifyContent: "center",
+        fontSize: "4.5rem",
+        color: "var(--white)",
+        textAlign: "center"
       }}>
-        <Swiper
-          slidesPerView={1}
-          loop
-          onSwiper={(swiper) => swiperRef.current = swiper}
-        >
-          {Object.keys(interfaceTranslations).map((language) => (
-            <SwiperSlideLanguage key={language}>
-              <div>{interfaceTranslations[language as keyof typeof interfaceTranslations].language}</div>
-            </SwiperSlideLanguage>
-          ))}
-        </Swiper>
+        {selectedLanguageKeys.length > 0 && selectedLanguageKeys[selectedLanguageKeyIndex] && (
+          interfaceTranslations[selectedLanguageKeys[selectedLanguageKeyIndex] as keyof typeof interfaceTranslations].language
+        )}
       </div>
       <ControlBoxFixed />
     </Page>

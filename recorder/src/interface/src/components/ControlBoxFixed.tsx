@@ -4,7 +4,7 @@ import {
   AiOutlineRollback,
   AiOutlineLeftCircle,
   AiOutlineRightCircle,
-  AiFillCheckCircle
+  AiOutlineCheckCircle
 } from 'react-icons/ai';
 
 type ControlBoxProps = {
@@ -45,7 +45,7 @@ export const ControlBoxFixed = ({
         {enableLeft && <AiOutlineLeftCircle />}
       </ControlBoxCell>
       <ControlBoxCell>
-        {middleButtonType === 'check' && enableMiddle && <AiFillCheckCircle />}
+        {middleButtonType === 'check' && enableMiddle && <AiOutlineCheckCircle />}
         {middleButtonType === 'back' && enableMiddle && <AiOutlineRollback />}
       </ControlBoxCell>
       <ControlBoxCell>
