@@ -7,7 +7,6 @@
       "automations",
       "cms",
       "cms-types",
-      "landingspage-app",
       "recorder"
     ],
     "nohoist": [

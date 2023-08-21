@@ -9,6 +9,8 @@ import SoundBoard from "../audio/SoundBoard";
 import { MqttSingleton } from "../mqtt/MqttSingleton";
 import Logger from "../logging/Logger";
 import { Recorder } from "../../recorder";
+import { SocketSingleton } from "./SocketSingleton";
+import { Door } from "../../door";
 
 export class SocketMessageHandler {
   /**
@@ -44,6 +46,13 @@ export class SocketMessageHandler {
         methodName as keyof typeof SocketMessageHandler
       ](json);
     }
+  }
+
+  /**
+   * Get the door state via sockets
+   */
+  public static async handleMessageGetDoorState() {
+    SocketSingleton.getInstance().sendToClients("door-state", Door.open);
   }
 
   /**

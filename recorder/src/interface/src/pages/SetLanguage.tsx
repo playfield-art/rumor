@@ -29,20 +29,41 @@ export const SetLanguage = () => {
   }
 
   /**
+   * Get the door state from the server
+   * @returns boolean if the door is open
+   */
+  const getDoorState = ():Promise<boolean> => {
+    return new Promise((resolve, reject) => {
+      socket.once('door-state', (open) => {
+        resolve(open);
+      });
+      sendToServer('getDoorState', {});
+    });
+  }
+
+  /**
    * When the middle button is pressed, activate the language
    */
-  const onMiddleButtonPressed = useCallback(() => {
+  const onMiddleButtonPressed = useCallback(async () => {
     // selected language
     const language = selectedLanguageKeys[selectedLanguageKeyIndex];
 
-    // set the language in backend
-    sendToServer('setLanguage', { language });
+    // get the door state
+    const doorIsOpen = await getDoorState();
 
-    // set the language in the frontend
-    changeTranslations(language);
+    // if the door is open, redirect to the door-is-open page
+    if(doorIsOpen) {
+      navigate('/door-is-open');
+    } else {
+      // set the language in backend
+      sendToServer('setLanguage', { language });
 
-    // navigate to count down
-    navigate('/start-countdown');
+      // set the language in the frontend
+      changeTranslations(language);
+
+      // start the countdown
+      navigate('/start-countdown');
+    }
   }, [selectedLanguageKeyIndex]);
 
   /**
@@ -59,7 +80,7 @@ export const SetLanguage = () => {
 
   // Use the control hook
   useEffect(() => {
-    socket.once('button-pressed', (payload) => {
+    socket.on('button-pressed', (payload) => {
       const button = Number(payload.button) as ControlButton;
       switch(button) {
         case ControlButton.LEFT:
@@ -74,7 +95,10 @@ export const SetLanguage = () => {
         default:
           break;
       }
-    })
+    });
+    return () => {
+      socket.off('button-pressed');
+    }
   }, [selectedLanguageKeyIndex]);
 
   return (
