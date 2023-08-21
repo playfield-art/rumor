@@ -4,11 +4,11 @@
   "private": "true",
   "workspaces": {
     "packages": [
-      "recorder",
+      "automations",
       "cms",
       "cms-types",
-      "automations",
-      "module-service"
+      "landingspage-app",
+      "recorder"
     ],
     "nohoist": [
       "@graphql-codegen/**"
