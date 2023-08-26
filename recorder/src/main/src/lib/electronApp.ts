@@ -92,6 +92,13 @@ export default class ElectronApp {
         resolve(browserWindow);
       });
 
+      // when the render process is gone, reload the page
+      browserWindow.webContents.on("render-process-gone", (event, detailed) => {
+        if (detailed.reason === "crashed") {
+          browserWindow?.webContents.reload();
+        }
+      });
+
       // when we are closing, destroy the main window
       browserWindow.on("closed", () => {
         browserWindow = null;

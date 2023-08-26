@@ -15,7 +15,7 @@ export const SetLanguage = () => {
   const [instructions, setInstructions] = React.useState<string>(interfaceTranslations.en.pleaseSelectYourLanguage);
   const changeTranslations = useTranslationsStore((state) => state.changeTranslations);
   const { sendToServer } = useSocket();
-  const [ selectedLanguageKeyIndex, setSelectedLanguageKeyIndex ] = useState(0);
+  const [ selectedLanguageKeyIndex, setSelectedLanguageKeyIndex ] = useState(1);
   useScreen(true);
 
   // Get the keys of the translations
