@@ -1,0 +1,40 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environment
+venv/
+env/
+*.venv/
+
+# Logs and databases
+*.log
+*.sqlite3
+*.db
+
+# Environment variables
+.env
+
+# Compiled Python files
+*.pyc
+
+# Jupyter Notebook metadata
+.ipynb_checkpoints/
+
+# User-specific files
+.DS_Store
+Thumbs.db
+
+# Dependency directories
+# You might want to remove this section if you're using pipenv
+# See https://pipenv.pypa.io/en/latest/basics/#example-pipfile
+.pipenv/
+# Environments
+.env/
+.venv/
+env/
+
+# Data
+data/
