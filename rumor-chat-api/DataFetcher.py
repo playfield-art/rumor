@@ -3,7 +3,7 @@ import json
 import os
 import pandas as pd
 
-from config import settings
+from config import rumor_cms_api_key, rumor_cms_url
 from queries import getSessionsQuery, getAmountOfSessionsQuery
 
 ##
@@ -30,7 +30,7 @@ def create_directory_if_not_exists(directory_path):
 ##
 def getHeaders():
   headers = {
-    'Authorization': f"Bearer {settings.rumor_cms_api_key}",
+    'Authorization': f"Bearer {rumor_cms_api_key}",
     'Content-Type': 'application/json',
   }
   return headers
@@ -46,7 +46,7 @@ def getIntro():
 # Get the amount of sessions
 ##
 def getAmountOfSessions():
-  response = requests.post(f"{settings.rumor_cms_url}/graphql", json={'query': getAmountOfSessionsQuery()}, headers=getHeaders())
+  response = requests.post(f"{rumor_cms_url}/graphql", json={'query': getAmountOfSessionsQuery()}, headers=getHeaders())
   if response.status_code == 200:
     return len(response.json()['data']["sessions"]["data"])
   else:
@@ -59,7 +59,7 @@ def getSessionData():
   output = []
   amountOfSessions = getAmountOfSessions()
   for i in range(0, amountOfSessions, 10):
-    response = requests.post(f"{settings.rumor_cms_url}/graphql", json={'query': getSessionsQuery(10,i)}, headers=getHeaders())
+    response = requests.post(f"{rumor_cms_url}/graphql", json={'query': getSessionsQuery(10,i)}, headers=getHeaders())
     if response.status_code == 200:
       for session in response.json()['data']['sessions']['data']:
         currentSession = { 'id': session['id'], 'answers': [] }

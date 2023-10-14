@@ -1,8 +1,8 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useContext } from 'react'
 import { useNavigate } from 'react-router-dom';
-import { useControl } from '../hooks/useControl';
 import { useSocket } from '../hooks/useSocket';
 import { useScreen } from '../hooks/useScreen';
+import { useControl } from '../hooks/useControl';
 
 export const DuringPerformance = () => {
   const { sendToServer } = useSocket();
@@ -15,12 +15,14 @@ export const DuringPerformance = () => {
     sendToServer('stopSession', {});
   };
 
-  // Use the control hook
+  /**
+   * Set the control behaviour
+   */
   useControl({
-    onMiddleButtonPressed: onButtonPressed,
     onLeftButtonPressed: onButtonPressed,
-    onRightButtonPressed: onButtonPressed
-  });
+    onMiddleButtonPressed: onButtonPressed,
+    onRightButtonPressed: onButtonPressed,
+  })
 
   return (
     <div></div>

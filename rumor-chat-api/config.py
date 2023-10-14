@@ -1,8 +1,3 @@
-from pydantic_settings import BaseSettings, SettingsConfigDict
-
-class Settings(BaseSettings):
-    rumor_cms_url: str = ""
-    rumor_cms_api_key: str = ""
-    model_config = SettingsConfigDict(env_file=".env")
-
-settings = Settings()
+rumor_cms_url = "https://rumor-cms.onrender.com"
+rumor_cms_api_key = "2a0c0761250f7146ce0cd7f5c7353914c1d092639ac0b8bb151d4451f9345ffb7570e23e79b3a97c6681a6ab21f6a545af5070b76f06b62524c18ef4c2a0d1d5ab87724c1033b4db83512a0b12b28c53b99c9c21c176faf42b7795522d5c81dcc636bfa5cfc0c37914f6ae89e409c243b0f662fdc9fbfa82d3111ed1d035cda7"
+openai_api_key = "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"

@@ -1,5 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
-import { useControl } from '../hooks/useControl'
+import React, { useEffect, useState, useContext } from 'react'
 import { Page } from './Layouts/Page';
 import { ControlBoxFixed } from '../components/ControlBoxFixed';
 import { useCountdown } from 'usehooks-ts';
@@ -7,6 +6,8 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslationsStore } from '../hooks/useTranslationsStore';
 import { useSocket } from '../hooks/useSocket';
 import { useScreen } from '../hooks/useScreen';
+import ControlButtonContext from '../ControlButtonContext';
+import { useControl } from '../hooks/useControl';
 
 export const StartCountdown = () => {
   const [intervalValue] = useState<number>(1000)
@@ -18,15 +19,8 @@ export const StartCountdown = () => {
   const navigate = useNavigate();
   const { sendToServer } = useSocket();
   const translations = useTranslationsStore((state) => state.translations);
+  const controlButtonContext = useContext(ControlButtonContext);
   useScreen(true);
-
-  /**
-   * When the middle button is pressed, activate the language
-   */
-  const onMiddleButtonPressed = () => navigate('/set-language');
-
-  // Use the control hook
-  useControl({ onMiddleButtonPressed });
 
   // Start the countdown
   useEffect(() => {
@@ -40,6 +34,15 @@ export const StartCountdown = () => {
       sendToServer('startSession', {});
     }
   }, [count]);
+
+  /**
+   * Set the control behaviour
+   */
+  useControl({
+    onLeftButtonPressed: () => {},
+    onMiddleButtonPressed: () => navigate('/set-language'),
+    onRightButtonPressed: () => {},
+  });
 
   return (
     <Page>

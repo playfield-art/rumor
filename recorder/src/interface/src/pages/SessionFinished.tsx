@@ -4,6 +4,7 @@ import { useTranslationsStore } from '../hooks/useTranslationsStore';
 import { useScreen } from '../hooks/useScreen';
 import qr from '../../public/qr.svg'
 import { useNavigate } from 'react-router-dom';
+import { useControl } from '../hooks/useControl';
 
 export const SessionFinished = () => {
   useScreen(true);
@@ -18,6 +19,15 @@ export const SessionFinished = () => {
       clearTimeout(removeTimeout);
     }
   }, []);
+
+  /**
+  * We don't want to do anything when the buttons are pressed
+  */
+  useControl({
+    onLeftButtonPressed: () => {},
+    onMiddleButtonPressed: () => {},
+    onRightButtonPressed: () => {}
+  });
 
   return (
     <Page>
