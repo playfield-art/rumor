@@ -63,6 +63,7 @@ export interface RecordingMeta {
  */
 
 export interface Session {
+  folder: string;
   meta: RecordingMeta;
   audioList: AudioList;
   recordings: Recording[];

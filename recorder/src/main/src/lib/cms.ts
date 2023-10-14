@@ -34,7 +34,10 @@ import {
   getRecordingsFolder,
   moveFolder,
 } from "./filesystem";
-import { convertSessionIdToDateAndTime } from "./sessions/SessionUtils";
+import {
+  convertSessionIdToDateAndTime,
+  validateAndRemoveUnnecessarySessions,
+} from "./sessions/SessionUtils";
 import { Exception } from "./exceptions/Exception";
 import SettingHelper from "./settings/SettingHelper";
 import { SessionFactory } from "./sessions/SessionFactory";
@@ -597,6 +600,12 @@ export const uploadToCms = async (
   // gets uploaded before it is finished
   sessions = sessions.slice(0, sessions.length - 1);
 
+  /**
+   * II. Remove all unnessesary sessions
+   */
+
+  sessions = await validateAndRemoveUnnecessarySessions(sessions);
+
   // validate
   if (!sessions || sessions.length === 0) {
     if (statusCallback) await statusCallback("No uploadable sessions found.");
@@ -606,7 +615,7 @@ export const uploadToCms = async (
     );
 
   /**
-   * II. Convert the files to mp3
+   * III. Convert the files to mp3
    */
 
   // Before we start uploading:
@@ -635,14 +644,14 @@ export const uploadToCms = async (
   }
 
   /**
-   * III. Upload the sessions to the CMS
+   * IV. Upload the sessions to the CMS
    */
 
   // upload the sessions
   await uploadSessions(sessions, statusCallback);
 
   /**
-   * IV. Finish the process
+   * V. Finish the process
    */
 
   if (onFinished) onFinished();

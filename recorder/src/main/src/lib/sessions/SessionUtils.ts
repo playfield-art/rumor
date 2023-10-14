@@ -2,6 +2,9 @@
  * A file with some utils in case of a session
  */
 
+import fs from "fs-extra";
+import { Session } from "@shared/interfaces";
+
 /**
  * Convert a session id to date and time
  * @param sessionId
@@ -32,4 +35,27 @@ export const convertSessionIdToDateAndTime = (
 
   // return the output
   return output;
+};
+
+/**
+ * Remove unnecessary sessions
+ * @param sessions
+ * @returns
+ */
+export const validateAndRemoveUnnecessarySessions = (
+  sessions: Session[]
+): Session[] => {
+  // validate incoming session
+  if (!sessions || sessions.length === 0) return [];
+
+  // get sessions to remove
+  const sessionsToRemove = sessions.filter((s) => s.recordings.length <= 3);
+
+  // remove the sessions
+  sessionsToRemove.forEach((s) => {
+    fs.rmSync(s.folder, { recursive: true });
+  });
+
+  // return the remaining sessions
+  return sessions.filter((s) => s.recordings.length > 3);
 };

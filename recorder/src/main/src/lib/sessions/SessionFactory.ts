@@ -27,6 +27,7 @@ export class SessionFactory {
       .map((sessionFolder) => {
         // create new session
         const session: Session = {
+          folder: path.join(this.sessionsFolder, sessionFolder),
           meta: {
             language: "",
             boothSlug: "",
@@ -42,12 +43,9 @@ export class SessionFactory {
           },
         };
 
-        // get the folder path of the session
-        const sessionFolderPath = path.join(this.sessionsFolder, sessionFolder);
-
         // get the files in the session folder
         const sessionFiles = fsExtra
-          .readdirSync(sessionFolderPath)
+          .readdirSync(session.folder)
           .filter((sessionFile) => !UNWANTED_FILES.includes(sessionFile));
 
         // validate
@@ -56,7 +54,7 @@ export class SessionFactory {
           if (sessionFiles.find((file) => file === "meta.json")) {
             session.meta = JSON.parse(
               fsExtra.readFileSync(
-                path.join(sessionFolderPath, "meta.json"),
+                path.join(session.folder, "meta.json"),
                 "utf8"
               )
             ) as RecordingMeta;
@@ -66,7 +64,7 @@ export class SessionFactory {
           if (sessionFiles.find((file) => file === "audiolist.json")) {
             session.audioList = JSON.parse(
               fsExtra.readFileSync(
-                path.join(sessionFolderPath, "audiolist.json"),
+                path.join(session.folder, "audiolist.json"),
                 "utf8"
               )
             ) as AudioList;
@@ -78,8 +76,8 @@ export class SessionFactory {
             .map((fileName) => ({
               fileName: path.basename(fileName, path.extname(fileName)),
               ext: path.extname(fileName),
-              fullPath: path.join(sessionFolderPath, fileName),
-              directory: sessionFolderPath,
+              fullPath: path.join(session.folder, fileName),
+              directory: session.folder,
               language: fileName
                 .substring(0, fileName.lastIndexOf("."))
                 .split("-")[0],
@@ -90,8 +88,8 @@ export class SessionFactory {
                 .substring(0, fileName.lastIndexOf("."))
                 .split("-")[2],
               isEmpty:
-                fsExtra.statSync(path.join(sessionFolderPath, fileName))
-                  .size === 0,
+                fsExtra.statSync(path.join(session.folder, fileName)).size ===
+                0,
             }))
             .sort((a, b) => a.order - b.order);
         }
