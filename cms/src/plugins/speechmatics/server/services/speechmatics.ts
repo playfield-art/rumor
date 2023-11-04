@@ -36,7 +36,7 @@ const getSpeechmaticsUrl = () => {
 }
 
 const getBrainjarUrl = () => {
-  return 'https://rumor-brainjet.onrender.com';
+  return 'https://rumor-brainjet.onrender.com/';
 }
 
 /**
