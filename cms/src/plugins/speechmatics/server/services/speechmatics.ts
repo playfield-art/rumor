@@ -36,7 +36,7 @@ const getSpeechmaticsUrl = () => {
 }
 
 const getBrainjarUrl = () => {
-  return 'https://brj-intern-playfield-rumour.ew.r.appspot.com/';
+  return 'https://rumor-brainjet.onrender.com';
 }
 
 /**
