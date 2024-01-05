@@ -30,3 +30,27 @@ export const convertSessionIdToDateAndTime = (
   // return the output
   return output;
 };
+
+/**
+ * Change the last console line
+ * @param message The message
+ */
+export const updatePreviousMessage = (message: string) => {
+  process.stdout.moveCursor(0, -1); // Move cursor up one line
+  process.stdout.clearLine(0); // Clear the line
+  process.stdout.cursorTo(0); // Move cursor to the beginning of the line
+  process.stdout.write(message); // Write the new message
+  process.stdout.write("\n"); // Write the new message
+};
+
+/**
+ * Remove quotes
+ * @param message
+ * @returns
+ */
+export const removeQuotes = (message: string): string => {
+  if (message.trim().startsWith('"') && message.trim().endsWith('"')) {
+    return message.slice(1, -1);
+  }
+  return message;
+};
