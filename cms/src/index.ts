@@ -1,6 +1,6 @@
-import { finished } from 'stream/promises';
-import fs from 'fs';
-import { GraphQLUpload } from 'graphql-upload';
+import { finished } from "stream/promises";
+import fs from "fs";
+import { GraphQLUpload } from "graphql-upload";
 
 export default {
   /**
@@ -22,26 +22,64 @@ export default {
           ids: [ID]!
           folderPath: String
         }
+        input ModeratedAnswer {
+          id: ID!
+          moderated_transcript: String
+          common_language: String
+        }
         type Mutation {
           updateFileFolderPath(fileFolder: FileFolder!): String
+          moderateAnswer(moderatedAnswer: ModeratedAnswer): ComponentAnswersAnwser
+          makeSessionAiModerated(sessionId: ID): ID
         }
       `,
       resolvers: {
         Mutation: {
-          updateFileFolderPath: async (parent, { fileFolder }, context, info) => {
+          updateFileFolderPath: async (
+            parent,
+            { fileFolder },
+            context,
+            info
+          ) => {
             const { ids, folderPath } = fileFolder;
             const promises = ids.map(async (id) => {
               return strapi.db
-                .connection('public.files')
-                .where('id', '=', Number(id))
+                .connection("public.files")
+                .where("id", "=", Number(id))
                 .update({
                   folder_path: folderPath,
                 });
             });
             await Promise.all(promises);
-            return 'Success!!';
-          }
-        }
+            return "Success!!";
+          },
+          moderateAnswer: async (
+            parent,
+            { moderatedAnswer },
+            context,
+            info
+          ) => {
+            // get the moderated transcript from params
+            const { id, moderated_transcript, common_language } =
+              moderatedAnswer;
+
+            // update the database
+            await strapi.db
+              .connection("public.components_answers_anwsers")
+              .where("id", "=", id)
+              .update({
+                moderated_transcript,
+                common_language,
+              });
+
+            // return the updated component
+            return (
+              (await strapi.db
+                .connection("public.components_answers_anwsers")
+                .where("id", "=", id)) as []
+            ).pop();
+          },
+        },
       },
       resolversConfig: {},
     }));

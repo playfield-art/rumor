@@ -53,6 +53,10 @@
       "type": "relation",
       "relation": "oneToOne",
       "target": "api::language.language"
+    },
+    "ai_moderated": {
+      "type": "boolean",
+      "default": false
     }
   }
 }
