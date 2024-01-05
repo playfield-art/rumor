@@ -1,0 +1,37 @@
+#
+# This query will find unmoderated sessions
+#
+
+query GetNextUnmoderatedSessions {
+  sessions(
+    filters: { moderated: { eq: false } }
+    pagination: { limit: 10, start: 0 }
+  ) {
+    data {
+      id
+      attributes {
+        session_id
+        language
+        answers(pagination: { pageSize: 30 }) {
+          id
+          question {
+            data {
+              attributes {
+                title
+                description
+                question_tags {
+                  data {
+                    attributes {
+                      name
+                    }
+                  }
+                }
+              }
+            }
+          }
+          moderated_transcript
+        }
+      }
+    }
+  }
+}

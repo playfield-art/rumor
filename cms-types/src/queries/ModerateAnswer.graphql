@@ -1,0 +1,19 @@
+#
+# Moderates an answer via GraphQL
+#
+
+mutation ModerateAnswer(
+  $answerId: ID!
+  $moderated_transcript: String
+  $common_language: String
+) {
+  moderateAnswer(
+    moderatedAnswer: {
+      id: $answerId
+      moderated_transcript: $moderated_transcript
+      common_language: $common_language
+    }
+  ) {
+    moderated_transcript
+  }
+}

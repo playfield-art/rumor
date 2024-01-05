@@ -1,0 +1,11 @@
+#
+# Get the relation ID based on the short version
+#
+
+query GetLanguageRelationId($short: String) {
+  languages(filters: { short: { eq: $short } }) {
+    data {
+      id
+    }
+  }
+}

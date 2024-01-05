@@ -1,0 +1,18 @@
+#
+# Update a session moderated with AI
+#
+
+mutation UpdateSessionModeratedWithAI($id: ID!, $languageRelationId: ID) {
+  updateSession(
+    id: $id
+    data: {
+      moderated: true
+      ai_moderated: true
+      language_relation: $languageRelationId
+    }
+  ) {
+    data {
+      id
+    }
+  }
+}
