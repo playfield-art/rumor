@@ -73,11 +73,13 @@ export default {
               });
 
             // return the updated component
-            return (
-              (await strapi.db
-                .connection("public.components_answers_anwsers")
-                .where("id", "=", id)) as []
-            ).pop();
+            // return (
+            //   (await strapi.db
+            //     .connection("public.components_answers_anwsers")
+            //     .where("id", "=", id)) as []
+            // ).pop();
+
+            return "Success!!";
           },
         },
       },

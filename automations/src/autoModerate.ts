@@ -181,6 +181,13 @@ const autoModerateSessions = async (amount: number) => {
             updatePrevious: true,
           }
         );
+
+        // add a delay for debug purpose
+
+        // const delay = (ms: number) =>
+        //   new Promise((resolve) => setTimeout(resolve, ms));
+
+        // await delay(1000);
       }
 
       /**
@@ -202,8 +209,12 @@ const main = async () => {
   // start with title
   log("playField. Rumor - Auto Moderation", { title: true, addReturn: true });
 
-  // auto moderate an amount of sessions
-  await autoModerateSessions(400);
+  try {
+    // auto moderate an amount of sessions
+    await autoModerateSessions(400);
+  } catch (e) {
+    log(chalk.red(`ERROR: ${e.message}`));
+  }
 };
 
 // run the program

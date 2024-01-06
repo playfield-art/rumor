@@ -9,6 +9,8 @@ import {
 } from "cms-types/gql/graphql";
 import { GraphQLClient } from "graphql-request";
 
+let graphQlClient: GraphQLClient = null;
+
 /**
  * Get the API endpoint
  * @returns
@@ -31,13 +33,19 @@ const getApiToken = async (): Promise<string> => {
  * Returns a GraphQL client to work with
  * @returns
  */
-const getGraphQLClient = async (): Promise<GraphQLClient> =>
-  new GraphQLClient(`${await getApiEndpoint()}/graphql`, {
-    headers: {
-      contentType: "application/json",
-      authorization: `Bearer ${await getApiToken()}`,
-    },
-  });
+const getGraphQLClient = async (): Promise<GraphQLClient> => {
+  if (!graphQlClient) {
+    graphQlClient = new GraphQLClient(`${await getApiEndpoint()}/graphql`, {
+      headers: {
+        contentType: "application/json",
+        authorization: `Bearer ${await getApiToken()}`,
+      },
+    });
+    return graphQlClient;
+  } else {
+    return graphQlClient;
+  }
+};
 
 /**
  * Get the last unmorderated sessions
