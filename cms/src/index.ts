@@ -27,9 +27,14 @@ export default {
           moderated_transcript: String
           common_language: String
         }
+        type ModeratedAnswerOutput {
+          status: String
+          moderated_transcript: String
+          common_language: String
+        }
         type Mutation {
           updateFileFolderPath(fileFolder: FileFolder!): String
-          moderateAnswer(moderatedAnswer: ModeratedAnswer): ComponentAnswersAnwser
+          moderateAnswer(moderatedAnswer: ModeratedAnswer): ModeratedAnswerOutput
           makeSessionAiModerated(sessionId: ID): ID
         }
       `,
@@ -51,7 +56,7 @@ export default {
                 });
             });
             await Promise.all(promises);
-            return "Success!!";
+            return "Success";
           },
           moderateAnswer: async (
             parent,
@@ -59,27 +64,39 @@ export default {
             context,
             info
           ) => {
-            // get the moderated transcript from params
-            const { id, moderated_transcript, common_language } =
-              moderatedAnswer;
+            try {
+              // get the moderated transcript from params
+              const { id, moderated_transcript, common_language } =
+                moderatedAnswer;
 
-            // update the database
-            await strapi.db
-              .connection("public.components_answers_anwsers")
-              .where("id", "=", id)
-              .update({
+              // update the moderated transcript
+              await strapi.db
+                .connection("public.components_answers_anwsers")
+                .where("id", "=", id)
+                .update({
+                  moderated_transcript,
+                });
+
+              // update the common language
+              await strapi.db
+                .connection("public.components_answers_anwsers")
+                .where("id", "=", id)
+                .update({
+                  common_language,
+                });
+
+              return {
+                status: "Succes",
                 moderated_transcript,
                 common_language,
-              });
-
-            // return the updated component
-            // return (
-            //   (await strapi.db
-            //     .connection("public.components_answers_anwsers")
-            //     .where("id", "=", id)) as []
-            // ).pop();
-
-            return "Success!!";
+              };
+            } catch (e) {
+              return {
+                status: `Error... ${e.message}`,
+                moderated_transcript: "",
+                common_language: "",
+              };
+            }
           },
         },
       },
