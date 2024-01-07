@@ -10,6 +10,7 @@ import { GetNextUnmoderatedSessionsQuery } from "cms-types/gql/graphql";
 import chalk from "chalk";
 import { updatePreviousMessage } from "../lib/utils";
 import { GoogleTranslate } from "../lib/translate";
+import readline from "readline";
 
 /**
  * Variables
@@ -20,6 +21,11 @@ const googleTranslate = new GoogleTranslate(
   process.env.GOOGLE_CLOUD_API_KEY,
   process.env.GOOGLE_CLOUD_PROJECT_ID
 );
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout,
+});
+let amountOfSessions = 0;
 
 /**
  * Interfaces
@@ -84,6 +90,23 @@ const normalizeAnswerQuestion = (
 };
 
 /**
+ * Ask for a number in terminal
+ * @returns
+ */
+const askForNumber = () => {
+  return new Promise<number>((resolve, reject) => {
+    rl.question("Max. amount of sessions: ", (input) => {
+      const number = parseInt(input);
+      if (isNaN(number)) {
+        reject(new Error("Invalid number"));
+      } else {
+        resolve(number);
+      }
+    });
+  });
+};
+
+/**
  * Automoderate sessions
  */
 const autoModerateSessions = async (amount: number) => {
@@ -115,9 +138,9 @@ const autoModerateSessions = async (amount: number) => {
 
     // loop over sessions
     for (const session of unmoderatedSessions) {
-      // loog out the session title
+      // log out the session title
       log(
-        `#${session.id} - Working on session id ${session.attributes.session_id}`,
+        `Sessions left ${amountOfSessions} - #${session.id} - Working on session id ${session.attributes.session_id}`,
         {
           title: true,
         }
@@ -157,12 +180,27 @@ const autoModerateSessions = async (amount: number) => {
 
         let commonLanguage = moderatedAnswer;
         if (moderatedAnswer) {
-          if (session.attributes.language !== "en") {
-            commonLanguage = await googleTranslate.translate(
-              moderatedAnswer,
-              "en"
+          try {
+            if (session.attributes.language !== "en") {
+              commonLanguage = await googleTranslate.translate(
+                moderatedAnswer,
+                "en"
+              );
+            }
+          } catch (e) {
+            log(
+              chalk.red(
+                `ERROR: somthing went wrong while translating ${e.message}`
+              )
             );
           }
+        }
+        if (moderatedAnswer && !commonLanguage) {
+          log(
+            chalk.yellow(
+              `WARNING: moderated answer but no common language found`
+            )
+          );
         }
 
         /**
@@ -196,6 +234,9 @@ const autoModerateSessions = async (amount: number) => {
 
       await updateSessionModeratedWithAI(session.id, languageRelationId);
 
+      // decrease session amount
+      amountOfSessions = amountOfSessions - 1;
+
       // add return
       log("");
     }
@@ -206,19 +247,24 @@ const autoModerateSessions = async (amount: number) => {
  * The main program
  */
 const main = async () => {
-  // start with title
-  log("playField. Rumor - Auto Moderation", { title: true, addReturn: true });
-
-  try {
-    // auto moderate an amount of sessions
-    await autoModerateSessions(400);
-  } catch (e) {
-    log(chalk.red(`ERROR: ${e.message}`));
+  while (amountOfSessions > 0) {
+    try {
+      await autoModerateSessions(amountOfSessions);
+    } catch (e) {
+      log("");
+      log(chalk.red(`ERROR: ${e.message}`));
+      log("");
+    }
   }
 };
 
 // run the program
-main().then(() => {
+log("playField. Rumor - Auto Moderation", { title: true, addReturn: true });
+askForNumber().then((number) => {
+  amountOfSessions = number;
   log("");
-  log(chalk.green("Auto moderation completed."));
+  main().then(() => {
+    log("");
+    log(chalk.green("Auto moderation completed."));
+  });
 });

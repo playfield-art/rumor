@@ -89,11 +89,16 @@ export const moderateAnswer = async (
   const gqlClient = await getGraphQLClient();
 
   // do the request
-  await gqlClient.request(ModerateAnswerDocument, {
+  const output = await gqlClient.request(ModerateAnswerDocument, {
     answerId,
     moderated_transcript,
     common_language,
   });
+
+  // do error handling if we have an error on the server
+  if (output.moderateAnswer.status.startsWith("Error")) {
+    console.log(output.moderateAnswer.status);
+  }
 };
 
 /**

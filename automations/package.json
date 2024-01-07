@@ -6,7 +6,8 @@
   "license": "MIT",
   "scripts": {
     "transformRecorderPrototypeFiles": "ts-node ./src/transformRecorderPrototypeFiles.ts",
-    "autoModerate": "ts-node --esm ./src/autoModerate.ts"
+    "autoModerate": "ts-node --esm ./src/autoModerate.ts",
+    "openAITest": "ts-node --esm ./src/openAITest.ts"
   },
   "devDependencies": {
     "@types/node": "^18.11.18",
